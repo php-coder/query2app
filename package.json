@@ -9,5 +9,8 @@
   },
   "keywords": [],
   "author": "Slava Semushin <slava.semushin@gmail.com>",
-  "license": "GPL-2.0"
+  "license": "GPL-2.0",
+  "dependencies": {
+    "js-yaml": "~3.14.0"
+  }
 }
