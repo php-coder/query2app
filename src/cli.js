@@ -19,7 +19,7 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
-const createEndpoints = (config) => {
+const createEndpoints = (config, resultFile) => {
     console.log('Generate', resultFile);
     for (let endpoint of config) {
         console.log('GET', endpoint.path, '=>', endpoint.get);
@@ -42,4 +42,4 @@ const createEndpoints = (config) => {
 };
 
 const config = loadConfig(endpointsFile);
-createEndpoints(config);
+createEndpoints(config, resultFile);
