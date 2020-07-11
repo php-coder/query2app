@@ -3,12 +3,12 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
 
-const file = 'endpoints.yaml';
-console.log('Read', file);
+const endpointsFile = 'endpoints.yaml';
+console.log('Read', endpointsFile);
 
 try {
 
-    const content = fs.readFileSync(file, 'utf8');
+    const content = fs.readFileSync(endpointsFile, 'utf8');
     const config = yaml.safeLoad(content);
     //console.debug(config);
     console.log('Generate code');
@@ -17,5 +17,5 @@ try {
     }
 
 } catch (ex) {
-    console.error('Failed to parse', file);
+    console.error('Failed to parse', endpointsFile);
 }
