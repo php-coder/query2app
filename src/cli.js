@@ -43,8 +43,9 @@ const createEndpoints = (destDir, fileName, config) => {
         database: process.env.DB_NAME
     })
 
-    app.get('<%= path %>', (req, res) => {
-        pool.query('<%= get %>', (err, rows, fields) => {
+    <% endpoints.forEach(function(endpoint) { %>
+    app.get('<%- endpoint.path %>', (req, res) => {
+        pool.query('<%= endpoint.get %>', (err, rows, fields) => {
             if (err) {
                 throw err
             }
@@ -52,14 +53,14 @@ const createEndpoints = (destDir, fileName, config) => {
             res.json(counter)
         })
     })
+    <% }); %>
 
     app.listen(3000, () => {
         console.log('Listen on 3000')
     })\n`.replace(/^    /gm, '');
 
     const resultedCode = ejs.render(template, {
-        "path": config[0].path,
-        "get": config[0].get
+        "endpoints": config
     });
 
     fs.writeFileSync(resultFile, resultedCode);
