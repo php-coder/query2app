@@ -2,6 +2,7 @@
 
 const yaml = require('js-yaml');
 const fs = require('fs');
+const path = require('path');
 
 const endpointsFile = 'endpoints.yaml';
 const resultFile = 'app.js';
@@ -41,5 +42,31 @@ const createEndpoints = (config, resultFile) => {
     fs.writeFileSync(resultFile, resultedCode);
 };
 
+const createPackageJson = (destDir, fileName) => {
+    console.log('Generate', fileName);
+
+    const resultFile = path.join(destDir, fileName);
+    const projectName = path.basename(destDir);
+    console.log('Project name:', projectName);
+
+    const minimalPackageJson = `{
+      "name": "${projectName}",
+      "version": "1.0.0",
+      "scripts": {
+        "start": "node app.js"
+      },
+      "dependencies": {
+        "express": "~4.17.1"
+      }
+    }\n`.replace(/^    /gm, '');
+
+    fs.writeFileSync(resultFile, minimalPackageJson);
+};
+
 const config = loadConfig(endpointsFile);
 createEndpoints(config, resultFile);
+
+const destDir = process.cwd();
+createPackageJson(destDir, 'package.json');
+
+console.info('The application has been generated!\nUse\n  npm install\nto install its dependencies and\n  npm start\nafteward to run it');
