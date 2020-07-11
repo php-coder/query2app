@@ -67,7 +67,15 @@ const createPackageJson = (destDir, fileName) => {
 
 const config = loadConfig(endpointsFile);
 
-const destDir = process.cwd();
+let [,, destDir = '.'] = process.argv;
+destDir = path.resolve(process.cwd(), destDir);
+console.log('Destination directory:', destDir)
+
+if (!fs.existsSync(destDir)) {
+    console.log('Create', destDir)
+    fs.mkdirSync(destDir, {recursive: true});
+}
+
 createEndpoints(destDir, resultFile, config);
 
 createPackageJson(destDir, 'package.json');
