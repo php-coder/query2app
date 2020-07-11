@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const yaml = require('js-yaml');
+const ejs = require('ejs');
 const fs = require('fs');
 const path = require('path');
 
@@ -28,7 +29,7 @@ const createEndpoints = (destDir, fileName, config) => {
         console.log('GET', endpoint.path, '=>', endpoint.get);
     }
 
-    const resultedCode = `const express = require('express')
+    const template = `const express = require('express')
     const mysql = require('mysql')
 
     const app = express()
@@ -42,8 +43,8 @@ const createEndpoints = (destDir, fileName, config) => {
         database: process.env.DB_NAME
     })
 
-    app.get('${config[0].path}', (req, res) => {
-        pool.query('${config[0].get}', (err, rows, fields) => {
+    app.get('<%= path %>', (req, res) => {
+        pool.query('<%= get %>', (err, rows, fields) => {
             if (err) {
                 throw err
             }
@@ -56,6 +57,11 @@ const createEndpoints = (destDir, fileName, config) => {
         console.log('Listen on 3000')
     })\n`.replace(/^    /gm, '');
 
+    const resultedCode = ejs.render(template, {
+        "path": config[0].path,
+        "get": config[0].get
+    });
+
     fs.writeFileSync(resultFile, resultedCode);
 };
 
@@ -66,8 +72,8 @@ const createPackageJson = (destDir, fileName) => {
     const projectName = path.basename(destDir);
     console.log('Project name:', projectName);
 
-    const minimalPackageJson = `{
-      "name": "${projectName}",
+    const template = `{
+      "name": "<%= projectName %>",
       "version": "1.0.0",
       "scripts": {
         "start": "node app.js"
@@ -77,6 +83,10 @@ const createPackageJson = (destDir, fileName) => {
         "mysql": "~2.18.1"
       }
     }\n`.replace(/^    /gm, '');
+
+    const minimalPackageJson = ejs.render(template, {
+        projectName
+    });
 
     fs.writeFileSync(resultFile, minimalPackageJson);
 };
