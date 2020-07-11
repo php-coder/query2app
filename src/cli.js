@@ -6,6 +6,19 @@ const fs = require('fs');
 const endpointsFile = 'endpoints.yaml';
 const resultFile = 'app.js';
 
+const loadConfig = (endpointsFile) => {
+    console.log('Read', endpointsFile);
+    try {
+        const content = fs.readFileSync(endpointsFile, 'utf8');
+        const config = yaml.safeLoad(content);
+        //console.debug(config);
+        return config;
+    } catch (ex) {
+        console.error(`Failed to parse ${endpointsFile}: ${ex.message}`);
+        throw ex;
+    }
+};
+
 const createEndpoints = (config) => {
     console.log('Generate', resultFile);
     for (let endpoint of config) {
@@ -28,15 +41,5 @@ const createEndpoints = (config) => {
     fs.writeFileSync(resultFile, resultedCode);
 };
 
-console.log('Read', endpointsFile);
-
-try {
-
-    const content = fs.readFileSync(endpointsFile, 'utf8');
-    const config = yaml.safeLoad(content);
-    //console.debug(config);
-    createEndpoints(config);
-
-} catch (ex) {
-    console.error('Failed to parse', endpointsFile);
-}
+const config = loadConfig(endpointsFile);
+createEndpoints(config);
