@@ -20,8 +20,10 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
-const createEndpoints = (config, resultFile) => {
-    console.log('Generate', resultFile);
+const createEndpoints = (destDir, fileName, config) => {
+    console.log('Generate', fileName);
+    const resultFile = path.join(destDir, fileName);
+
     for (let endpoint of config) {
         console.log('GET', endpoint.path, '=>', endpoint.get);
     }
@@ -64,9 +66,10 @@ const createPackageJson = (destDir, fileName) => {
 };
 
 const config = loadConfig(endpointsFile);
-createEndpoints(config, resultFile);
 
 const destDir = process.cwd();
+createEndpoints(destDir, resultFile, config);
+
 createPackageJson(destDir, 'package.json');
 
 console.info('The application has been generated!\nUse\n  npm install\nto install its dependencies and\n  npm start\nafteward to run it');
