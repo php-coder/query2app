@@ -74,7 +74,7 @@ const createPackageJson = (destDir, fileName) => {
     console.log('Project name:', projectName);
 
     const template = `{
-      "name": "<%= projectName %>",
+      "name": "<%- projectName %>",
       "version": "1.0.0",
       "scripts": {
         "start": "node app.js"
