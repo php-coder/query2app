@@ -29,12 +29,27 @@ const createEndpoints = (destDir, fileName, config) => {
     }
 
     const resultedCode = `const express = require('express')
+    const mysql = require('mysql')
+
     const app = express()
     app.set('x-powered-by', false)
 
+    const pool = mysql.createPool({
+        connectionLimit: 2,
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
+    })
+
     app.get('${config[0].path}', (req, res) => {
-        console.debug('Execute ${config[0].get}')
-        res.sendStatus(200)
+        pool.query('${config[0].get}', (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            const counter = rows[0].counter
+            res.json(counter)
+        })
     })
 
     app.listen(3000, () => {
@@ -58,7 +73,8 @@ const createPackageJson = (destDir, fileName) => {
         "start": "node app.js"
       },
       "dependencies": {
-        "express": "~4.17.1"
+        "express": "~4.17.1",
+        "mysql": "~2.18.1"
       }
     }\n`.replace(/^    /gm, '');
 
