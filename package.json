@@ -1,18 +1,31 @@
 {
   "name": "query2app",
   "version": "0.0.1",
-  "description": "",
+  "description": "Generates the endpoints from SQL -> URL mapping",
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/php-coder/query2app.git"
+  },
   "bin": {
     "query2app": "./src/cli.js"
   },
-  "keywords": [],
+  "keywords": [
+    "sql",
+    "generate",
+    "generator",
+    "skaffolding"
+  ],
   "author": "Slava Semushin <slava.semushin@gmail.com>",
   "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/php-coder/query2app/issues",
+    "email": "slava.semushin@gmail.com"
+  },
   "dependencies": {
     "ejs": "~3.1.3",
     "js-yaml": "~3.14.0"
