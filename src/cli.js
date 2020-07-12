@@ -71,4 +71,10 @@ createEndpoints(destDir, resultFile, config);
 
 createPackageJson(destDir, 'package.json');
 
-console.info('The application has been generated!\nUse\n  npm install\nto install its dependencies and\n  npm start\nafteward to run it');
+console.info(`The application has been generated!
+Use
+  npm install
+to install its dependencies and
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
+  npm start
+afteward to run it`);
