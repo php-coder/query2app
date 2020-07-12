@@ -18,7 +18,8 @@ app.get('<%- endpoint.path %>', (req, res) => {
         if (err) {
             throw err
         }
-        res.json(rows[0])
+        const counter = rows[0].counter
+        res.json(counter)
     })
 })
 <% }); %>
