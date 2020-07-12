@@ -19,19 +19,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Generate code
    ```console
    $ npx query2app
-   Read endpoints.yaml
-   Destination directory: /Users/coder/new-project
-   Generate app.js
-   GET /v1/categories/count => SELECT COUNT(*) AS counter FROM categories
-   Generate package.json
-   Project name: new-project
-   The application has been generated!
-   Use
-     npm install
-   to install its dependencies and
-     export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-     npm start
-   afteward to run it
    ```
 
 1. Run the application
@@ -39,11 +26,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    $ npm install
    $ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password
    $ npm start
-   
-   > new-project@1.0.0 start /Users/coder/new-project
-   > node app.js
-   
-   Listen on 3000
    ```
    ---
    **NOTE**
