@@ -49,8 +49,7 @@ const createEndpoints = (destDir, fileName, config) => {
             if (err) {
                 throw err
             }
-            const counter = rows[0].counter
-            res.json(counter)
+            res.json(rows[0])
         })
     })
     <% }); %>
