@@ -33,8 +33,8 @@ const createEndpoints = async (destDir, fileName, config) => {
         __dirname + '/templates/app.js.ejs',
         {
             "endpoints": config
-        })
-    ;
+        }
+    );
 
     fs.writeFileSync(resultFile, resultedCode);
 };
