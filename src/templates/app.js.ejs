@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 
 <% endpoints.forEach(function(endpoint) { %>
 app.get('<%- endpoint.path %>', (req, res) => {
-    pool.query('<%= endpoint.get %>', (err, rows, fields) => {
+    pool.query('<%- endpoint.get %>', (err, rows, fields) => {
         if (err) {
             throw err
         }
