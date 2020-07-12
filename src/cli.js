@@ -21,7 +21,7 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
-const createEndpoints = (destDir, fileName, config) => {
+const createEndpoints = async (destDir, fileName, config) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
@@ -29,64 +29,29 @@ const createEndpoints = (destDir, fileName, config) => {
         console.log('GET', endpoint.path, '=>', endpoint.get);
     }
 
-    const template = `const express = require('express')
-    const mysql = require('mysql')
-
-    const app = express()
-    app.set('x-powered-by', false)
-
-    const pool = mysql.createPool({
-        connectionLimit: 2,
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME
-    })
-
-    <% endpoints.forEach(function(endpoint) { %>
-    app.get('<%- endpoint.path %>', (req, res) => {
-        pool.query('<%= endpoint.get %>', (err, rows, fields) => {
-            if (err) {
-                throw err
-            }
-            res.json(rows[0])
+    const resultedCode = await ejs.renderFile(
+        __dirname + '/templates/app.js.ejs',
+        {
+            "endpoints": config
         })
-    })
-    <% }); %>
-
-    app.listen(3000, () => {
-        console.log('Listen on 3000')
-    })\n`.replace(/^    /gm, '');
-
-    const resultedCode = ejs.render(template, {
-        "endpoints": config
-    });
+    ;
 
     fs.writeFileSync(resultFile, resultedCode);
 };
 
-const createPackageJson = (destDir, fileName) => {
+const createPackageJson = async (destDir, fileName) => {
     console.log('Generate', fileName);
 
     const resultFile = path.join(destDir, fileName);
     const projectName = path.basename(destDir);
     console.log('Project name:', projectName);
 
-    const template = `{
-      "name": "<%- projectName %>",
-      "version": "1.0.0",
-      "scripts": {
-        "start": "node app.js"
-      },
-      "dependencies": {
-        "express": "~4.17.1",
-        "mysql": "~2.18.1"
-      }
-    }\n`.replace(/^    /gm, '');
-
-    const minimalPackageJson = ejs.render(template, {
-        projectName
-    });
+    const minimalPackageJson = await ejs.renderFile(
+        __dirname + '/templates/package.json.ejs',
+        {
+            projectName
+        }
+    );
 
     fs.writeFileSync(resultFile, minimalPackageJson);
 };
