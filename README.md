@@ -28,12 +28,12 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    $ npm start
    ```
    ---
-   **NOTE**
+   :bulb: **NOTE**
    
    While the example used `export` for setting up the environment variables, we don't recommend export variables that way! This was provided as an example to illustrate that an application follows [The Twelve Factors](https://12factor.net/config) and can be configured by passing environment variables. In real life, you will use docker, docker-compose, Kubernetes or other ways to run an app with required environment variables.
    
    ---
-   **NOTE**
+   :bulb: **NOTE**
    
    An app also supports other environment variables:
    
