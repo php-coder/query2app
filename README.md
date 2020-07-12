@@ -1,6 +1,8 @@
 # Query To App
 Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 
+>:warning: This is a proof of concept at this moment. Until it reaches a stable version, it might (and will) break a compatibility.
+
 # How to use
 
 1. Navigate to a project catalog
