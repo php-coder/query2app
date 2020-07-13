@@ -54,22 +54,8 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 
 1. Test that it works
    ```console
-   $ curl -i http://localhost:3000/v1/categories/count
-   HTTP/1.1 200 OK
-   Content-Type: application/json; charset=utf-8
-   Content-Length: 1
-   ETag: W/"1-d95o2uzYI7q7tY7bHI4U1xBug7s"
-   Date: Sun, 12 Jul 2020 17:01:25 GMT
-   Connection: keep-alive
-
+   $ curl http://localhost:3000/v1/categories/count
    3
-   $ curl -i http://localhost:3000/v1/collections/1/categories/count
-   HTTP/1.1 200 OK
-   Content-Type: application/json; charset=utf-8
-   Content-Length: 1
-   ETag: W/"1-NWoZK3kTsExUV00Ywo1G5jlUKKs"
-   Date: Sun, 12 Jul 2020 17:01:26 GMT
-   Connection: keep-alive
-
+   $ curl http://localhost:3000/v1/collections/1/categories/count
    1
    ```
