@@ -1,0 +1,2 @@
+- path: /v1/categories/count
+  get:  SELECT COUNT(*) AS counter FROM categories
