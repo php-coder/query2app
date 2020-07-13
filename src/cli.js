@@ -32,7 +32,27 @@ const createEndpoints = async (destDir, fileName, config) => {
     const resultedCode = await ejs.renderFile(
         __dirname + '/templates/app.js.ejs',
         {
-            "endpoints": config
+            "endpoints": config,
+
+            // "... WHERE id = :id" => [ ":id" ] => [ "id" ]
+            "extractParams": (query) => {
+                const params = query.match(/:\w+/g) || [];
+                return params.length > 0
+                    ? params.map(p => p.substring(1))
+                    : params;
+            },
+
+            // [ "page", "num" ] => '{ "page" : req.params.page, "num": req.params.num }'
+            "formatParams": (params) => {
+                return params.length > 0
+                    ? '{ ' + params.map(p => `"${p}": req.params.${p}`).join(', ') + ' }'
+                    : params;
+            },
+
+            // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
+            "formatQuery": (query) => {
+                return "'" + query.replace(/\n[ ]+/g, ' ') + "'";
+            }
         }
     );
 

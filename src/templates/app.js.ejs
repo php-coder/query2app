@@ -9,12 +9,27 @@ const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    // Support of named placeholders (https://github.com/mysqljs/mysql#custom-format)
+    queryFormat: function(query, values) {
+        if (!values) {
+            return query;
+        }
+        return query.replace(/\:(\w+)/g, function(txt, key) {
+            if (values.hasOwnProperty(key)) {
+                return this.escape(values[key]);
+            }
+            return txt;
+        }.bind(this));
+    }
 })
 
-<% endpoints.forEach(function(endpoint) { %>
+<%
+  endpoints.forEach(function(endpoint) {
+      const params = extractParams(endpoint.get);
+%>
 app.get('<%- endpoint.path %>', (req, res) => {
-    pool.query('<%- endpoint.get %>', (err, rows, fields) => {
+    pool.query(<%- formatQuery(endpoint.get) %>, <%- params.length > 0 ? formatParams(params) + ', ' : '' %>(err, rows, fields) => {
         if (err) {
             throw err
         }

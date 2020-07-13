@@ -1,2 +1,10 @@
 - path: /v1/categories/count
   get:  SELECT COUNT(*) AS counter FROM categories
+
+- path: /v1/collections/:collectionId/categories/count
+  get: >-
+    SELECT COUNT(DISTINCT s.category_id) AS counter
+      FROM collections_series cs
+      JOIN series s
+        ON s.id = cs.series_id
+     WHERE cs.collection_id = :collectionId

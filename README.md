@@ -16,6 +16,14 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    $ vim endpoints.yaml
    - path: /v1/categories/count
      get:  SELECT COUNT(*) AS counter FROM categories
+
+   - path: /v1/collections/:collectionId/categories/count
+     get: >-
+       SELECT COUNT(DISTINCT s.category_id) AS counter
+         FROM collections_series cs
+         JOIN series s
+           ON s.id = cs.series_id
+        WHERE cs.collection_id = :collectionId
    ```
 
 1. Generate code
@@ -55,4 +63,13 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    Connection: keep-alive
 
    3
+   $ curl -i http://localhost:3000/v1/collections/1/categories/count
+   HTTP/1.1 200 OK
+   Content-Type: application/json; charset=utf-8
+   Content-Length: 1
+   ETag: W/"1-NWoZK3kTsExUV00Ywo1G5jlUKKs"
+   Date: Sun, 12 Jul 2020 17:01:26 GMT
+   Connection: keep-alive
+
+   1
    ```
