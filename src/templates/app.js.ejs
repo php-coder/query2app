@@ -29,13 +29,16 @@ const pool = mysql.createPool({
       const params = extractParams(endpoint.get);
 %>
 app.get('<%- endpoint.path %>', (req, res) => {
-    pool.query(<%- formatQuery(endpoint.get) %>, <%- params.length > 0 ? formatParams(params) + ', ' : '' %>(err, rows, fields) => {
-        if (err) {
-            throw err
+    pool.query(
+        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) : '' %>
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            const counter = rows[0].counter
+            res.json(counter)
         }
-        const counter = rows[0].counter
-        res.json(counter)
-    })
+    )
 })
 <% }); %>
 

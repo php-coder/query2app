@@ -26,23 +26,30 @@ const pool = mysql.createPool({
 
 
 app.get('/v1/categories/count', (req, res) => {
-    pool.query('SELECT COUNT(*) AS counter FROM categories', (err, rows, fields) => {
-        if (err) {
-            throw err
+    pool.query(
+        'SELECT COUNT(*) AS counter FROM categories',
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            const counter = rows[0].counter
+            res.json(counter)
         }
-        const counter = rows[0].counter
-        res.json(counter)
-    })
+    )
 })
 
 app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
-    pool.query('SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId', { "collectionId": req.params.collectionId }, (err, rows, fields) => {
-        if (err) {
-            throw err
+    pool.query(
+        'SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId',
+        { "collectionId": req.params.collectionId }
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            const counter = rows[0].counter
+            res.json(counter)
         }
-        const counter = rows[0].counter
-        res.json(counter)
-    })
+    )
 })
 
 
