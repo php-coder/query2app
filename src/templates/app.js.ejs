@@ -30,7 +30,7 @@ const pool = mysql.createPool({
 %>
 app.get('<%- endpoint.path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) : '' %>
+        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
