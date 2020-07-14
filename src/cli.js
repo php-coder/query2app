@@ -26,7 +26,12 @@ const createEndpoints = async (destDir, fileName, config) => {
     const resultFile = path.join(destDir, fileName);
 
     for (let endpoint of config) {
-        console.log('GET', endpoint.path, '=>', endpoint.get);
+        if (endpoint.hasOwnProperty('get')) {
+            console.log('GET', endpoint.path, '=>', endpoint.get);
+        }
+        if (endpoint.hasOwnProperty('post')) {
+            console.log('POST', endpoint.path, '=>', endpoint.post);
+        }
     }
 
     const resultedCode = await ejs.renderFile(

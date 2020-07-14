@@ -25,8 +25,9 @@ const pool = mysql.createPool({
 })
 
 <%
-  endpoints.forEach(function(endpoint) {
-      const params = extractParams(endpoint.get);
+endpoints.forEach(function(endpoint) {
+    if (endpoint.hasOwnProperty('get')) {
+        const params = extractParams(endpoint.get);
 %>
 app.get('<%- endpoint.path %>', (req, res) => {
     pool.query(
@@ -40,7 +41,17 @@ app.get('<%- endpoint.path %>', (req, res) => {
         }
     )
 })
-<% }); %>
+<%
+    }
+    if (endpoint.hasOwnProperty('post')) {
+%>
+app.post('<%- endpoint.path %>', (req, res) => {
+    res.sendStatus(200)
+})
+<%
+    }
+});
+-%>
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

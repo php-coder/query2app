@@ -8,3 +8,25 @@
       JOIN series s
         ON s.id = cs.series_id
      WHERE cs.collection_id = :collectionId
+
+- path: /v1/categories
+  post: >-
+    INSERT
+      INTO categories2
+         ( name
+         , name_ru
+         , slug
+         , created_at
+         , created_by
+         , updated_at
+         , updated_by
+         )
+    VALUES
+        ( :name
+        , :name_ru
+        , :slug
+        , NOW()
+        , :userId
+        , NOW()
+        , :userId
+        )

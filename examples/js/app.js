@@ -52,6 +52,9 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
     )
 })
 
+app.post('/v1/categories', (req, res) => {
+    res.sendStatus(200)
+})
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
