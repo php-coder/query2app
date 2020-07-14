@@ -45,7 +45,7 @@ const createEndpoints = async (destDir, fileName, config) => {
             // [ "page", "num" ] => '{ "page" : req.params.page, "num": req.params.num }'
             "formatParams": (params) => {
                 return params.length > 0
-                    ? '{ ' + params.map(p => `"${p}": req.params.${p}`).join(', ') + ' }'
+                    ? '{ ' + Array.from(new Set(params), p => `"${p}": req.params.${p}`).join(', ') + ' }'
                     : params;
             },
 
