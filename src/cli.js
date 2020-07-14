@@ -56,7 +56,7 @@ const createEndpoints = async (destDir, fileName, config) => {
 
             // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
             "formatQuery": (query) => {
-                return "'" + query.replace(/\n[ ]+/g, ' ') + "'";
+                return "'" + query.replace(/\n[ ]*/g, ' ') + "'";
             }
         }
     );
