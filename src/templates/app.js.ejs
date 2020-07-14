@@ -33,7 +33,7 @@ endpoints.forEach(function(endpoint) {
 %>
 app.get('<%- endpoint.path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params, 'req.params') + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
