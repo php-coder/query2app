@@ -1,8 +1,10 @@
+const bodyParser = require('body-parser')
 const express = require('express')
 const mysql = require('mysql')
 
 const app = express()
 app.set('x-powered-by', false)
+app.use(bodyParser.json())
 
 const pool = mysql.createPool({
     connectionLimit: 2,
