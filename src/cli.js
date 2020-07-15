@@ -35,6 +35,9 @@ const createEndpoints = async (destDir, fileName, config) => {
         if (endpoint.hasOwnProperty('post')) {
             console.log('POST', endpoint.path, '=>', flattenQuery(endpoint.post));
         }
+        if (endpoint.hasOwnProperty('put')) {
+            console.log('PUT', endpoint.path, '=>', flattenQuery(endpoint.put));
+        }
     }
 
     const resultedCode = await ejs.renderFile(

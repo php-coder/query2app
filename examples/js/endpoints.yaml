@@ -30,3 +30,13 @@
         , NOW()
         , :userId
         )
+
+- path: /v1/categories/:categoryId
+  put: >-
+    UPDATE categories
+       SET name = :name
+         , name_ru = :nameRu
+         , slug = :slug
+         , updated_at = NOW()
+         , updated_by = :userId
+     WHERE id = :categoryId

@@ -67,6 +67,19 @@ app.post('/v1/categories', (req, res) => {
     )
 })
 
+app.put('/v1/categories/:categoryId', (req, res) => {
+    pool.query(
+        'UPDATE categories SET name = :name , name_ru = :nameRu , slug = :slug , updated_at = NOW() , updated_by = :userId WHERE id = :categoryId',
+        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId, "categoryId": req.body.categoryId },
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.sendStatus(204)
+        }
+    )
+})
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Listen on ${port}`)
