@@ -21,16 +21,19 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
+// "SELECT *\n   FROM foo" => "SELECT * FROM foo"
+const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
+
 const createEndpoints = async (destDir, fileName, config) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
     for (let endpoint of config) {
         if (endpoint.hasOwnProperty('get')) {
-            console.log('GET', endpoint.path, '=>', endpoint.get);
+            console.log('GET', endpoint.path, '=>', flattenQuery(endpoint.get));
         }
         if (endpoint.hasOwnProperty('post')) {
-            console.log('POST', endpoint.path, '=>', endpoint.post);
+            console.log('POST', endpoint.path, '=>', flattenQuery(endpoint.post));
         }
     }
 
@@ -56,7 +59,7 @@ const createEndpoints = async (destDir, fileName, config) => {
 
             // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
             "formatQuery": (query) => {
-                return "'" + query.replace(/\n[ ]*/g, ' ') + "'";
+                return "'" + flattenQuery(query) + "'";
             }
         }
     );
