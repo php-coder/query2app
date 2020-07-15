@@ -62,7 +62,7 @@ app.post('/v1/categories', (req, res) => {
             if (err) {
                 throw err
             }
-            res.sendStatus(200)
+            res.sendStatus(204)
         }
     )
 })

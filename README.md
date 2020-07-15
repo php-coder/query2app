@@ -63,6 +63,9 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    3
    $ curl http://localhost:3000/v1/collections/1/categories/count
    1
-   $ curl -H 'Content-Type: application/json' -d '{"name":"Sport","slug":"sport","userId":100}' http://localhost:3000/v1/categories
-   OK
+   $ curl -i -H 'Content-Type: application/json' -d '{"name":"Sport","nameRu":"Спорт","slug":"sport","userId":100}' http://localhost:3000/v1/categories
+   HTTP/1.1 204 No Content
+   ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
+   Date: Wed, 15 Jul 2020 18:06:33 GMT
+   Connection: keep-alive
    ```
