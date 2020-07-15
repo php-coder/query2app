@@ -35,7 +35,10 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
        UPDATE categories
           SET name = :name, name_ru = :nameRu, slug = :slug, updated_at = NOW(), updated_by = :userId
         WHERE id = :categoryId
-     delete: DELETE FROM categories WHERE id = :categoryId
+     delete: >-
+       DELETE
+         FROM categories
+        WHERE id = :categoryId
    ```
 
 1. Generate code
