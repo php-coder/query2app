@@ -55,7 +55,16 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
 })
 
 app.post('/v1/categories', (req, res) => {
-    res.sendStatus(200)
+    pool.query(
+        'INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :nameRu , :slug , NOW() , :userId , NOW() , :userId )',
+        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId },
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.sendStatus(200)
+        }
+    )
 })
 
 const port = process.env.PORT || 3000;

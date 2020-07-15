@@ -24,6 +24,11 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
          JOIN series s
            ON s.id = cs.series_id
         WHERE cs.collection_id = :collectionId
+
+   - path: /v1/categories
+     post: >-
+       INSERT INTO categories(name, slug, created_at, created_by, updated_at, updated_by)
+       VALUES (:name, :slug, NOW(), :userId, NOW(), :userId)
    ```
 
 1. Generate code
@@ -58,4 +63,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    3
    $ curl http://localhost:3000/v1/collections/1/categories/count
    1
+   $ curl -H 'Content-Type: application/json' -d '{"name":"Sport","slug":"sport","userId":100}' http://localhost:3000/v1/categories
+   OK
    ```

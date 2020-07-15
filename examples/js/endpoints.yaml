@@ -12,7 +12,7 @@
 - path: /v1/categories
   post: >-
     INSERT
-      INTO categories2
+      INTO categories
          ( name
          , name_ru
          , slug
@@ -23,7 +23,7 @@
          )
     VALUES
         ( :name
-        , :name_ru
+        , :nameRu
         , :slug
         , NOW()
         , :userId

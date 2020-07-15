@@ -46,9 +46,18 @@ app.get('<%- endpoint.path %>', (req, res) => {
 <%
     }
     if (endpoint.hasOwnProperty('post')) {
+        const params = extractParams(endpoint.post);
 %>
 app.post('<%- endpoint.path %>', (req, res) => {
-    res.sendStatus(200)
+    pool.query(
+        <%- formatQuery(endpoint.post) %>,<%- params.length > 0 ? '\n        ' + formatParams(params, 'req.body') + ',' : '' %>
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.sendStatus(200)
+        }
+    )
 })
 <%
     }
