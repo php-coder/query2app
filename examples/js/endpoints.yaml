@@ -40,3 +40,7 @@
          , updated_at = NOW()
          , updated_by = :userId
      WHERE id = :categoryId
+  delete: >-
+    DELETE
+      FROM categories
+     WHERE id = :categoryId

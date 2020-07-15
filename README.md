@@ -35,6 +35,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
        UPDATE categories
           SET name = :name, name_ru = :nameRu, slug = :slug, updated_at = NOW(), updated_by = :userId
         WHERE id = :categoryId
+     delete: DELETE FROM categories WHERE id = :categoryId
    ```
 
 1. Generate code
@@ -77,6 +78,11 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    $ curl -i -H 'Content-Type: application/json' -d '{"name":"Fauna","nameRu":"Фауна","slug":"fauna","userId":101,"categoryId":1}' -X PUT http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
-   Date: Wed, 15 Jul 2020 18:30:36 GMT
+   Date: Wed, 15 Jul 2020 18:06:34 GMT
+   Connection: keep-alive
+   $ curl -i -X DELETE http://localhost:3000/v1/categories/1
+   HTTP/1.1 204 No Content
+   ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
+   Date: Wed, 15 Jul 2020 18:06:35 GMT
    Connection: keep-alive
    ```

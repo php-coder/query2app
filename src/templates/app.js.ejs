@@ -77,6 +77,22 @@ app.put('<%- endpoint.path %>', (req, res) => {
 })
 <%
     }
+    if (endpoint.hasOwnProperty('delete')) {
+        const params = extractParams(endpoint.delete);
+%>
+app.delete('<%- endpoint.path %>', (req, res) => {
+    pool.query(
+        <%- formatQuery(endpoint.delete) %>,<%- params.length > 0 ? '\n        ' + formatParams(params, 'req.params') + ',' : '' %>
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.sendStatus(204)
+        }
+    )
+})
+<%
+    }
 });
 -%>
 

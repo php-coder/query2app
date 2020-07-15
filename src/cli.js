@@ -38,6 +38,9 @@ const createEndpoints = async (destDir, fileName, config) => {
         if (endpoint.hasOwnProperty('put')) {
             console.log('PUT', endpoint.path, '=>', flattenQuery(endpoint.put));
         }
+        if (endpoint.hasOwnProperty('delete')) {
+            console.log('DELETE', endpoint.path, '=>', flattenQuery(endpoint.delete));
+        }
     }
 
     const resultedCode = await ejs.renderFile(

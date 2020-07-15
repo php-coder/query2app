@@ -80,6 +80,19 @@ app.put('/v1/categories/:categoryId', (req, res) => {
     )
 })
 
+app.delete('/v1/categories/:categoryId', (req, res) => {
+    pool.query(
+        'DELETE FROM categories WHERE id = :categoryId',
+        { "categoryId": req.params.categoryId },
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.sendStatus(204)
+        }
+    )
+})
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Listen on ${port}`)
