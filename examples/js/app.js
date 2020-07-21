@@ -34,8 +34,7 @@ app.get('/v1/categories/count', (req, res) => {
             if (err) {
                 throw err
             }
-            const counter = rows[0].counter
-            res.json(counter)
+            res.json(rows[0])
         }
     )
 })
@@ -48,8 +47,7 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
             if (err) {
                 throw err
             }
-            const counter = rows[0].counter
-            res.json(counter)
+            res.json(rows[0])
         }
     )
 })
