@@ -9,16 +9,6 @@ Suite Teardown  Delete All Sessions
 ${SERVER_URL}  http://host.docker.internal:3000
 
 ** Test Cases ***
-GET should return a value
-    ${response}=                    Get Request  api  /v1/categories/count
-    Status Should Be                200  ${response}
-    Dictionary Should Contain Item  ${response.json()}  counter  0
-
-GET should return not found
-    ${response}=      Get Request  api  /v1/categories/100
-    Status Should Be  404  ${response}
-    Should Be Equal   ${response.headers['Content-Type']}  application/json; charset=utf-8
-
 POST should create an object
     &{payload}=                     Create Dictionary  name=Sport  slug=sport  userId=1
     ${response}=                    Post Request  api  /v1/categories  json=${payload}
@@ -27,6 +17,16 @@ POST should create an object
     ${response}=                    Get Request  api  /v1/categories/count
     Status Should Be                200  ${response}
     Dictionary Should Contain Item  ${response.json()}  counter  1
+
+GET should return a value
+    ${response}=                    Get Request  api  /v1/categories/count
+    Status Should Be                200  ${response}
+    Dictionary Should Contain Item  ${response.json()}  counter  1
+
+GET should return not found
+    ${response}=      Get Request  api  /v1/categories/100
+    Status Should Be  404  ${response}
+    Should Be Equal   ${response.headers['Content-Type']}  application/json; charset=utf-8
 
 PUT should update an object
     &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1  categoryId=1
