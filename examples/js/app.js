@@ -33,6 +33,10 @@ app.get('/v1/categories/count', (req, res) => {
             if (err) {
                 throw err
             }
+            if (rows.length === 0) {
+                res.type('application/json').status(404).end()
+                return
+            }
             res.json(rows[0])
         }
     )
@@ -45,6 +49,10 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
         (err, rows, fields) => {
             if (err) {
                 throw err
+            }
+            if (rows.length === 0) {
+                res.type('application/json').status(404).end()
+                return
             }
             res.json(rows[0])
         }
@@ -60,6 +68,23 @@ app.post('/v1/categories', (req, res) => {
                 throw err
             }
             res.sendStatus(204)
+        }
+    )
+})
+
+app.get('/v1/categories/:categoryId', (req, res) => {
+    pool.query(
+        'SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId',
+        { "categoryId": req.params.categoryId },
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            if (rows.length === 0) {
+                res.type('application/json').status(404).end()
+                return
+            }
+            res.json(rows[0])
         }
     )
 })

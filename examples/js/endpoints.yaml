@@ -32,6 +32,13 @@
         )
 
 - path: /v1/categories/:categoryId
+  get: >-
+    SELECT id
+         , name
+         , name_ru
+         , slug
+      FROM categories
+     WHERE id = :categoryId
   put: >-
     UPDATE categories
        SET name = :name

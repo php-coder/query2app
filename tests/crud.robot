@@ -14,6 +14,11 @@ GET should return a value
     Status Should Be                200  ${response}
     Dictionary Should Contain Item  ${response.json()}  counter  0
 
+GET should return not found
+    ${response}=      Get Request  api  /v1/categories/100
+    Status Should Be  404  ${response}
+    Should Be Equal   ${response.headers['Content-Type']}  application/json; charset=utf-8
+
 POST should create an object
     &{payload}=                     Create Dictionary  name=Sport  slug=sport  userId=1
     ${response}=                    Post Request  api  /v1/categories  json=${payload}
