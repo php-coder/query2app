@@ -27,21 +27,28 @@ const pool = mysql.createPool({
 
 <%
 endpoints.forEach(function(endpoint) {
-    if (endpoint.hasOwnProperty('get')) {
-        const params = extractParams(endpoint.get);
+    const hasGetOne = endpoint.hasOwnProperty('get');
+    const hasGetMany = endpoint.hasOwnProperty('get_list');
+    if (hasGetOne || hasGetMany) {
+        const sql = hasGetOne ? endpoint.get : endpoint.get_list;
+        const params = extractParams(sql);
 %>
 app.get('<%- endpoint.path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.get) %>,<%- params.length > 0 ? '\n        ' + formatParams(params, 'req.params') + ',' : '' %>
+        <%- formatQuery(sql) %>,<%- params.length > 0 ? '\n        ' + formatParams(params, 'req.params') + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
             }
+<% if (hasGetMany) { -%>
+            res.json(rows)
+<% } else { -%>
             if (rows.length === 0) {
                 res.type('application/json').status(404).end()
                 return
             }
             res.json(rows[0])
+<% } -%>
         }
     )
 })

@@ -31,6 +31,8 @@ const createEndpoints = async (destDir, fileName, config) => {
     for (let endpoint of config) {
         if (endpoint.hasOwnProperty('get')) {
             console.log('GET', endpoint.path, '=>', flattenQuery(endpoint.get));
+        } else if (endpoint.hasOwnProperty('get_list')) {
+            console.log('GET', endpoint.path, '=>', flattenQuery(endpoint.get_list));
         }
         if (endpoint.hasOwnProperty('post')) {
             console.log('POST', endpoint.path, '=>', flattenQuery(endpoint.post));

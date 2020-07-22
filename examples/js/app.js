@@ -59,6 +59,18 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
     )
 })
 
+app.get('/v1/categories', (req, res) => {
+    pool.query(
+        'SELECT id , name , name_ru , slug FROM categories',
+        (err, rows, fields) => {
+            if (err) {
+                throw err
+            }
+            res.json(rows)
+        }
+    )
+})
+
 app.post('/v1/categories', (req, res) => {
     pool.query(
         'INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :nameRu , :slug , NOW() , :userId , NOW() , :userId )',

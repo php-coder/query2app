@@ -10,6 +10,12 @@
      WHERE cs.collection_id = :collectionId
 
 - path: /v1/categories
+  get_list: >-
+    SELECT id
+         , name
+         , name_ru
+         , slug
+      FROM categories
   post: >-
     INSERT
       INTO categories
