@@ -70,7 +70,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Test that it works
    ```console
    $ curl http://localhost:3000/v1/categories/count
-   3
+   {"counter":3}
    $ curl http://localhost:3000/v1/collections/1/categories/count
    1
    $ curl -i -H 'Content-Type: application/json' -d '{"name":"Sport","nameRu":"Спорт","slug":"sport","userId":100}' http://localhost:3000/v1/categories
