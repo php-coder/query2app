@@ -26,11 +26,18 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
         WHERE cs.collection_id = :collectionId
 
    - path: /v1/categories
+     get_list: >-
+       SELECT id, name, name_ru, slug
+         FROM categories
      post: >-
        INSERT INTO categories(name, slug, created_at, created_by, updated_at, updated_by)
        VALUES (:name, :slug, NOW(), :userId, NOW(), :userId)
 
    - path: /v1/categories/:categoryId
+     get: >-
+       SELECT id, name, name_ru, slug
+         FROM categories
+        WHERE id = :categoryId
      put: >-
        UPDATE categories
           SET name = :name, name_ru = :nameRu, slug = :slug, updated_at = NOW(), updated_by = :userId
@@ -78,11 +85,15 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:33 GMT
    Connection: keep-alive
+   $ curl http://localhost:3000/v1/categories
+   [{"id":1,"name":"Sport","name_ru":"Спорт","slug":"sport"}]
    $ curl -i -H 'Content-Type: application/json' -d '{"name":"Fauna","nameRu":"Фауна","slug":"fauna","userId":101,"categoryId":1}' -X PUT http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:34 GMT
    Connection: keep-alive
+   $ curl http://localhost:3000/v1/categories/1
+   {"id":1,"name":"Fauna","name_ru":"Фауна","slug":"fauna"}
    $ curl -i -X DELETE http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
