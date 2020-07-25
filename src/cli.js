@@ -6,7 +6,8 @@ const fs = require('fs');
 const path = require('path');
 
 const endpointsFile = 'endpoints.yaml';
-const resultFile = 'app.js';
+const appFile = 'app.js';
+const routesFile = 'routes.js';
 
 const loadConfig = (endpointsFile) => {
     console.log('Read', endpointsFile);
@@ -19,6 +20,13 @@ const loadConfig = (endpointsFile) => {
         console.error(`Failed to parse ${endpointsFile}: ${ex.message}`);
         throw ex;
     }
+};
+
+const createApp = async (destDir, fileName) => {
+    console.log('Generate', fileName);
+    const resultFile = path.join(destDir, fileName);
+
+    fs.copyFileSync(__dirname + '/templates/app.js', resultFile)
 };
 
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
@@ -46,7 +54,7 @@ const createEndpoints = async (destDir, fileName, config) => {
     }
 
     const resultedCode = await ejs.renderFile(
-        __dirname + '/templates/app.js.ejs',
+        __dirname + '/templates/routes.js.ejs',
         {
             "endpoints": config,
 
@@ -103,8 +111,8 @@ if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, {recursive: true});
 }
 
-createEndpoints(destDir, resultFile, config);
-
+createApp(destDir, appFile, config);
+createEndpoints(destDir, routesFile, config);
 createPackageJson(destDir, 'package.json');
 
 console.info(`The application has been generated!
