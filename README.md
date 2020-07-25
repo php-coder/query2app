@@ -44,6 +44,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ```console
    $ npx query2app
    ```
+   An example of generated code can be inspect at [examples/js](examples/js) directory.
 
 1. Run the application
    ```console
