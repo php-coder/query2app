@@ -17,14 +17,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    - path: /v1/categories/count
      get:  SELECT COUNT(*) AS counter FROM categories
 
-   - path: /v1/collections/:collectionId/categories/count
-     get: >-
-       SELECT COUNT(DISTINCT s.category_id) AS counter
-         FROM collections_series cs
-         JOIN series s
-           ON s.id = cs.series_id
-        WHERE cs.collection_id = :collectionId
-
    - path: /v1/categories
      get_list: >-
        SELECT id, name, name_ru, slug
@@ -78,8 +70,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ```console
    $ curl http://localhost:3000/v1/categories/count
    {"counter":3}
-   $ curl http://localhost:3000/v1/collections/1/categories/count
-   1
    $ curl -i -H 'Content-Type: application/json' -d '{"name":"Sport","nameRu":"Спорт","slug":"sport","userId":100}' http://localhost:3000/v1/categories
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
