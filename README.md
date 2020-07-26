@@ -79,7 +79,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    Connection: keep-alive
    $ curl http://localhost:3000/v1/categories
    [{"id":1,"name":"Sport","name_ru":"Спорт","slug":"sport"}]
-   $ curl -i -H 'Content-Type: application/json' -d '{"name":"Fauna","nameRu":"Фауна","slug":"fauna","userId":101,"categoryId":1}' -X PUT http://localhost:3000/v1/categories/1
+   $ curl -i -H 'Content-Type: application/json' -d '{"name":"Fauna","nameRu":"Фауна","slug":"fauna","userId":101}' -X PUT http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:34 GMT
