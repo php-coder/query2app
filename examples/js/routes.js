@@ -79,7 +79,7 @@ app.get('/v1/categories/:categoryId', (req, res) => {
 app.put('/v1/categories/:categoryId', (req, res) => {
     pool.query(
         'UPDATE categories SET name = :name , name_ru = :nameRu , slug = :slug , updated_at = NOW() , updated_by = :userId WHERE id = :categoryId',
-        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId, "categoryId": req.body.categoryId },
+        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId, "categoryId": req.params.categoryId },
         (err, rows, fields) => {
             if (err) {
                 throw err

@@ -29,7 +29,7 @@ GET should return not found
     Should Be Equal   ${response.headers['Content-Type']}  application/json; charset=utf-8
 
 PUT should update an object
-    &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1  categoryId=1
+    &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
     ${response}=      Put Request  api  /v1/categories/1  json=${payload}
     Status Should Be  204  ${response}
 

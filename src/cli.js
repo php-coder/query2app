@@ -32,25 +32,33 @@ const createApp = async (destDir, fileName) => {
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
 const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 
+// "WHERE id = :p.categoryId OR id = :b.id" => "WHERE id = :categoryId OR id = :id"
+const removePlaceholders = (query) => query.replace(/:[pb]\./g, ':');
+
 const createEndpoints = async (destDir, fileName, config) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
     for (let endpoint of config) {
         if (endpoint.hasOwnProperty('get')) {
-            console.log('GET', endpoint.path, '=>', flattenQuery(endpoint.get));
+            console.log('GET', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.get)));
         } else if (endpoint.hasOwnProperty('get_list')) {
-            console.log('GET', endpoint.path, '=>', flattenQuery(endpoint.get_list));
+            console.log('GET', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.get_list)));
         }
         if (endpoint.hasOwnProperty('post')) {
-            console.log('POST', endpoint.path, '=>', flattenQuery(endpoint.post));
+            console.log('POST', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.post)));
         }
         if (endpoint.hasOwnProperty('put')) {
-            console.log('PUT', endpoint.path, '=>', flattenQuery(endpoint.put));
+            console.log('PUT', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.put)));
         }
         if (endpoint.hasOwnProperty('delete')) {
-            console.log('DELETE', endpoint.path, '=>', flattenQuery(endpoint.delete));
+            console.log('DELETE', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.delete)));
         }
+    }
+
+    const placeholdersMap = {
+        'p': 'req.params',
+        'b': 'req.body'
     }
 
     const resultedCode = await ejs.renderFile(
@@ -58,24 +66,24 @@ const createEndpoints = async (destDir, fileName, config) => {
         {
             "endpoints": config,
 
-            // "... WHERE id = :id" => [ ":id" ] => [ "id" ]
+            // "... WHERE id = :p.id" => [ "p.id" ] => [ "p.id" ]
             "extractParams": (query) => {
-                const params = query.match(/:\w+/g) || [];
+                const params = query.match(/:[pb]\.\w+/g) || [];
                 return params.length > 0
                     ? params.map(p => p.substring(1))
                     : params;
             },
 
-            // [ "page", "num" ] => '{ "page" : req.params.page, "num": req.params.num }'
-            "formatParams": (params, targetObject) => {
+            // [ "p.page", "b.num" ] => '{ "page" : req.params.page, "num": req.body.num }'
+            "formatParams": (params) => {
                 return params.length > 0
-                    ? '{ ' + Array.from(new Set(params), p => `"${p}": ${targetObject}.${p}`).join(', ') + ' }'
+                    ? '{ ' + Array.from(new Set(params), p => `"${p.substring(2)}": ${placeholdersMap[p.substring(0, 1)]}.${p.substring(2)}`).join(', ') + ' }'
                     : params;
             },
 
             // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
             "formatQuery": (query) => {
-                return "'" + flattenQuery(query) + "'";
+                return "'" + removePlaceholders(flattenQuery(query)) + "'";
             }
         }
     );

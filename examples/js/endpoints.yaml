@@ -7,7 +7,7 @@
       FROM collections_series cs
       JOIN series s
         ON s.id = cs.series_id
-     WHERE cs.collection_id = :collectionId
+     WHERE cs.collection_id = :p.collectionId
 
 - path: /v1/categories
   get_list: >-
@@ -28,13 +28,13 @@
          , updated_by
          )
     VALUES
-        ( :name
-        , :nameRu
-        , :slug
+        ( :b.name
+        , :b.nameRu
+        , :b.slug
         , NOW()
-        , :userId
+        , :b.userId
         , NOW()
-        , :userId
+        , :b.userId
         )
 
 - path: /v1/categories/:categoryId
@@ -44,16 +44,16 @@
          , name_ru
          , slug
       FROM categories
-     WHERE id = :categoryId
+     WHERE id = :p.categoryId
   put: >-
     UPDATE categories
-       SET name = :name
-         , name_ru = :nameRu
-         , slug = :slug
+       SET name = :b.name
+         , name_ru = :b.nameRu
+         , slug = :b.slug
          , updated_at = NOW()
-         , updated_by = :userId
-     WHERE id = :categoryId
+         , updated_by = :b.userId
+     WHERE id = :p.categoryId
   delete: >-
     DELETE
       FROM categories
-     WHERE id = :categoryId
+     WHERE id = :p.categoryId
