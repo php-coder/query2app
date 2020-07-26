@@ -39,7 +39,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
          FROM categories
         WHERE id = :p.categoryId
    ```
-   Note that the queries use a little unusual named parameters: `:b.name`, `p.categoryId`, etc The prefixes `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
+   Note that the queries use a little unusual named parameters: `:b.name`, `:p.categoryId`, etc The prefixes `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
 
 1. Generate code
    ```console
