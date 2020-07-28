@@ -5,9 +5,23 @@ const ejs = require('ejs');
 const fs = require('fs');
 const path = require('path');
 
+const parseArgs = require('minimist');
+
 const endpointsFile = 'endpoints.yaml';
 const appFile = 'app.js';
 const routesFile = 'routes.js';
+
+const parseCommandLineArgs = (args) => {
+    const opts = {
+        'string': [ 'lang' ],
+        'default': {
+            'lang': 'js'
+        }
+    };
+    const argv = parseArgs(args, opts);
+    //console.debug('argv:', argv);
+    return argv;
+}
 
 const loadConfig = (endpointsFile) => {
     console.log('Read', endpointsFile);
@@ -108,9 +122,11 @@ const createPackageJson = async (destDir, fileName) => {
     fs.writeFileSync(resultFile, minimalPackageJson);
 };
 
+const argv = parseCommandLineArgs(process.argv.slice(2));
+
 const config = loadConfig(endpointsFile);
 
-let [,, destDir = '.'] = process.argv;
+let destDir = argv._.length > 0 ? argv._[0] : '.';
 destDir = path.resolve(process.cwd(), destDir);
 console.log('Destination directory:', destDir)
 
@@ -119,14 +135,18 @@ if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, {recursive: true});
 }
 
-createApp(destDir, appFile, config);
-createEndpoints(destDir, routesFile, config);
-createPackageJson(destDir, 'package.json');
+if (argv.lang === 'js') {
+    createApp(destDir, appFile, config);
+    createEndpoints(destDir, routesFile, config);
+    createPackageJson(destDir, 'package.json');
+}
 
-console.info(`The application has been generated!
-Use
+console.info('The application has been generated!')
+if (argv.lang === 'js') {
+    console.info(`Use
   npm install
 to install its dependencies and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
 afteward to run it`);
+}
