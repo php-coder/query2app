@@ -122,6 +122,26 @@ const createPackageJson = async (destDir, fileName) => {
     fs.writeFileSync(resultFile, minimalPackageJson);
 };
 
+const showInstructions = (lang) => {
+    console.info('The application has been generated!')
+    if (argv.lang === 'js') {
+        console.info(`Use
+  npm install
+to install its dependencies and
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
+  npm start
+afteward to run`);
+    } else if (argv.lang === 'go') {
+        console.info(`Use
+  go run app.go
+or
+  go build -o app
+  ./app
+to build and run it`)
+    }
+};
+
+
 const argv = parseCommandLineArgs(process.argv.slice(2));
 
 const config = loadConfig(endpointsFile);
@@ -141,19 +161,4 @@ if (argv.lang === 'js') {
     createPackageJson(destDir, 'package.json');
 }
 
-console.info('The application has been generated!')
-if (argv.lang === 'js') {
-    console.info(`Use
-  npm install
-to install its dependencies and
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  npm start
-afteward to run`);
-} else if (argv.lang === 'go') {
-    console.info(`Use
-  go run app.go
-or
-  go build -o app
-  ./app
-to build and run it`)
-}
+showInstructions(argv.lang);
