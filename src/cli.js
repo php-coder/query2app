@@ -40,7 +40,7 @@ const createApp = async (destDir, lang) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
-    fs.copyFileSync(__dirname + '/templates/app.js', resultFile)
+    fs.copyFileSync(`${__dirname}/templates/app.${lang}`, resultFile)
 };
 
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
