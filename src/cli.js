@@ -8,7 +8,6 @@ const path = require('path');
 const parseArgs = require('minimist');
 
 const endpointsFile = 'endpoints.yaml';
-const appFile = 'app.js';
 const routesFile = 'routes.js';
 
 const parseCommandLineArgs = (args) => {
@@ -36,7 +35,8 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
-const createApp = async (destDir, fileName) => {
+const createApp = async (destDir, lang) => {
+    const fileName = `app.${lang}`
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
@@ -136,7 +136,7 @@ if (!fs.existsSync(destDir)) {
 }
 
 if (argv.lang === 'js') {
-    createApp(destDir, appFile, config);
+    createApp(destDir, argv.lang, config);
     createEndpoints(destDir, routesFile, config);
     createPackageJson(destDir, 'package.json');
 }
