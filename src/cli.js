@@ -135,8 +135,8 @@ if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, {recursive: true});
 }
 
+createApp(destDir, argv.lang, config);
 if (argv.lang === 'js') {
-    createApp(destDir, argv.lang, config);
     createEndpoints(destDir, routesFile, config);
     createPackageJson(destDir, 'package.json');
 }
@@ -148,5 +148,12 @@ if (argv.lang === 'js') {
 to install its dependencies and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
-afteward to run it`);
+afteward to run`);
+} else if (argv.lang === 'go') {
+    console.info(`Use
+  go run app.go
+or
+  go build -o app
+  ./app
+to build and run it`)
 }
