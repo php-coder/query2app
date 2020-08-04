@@ -133,7 +133,7 @@ to install its dependencies and
 afteward to run`);
     } else if (argv.lang === 'go') {
         console.info(`Use
-  go run app.go
+  go run *.go
 or
   go build -o app
   ./app
@@ -156,8 +156,8 @@ if (!fs.existsSync(destDir)) {
 }
 
 createApp(destDir, argv.lang, config);
+createEndpoints(destDir, argv.lang, config);
 if (argv.lang === 'js') {
-    createEndpoints(destDir, argv.lang, config);
     createPackageJson(destDir, 'package.json');
 }
 
