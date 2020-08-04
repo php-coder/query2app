@@ -8,7 +8,6 @@ const path = require('path');
 const parseArgs = require('minimist');
 
 const endpointsFile = 'endpoints.yaml';
-const routesFile = 'routes.js';
 
 const parseCommandLineArgs = (args) => {
     const opts = {
@@ -49,7 +48,8 @@ const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 // "WHERE id = :p.categoryId OR id = :b.id" => "WHERE id = :categoryId OR id = :id"
 const removePlaceholders = (query) => query.replace(/:[pb]\./g, ':');
 
-const createEndpoints = async (destDir, fileName, config) => {
+const createEndpoints = async (destDir, lang, config) => {
+    const fileName = `routes.${lang}`
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
@@ -76,7 +76,7 @@ const createEndpoints = async (destDir, fileName, config) => {
     }
 
     const resultedCode = await ejs.renderFile(
-        __dirname + '/templates/routes.js.ejs',
+        `${__dirname}/templates/routes.${lang}.ejs`,
         {
             "endpoints": config,
 
@@ -157,7 +157,7 @@ if (!fs.existsSync(destDir)) {
 
 createApp(destDir, argv.lang, config);
 if (argv.lang === 'js') {
-    createEndpoints(destDir, routesFile, config);
+    createEndpoints(destDir, argv.lang, config);
     createPackageJson(destDir, 'package.json');
 }
 
