@@ -130,7 +130,7 @@ const createDependenciesDescriptor = async (destDir, lang) => {
     console.log('Project name:', projectName);
 
     const minimalPackageJson = await ejs.renderFile(
-        __dirname + '/templates/package.json.ejs',
+        `${__dirname}/templates/${fileName}.ejs`,
         {
             projectName
         }
