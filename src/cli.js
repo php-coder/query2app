@@ -125,14 +125,14 @@ const createPackageJson = async (destDir, fileName) => {
 
 const showInstructions = (lang) => {
     console.info('The application has been generated!')
-    if (argv.lang === 'js') {
+    if (lang === 'js') {
         console.info(`Use
   npm install
 to install its dependencies and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
 afteward to run`);
-    } else if (argv.lang === 'go') {
+    } else if (lang === 'go') {
         console.info(`Use
   go run *.go
 or
