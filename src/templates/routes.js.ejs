@@ -2,13 +2,14 @@ const register = (app, pool) => {
 
 <%
 endpoints.forEach(function(endpoint) {
+    const path = endpoint.path;
     const hasGetOne = endpoint.hasOwnProperty('get');
     const hasGetMany = endpoint.hasOwnProperty('get_list');
     if (hasGetOne || hasGetMany) {
         const sql = hasGetOne ? endpoint.get : endpoint.get_list;
         const params = extractParams(sql);
 %>
-app.get('<%- endpoint.path %>', (req, res) => {
+app.get('<%- path %>', (req, res) => {
     pool.query(
         <%- formatQuery(sql) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
@@ -32,7 +33,7 @@ app.get('<%- endpoint.path %>', (req, res) => {
     if (endpoint.hasOwnProperty('post')) {
         const params = extractParams(endpoint.post);
 %>
-app.post('<%- endpoint.path %>', (req, res) => {
+app.post('<%- path %>', (req, res) => {
     pool.query(
         <%- formatQuery(endpoint.post) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
@@ -48,7 +49,7 @@ app.post('<%- endpoint.path %>', (req, res) => {
     if (endpoint.hasOwnProperty('put')) {
         const params = extractParams(endpoint.put);
 %>
-app.put('<%- endpoint.path %>', (req, res) => {
+app.put('<%- path %>', (req, res) => {
     pool.query(
         <%- formatQuery(endpoint.put) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
@@ -64,7 +65,7 @@ app.put('<%- endpoint.path %>', (req, res) => {
     if (endpoint.hasOwnProperty('delete')) {
         const params = extractParams(endpoint.delete);
 %>
-app.delete('<%- endpoint.path %>', (req, res) => {
+app.delete('<%- path %>', (req, res) => {
     pool.query(
         <%- formatQuery(endpoint.delete) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
