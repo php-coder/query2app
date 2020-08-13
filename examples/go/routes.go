@@ -18,7 +18,7 @@ func registerRoutes(r chi.Router) {
 	})
 
 	r.Post("/v1/categories", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 
 	r.Get("/v1/categories/{categoryId}", func(w http.ResponseWriter, _ *http.Request) {
@@ -26,11 +26,11 @@ func registerRoutes(r chi.Router) {
 	})
 
 	r.Put("/v1/categories/{categoryId}", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 
 	r.Delete("/v1/categories/{categoryId}", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 
 }

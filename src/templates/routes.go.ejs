@@ -17,21 +17,21 @@ endpoints.forEach(function(endpoint) {
 	if (endpoint.hasOwnProperty('post')) {
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 <%
 	}
 	if (endpoint.hasOwnProperty('put')) {
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 <%
 	}
 	if (endpoint.hasOwnProperty('delete')) {
 %>
 	r.Delete("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("TODO"))
+		w.WriteHeader(http.StatusNoContent)
 	})
 <%
 	}
