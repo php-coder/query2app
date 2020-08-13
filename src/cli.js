@@ -48,6 +48,12 @@ const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 // "WHERE id = :p.categoryId OR id = :b.id" => "WHERE id = :categoryId OR id = :id"
 const removePlaceholders = (query) => query.replace(/:[pb]\./g, ':');
 
+// "/categories/:id" => "/categories/{id}"
+// (used only with Golang's go-chi)
+const convertPathPlaceholders = (path) => {
+    return path.replace(/:[^\/]+/g, (placeholder) => '{' +  placeholder.slice(1) + '}');
+};
+
 const createEndpoints = async (destDir, lang, config) => {
     const fileName = `routes.${lang}`
     console.log('Generate', fileName);
@@ -55,6 +61,9 @@ const createEndpoints = async (destDir, lang, config) => {
 
     for (let endpoint of config) {
         let path = endpoint.path;
+        if (lang === 'go') {
+            path = convertPathPlaceholders(path)
+        }
         if (endpoint.hasOwnProperty('get')) {
             console.log('GET', path, '=>', removePlaceholders(flattenQuery(endpoint.get)));
         } else if (endpoint.hasOwnProperty('get_list')) {
@@ -99,7 +108,10 @@ const createEndpoints = async (destDir, lang, config) => {
             // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
             "formatQuery": (query) => {
                 return "'" + removePlaceholders(flattenQuery(query)) + "'";
-            }
+            },
+
+            // (used only with Golang's go-chi)
+            "convertPathPlaceholders": convertPathPlaceholders,
         }
     );
 

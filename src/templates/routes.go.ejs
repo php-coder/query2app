@@ -1,11 +1,40 @@
 package main
 
 import "net/http"
+import "github.com/go-chi/chi"
 
-func registerRoutes() {
-<% endpoints.forEach(function(endpoint) { %>
-	http.HandleFunc("<%- endpoint.path %>", func(w http.ResponseWriter, _ *http.Request) {
+func registerRoutes(r chi.Router) {
+<%
+endpoints.forEach(function(endpoint) {
+	const path = convertPathPlaceholders(endpoint.path);
+	if (endpoint.hasOwnProperty('get') || endpoint.hasOwnProperty('get_list')) {
+%>
+	r.Get("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
 		w.Write([]byte("TODO"))
 	})
-<% }) %>
+<%
+	}
+	if (endpoint.hasOwnProperty('post')) {
+%>
+	r.Post("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte("TODO"))
+	})
+<%
+	}
+	if (endpoint.hasOwnProperty('put')) {
+%>
+	r.Put("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte("TODO"))
+	})
+<%
+	}
+	if (endpoint.hasOwnProperty('delete')) {
+%>
+	r.Delete("<%- path %>", func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte("TODO"))
+	})
+<%
+	}
+})
+%>
 }
