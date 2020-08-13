@@ -54,19 +54,20 @@ const createEndpoints = async (destDir, lang, config) => {
     const resultFile = path.join(destDir, fileName);
 
     for (let endpoint of config) {
+        let path = endpoint.path;
         if (endpoint.hasOwnProperty('get')) {
-            console.log('GET', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.get)));
+            console.log('GET', path, '=>', removePlaceholders(flattenQuery(endpoint.get)));
         } else if (endpoint.hasOwnProperty('get_list')) {
-            console.log('GET', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.get_list)));
+            console.log('GET', path, '=>', removePlaceholders(flattenQuery(endpoint.get_list)));
         }
         if (endpoint.hasOwnProperty('post')) {
-            console.log('POST', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.post)));
+            console.log('POST', path, '=>', removePlaceholders(flattenQuery(endpoint.post)));
         }
         if (endpoint.hasOwnProperty('put')) {
-            console.log('PUT', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.put)));
+            console.log('PUT', path, '=>', removePlaceholders(flattenQuery(endpoint.put)));
         }
         if (endpoint.hasOwnProperty('delete')) {
-            console.log('DELETE', endpoint.path, '=>', removePlaceholders(flattenQuery(endpoint.delete)));
+            console.log('DELETE', path, '=>', removePlaceholders(flattenQuery(endpoint.delete)));
         }
     }
 
