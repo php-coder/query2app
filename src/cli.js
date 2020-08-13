@@ -120,10 +120,10 @@ const createEndpoints = async (destDir, lang, config) => {
 
 const createDependenciesDescriptor = async (destDir, lang) => {
     let fileName;
-    if (argv.lang === 'js') {
+    if (lang === 'js') {
         fileName = 'package.json'
 
-    } else if (argv.lang === 'go') {
+    } else if (lang === 'go') {
         fileName = 'go.mod'
 
     } else {
