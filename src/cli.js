@@ -118,7 +118,11 @@ const createEndpoints = async (destDir, lang, config) => {
     fs.writeFileSync(resultFile, resultedCode);
 };
 
-const createDependenciesDescriptor = async (destDir, fileName) => {
+const createDependenciesDescriptor = async (destDir, lang) => {
+    if (argv.lang !== 'js') {
+        return;
+    }
+    const fileName = 'package.json';
     console.log('Generate', fileName);
 
     const resultFile = path.join(destDir, fileName);
@@ -170,8 +174,5 @@ if (!fs.existsSync(destDir)) {
 
 createApp(destDir, argv.lang, config);
 createEndpoints(destDir, argv.lang, config);
-if (argv.lang === 'js') {
-    createDependenciesDescriptor(destDir, 'package.json');
-}
-
+createDependenciesDescriptor(destDir, argv.lang);
 showInstructions(argv.lang);
