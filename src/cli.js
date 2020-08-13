@@ -119,10 +119,17 @@ const createEndpoints = async (destDir, lang, config) => {
 };
 
 const createDependenciesDescriptor = async (destDir, lang) => {
-    if (argv.lang !== 'js') {
+    let fileName;
+    if (argv.lang === 'js') {
+        fileName = 'package.json'
+
+    } else if (argv.lang === 'go') {
+        fileName = 'go.mod'
+
+    } else {
         return;
     }
-    const fileName = 'package.json';
+
     console.log('Generate', fileName);
 
     const resultFile = path.join(destDir, fileName);
@@ -132,6 +139,7 @@ const createDependenciesDescriptor = async (destDir, lang) => {
     const minimalPackageJson = await ejs.renderFile(
         `${__dirname}/templates/${fileName}.ejs`,
         {
+            // project name is being used only for package.json
             projectName
         }
     );
