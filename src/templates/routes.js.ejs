@@ -20,7 +20,7 @@ app.get('<%- path %>', (req, res) => {
             res.json(rows)
 <% } else { -%>
             if (rows.length === 0) {
-                res.type('application/json').status(404).end()
+                res.status(404).end()
                 return
             }
             res.json(rows[0])

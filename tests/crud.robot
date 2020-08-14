@@ -26,7 +26,6 @@ GET should return a value
 GET should return not found
     ${response}=      Get Request  api  /v1/categories/100
     Status Should Be  404  ${response}
-    Should Be Equal   ${response.headers['Content-Type']}  application/json; charset=utf-8
 
 PUT should update an object
     &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1

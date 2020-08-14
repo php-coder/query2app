@@ -9,7 +9,7 @@ app.get('/v1/categories/count', (req, res) => {
                 throw err
             }
             if (rows.length === 0) {
-                res.type('application/json').status(404).end()
+                res.status(404).end()
                 return
             }
             res.json(rows[0])
@@ -26,7 +26,7 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
                 throw err
             }
             if (rows.length === 0) {
-                res.type('application/json').status(404).end()
+                res.status(404).end()
                 return
             }
             res.json(rows[0])
@@ -68,7 +68,7 @@ app.get('/v1/categories/:categoryId', (req, res) => {
                 throw err
             }
             if (rows.length === 0) {
-                res.type('application/json').status(404).end()
+                res.status(404).end()
                 return
             }
             res.json(rows[0])
