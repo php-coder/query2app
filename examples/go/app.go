@@ -11,7 +11,7 @@ func main() {
 
 	fmt.Println("Listen on 3000")
 	if err := http.ListenAndServe(":3000", r); err != nil {
-		fmt.Fprintf(os.Stderr, "ListenAndServe failed: %v", err)
+		fmt.Fprintf(os.Stderr, "ListenAndServe failed: %v\n", err)
 		os.Exit(1)
 	}
 }
