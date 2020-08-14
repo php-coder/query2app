@@ -26,6 +26,14 @@ GET should return a value
     &{expected}=                  Create Dictionary  id=${1}  name=Sport  name_ru=${null}  slug=sport
     Dictionaries Should Be Equal  ${body}  ${expected}
 
+GET should return a list of values
+    ${response}=                  Get Request  api  /v1/categories
+    ${body}=                      Set Variable  ${response.json()}
+    Status Should Be              200  ${response}
+    Should Be Equal               ${response.headers['Content-Type']}  application/json; charset=utf-8
+    &{expected}=                  Create Dictionary  id=${1}  name=Sport  name_ru=${null}  slug=sport
+    Length Should Be              ${body}     1
+    Dictionaries Should Be Equal  ${body[0]}  ${expected}
 
 PUT should update an object
     &{payload}=                     Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
