@@ -19,15 +19,26 @@ POST should create an object
     Dictionary Should Contain Item  ${response.json()}  counter  1
 
 GET should return a value
-    ${response}=                    Get Request  api  /v1/categories/count
-    Status Should Be                200  ${response}
-    Dictionary Should Contain Item  ${response.json()}  counter  1
+    ${response}=                  Get Request  api  /v1/categories/1
+    ${body}=                      Set Variable  ${response.json()}
+    Status Should Be              200  ${response}
+    Should Be Equal               ${response.headers['Content-Type']}  application/json; charset=utf-8
+    &{expected}=                  Create Dictionary  id=${1}  name=Sport  name_ru=${null}  slug=sport
+    Dictionaries Should Be Equal  ${body}  ${expected}
 
 
 PUT should update an object
-    &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
-    ${response}=      Put Request  api  /v1/categories/1  json=${payload}
-    Status Should Be  204  ${response}
+    &{payload}=                     Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
+    ${response}=                    Put Request  api  /v1/categories/1  json=${payload}
+    Status Should Be                204  ${response}
+    # checks that it was updated
+    ${response}=                    Get Request  api  /v1/categories/1
+    ${body}=                        Set Variable  ${response.json()}
+    Status Should Be                200  ${response}
+    Should Be Equal                 ${response.headers['Content-Type']}  application/json; charset=utf-8
+    Dictionary Should Contain Item  ${body}  name     Fauna
+    Dictionary Should Contain Item  ${body}  name_ru  Фауна
+    Dictionary Should Contain Item  ${body}  slug     fauna
 
 DELETE should remove an object
     ${response}=      Delete Request  api  /v1/categories/1
