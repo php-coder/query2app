@@ -23,9 +23,6 @@ GET should return a value
     Status Should Be                200  ${response}
     Dictionary Should Contain Item  ${response.json()}  counter  1
 
-GET should return not found
-    ${response}=      Get Request  api  /v1/categories/100
-    Status Should Be  404  ${response}
 
 PUT should update an object
     &{payload}=       Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
@@ -33,9 +30,8 @@ PUT should update an object
     Status Should Be  204  ${response}
 
 DELETE should remove an object
-    ${response}=                    Delete Request  api  /v1/categories/1
-    Status Should Be                204  ${response}
+    ${response}=      Delete Request  api  /v1/categories/1
+    Status Should Be  204  ${response}
     # checks that it was removed
-    ${response}=                    Get Request  api  /v1/categories/count
-    Status Should Be                200  ${response}
-    Dictionary Should Contain Item  ${response.json()}  counter  0
+    ${response}=      Get Request  api  /v1/categories/1
+    Status Should Be  404  ${response}
