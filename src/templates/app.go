@@ -9,8 +9,13 @@ func main() {
 	r := chi.NewRouter()
 	registerRoutes(r)
 
-	fmt.Println("Listen on 3000")
-	err := http.ListenAndServe(":3000", r)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	fmt.Println("Listen on " + port)
+	err := http.ListenAndServe(":"+port, r)
 	fmt.Fprintf(os.Stderr, "ListenAndServe failed: %v\n", err)
 	os.Exit(1)
 }
