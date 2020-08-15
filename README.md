@@ -14,9 +14,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Create a mapping file `endpoints.yaml`
    ```console
    $ vim endpoints.yaml
-   - path: /v1/categories/count
-     get:  SELECT COUNT(*) AS counter FROM categories
-
    - path: /v1/categories
      get_list: >-
        SELECT id, name, name_ru, slug
@@ -70,8 +67,6 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 
 1. Test that it works
    ```console
-   $ curl http://localhost:3000/v1/categories/count
-   {"counter":0}
    $ curl -i -H 'Content-Type: application/json' -d '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
