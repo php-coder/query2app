@@ -50,9 +50,7 @@ const removePlaceholders = (query) => query.replace(/(?<=:)[pb]\./g, '');
 
 // "/categories/:id" => "/categories/{id}"
 // (used only with Golang's go-chi)
-const convertPathPlaceholders = (path) => {
-    return path.replace(/:[^\/]+/g, (placeholder) => '{' +  placeholder.slice(1) + '}');
-};
+const convertPathPlaceholders = (path) => path.replace(/:([^\/]+)/g, '{$1}');
 
 const createEndpoints = async (destDir, lang, config) => {
     const fileName = `routes.${lang}`
