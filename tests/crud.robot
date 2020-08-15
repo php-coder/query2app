@@ -10,7 +10,7 @@ ${SERVER_URL}  http://host.docker.internal:3000
 
 ** Test Cases ***
 POST should create an object
-    &{payload}=                     Create Dictionary  name=Sport  slug=sport  userId=1
+    &{payload}=                     Create Dictionary  name=Sport  slug=sport  user_id=1
     ${response}=                    Post Request  api  /v1/categories  json=${payload}
     Status Should Be                204  ${response}
     # checks that it was created
@@ -36,7 +36,7 @@ GET should return a list of values
     Dictionaries Should Be Equal  ${body[0]}  ${expected}
 
 PUT should update an object
-    &{payload}=                     Create Dictionary  name=Fauna  nameRu=Фауна  slug=fauna  userId=1
+    &{payload}=                     Create Dictionary  name=Fauna  name_ru=Фауна  slug=fauna  user_id=1
     ${response}=                    Put Request  api  /v1/categories/1  json=${payload}
     Status Should Be                204  ${response}
     # checks that it was updated

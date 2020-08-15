@@ -29,12 +29,12 @@
          )
     VALUES
         ( :b.name
-        , :b.nameRu
+        , :b.name_ru
         , :b.slug
         , NOW()
-        , :b.userId
+        , :b.user_id
         , NOW()
-        , :b.userId
+        , :b.user_id
         )
 
 - path: /v1/categories/:categoryId
@@ -48,10 +48,10 @@
   put: >-
     UPDATE categories
        SET name = :b.name
-         , name_ru = :b.nameRu
+         , name_ru = :b.name_ru
          , slug = :b.slug
          , updated_at = NOW()
-         , updated_by = :b.userId
+         , updated_by = :b.user_id
      WHERE id = :p.categoryId
   delete: >-
     DELETE

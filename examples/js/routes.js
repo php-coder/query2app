@@ -48,8 +48,8 @@ app.get('/v1/categories', (req, res) => {
 
 app.post('/v1/categories', (req, res) => {
     pool.query(
-        'INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :nameRu , :slug , NOW() , :userId , NOW() , :userId )',
-        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId },
+        'INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , NOW() , :user_id , NOW() , :user_id )',
+        { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "user_id": req.body.user_id },
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -78,8 +78,8 @@ app.get('/v1/categories/:categoryId', (req, res) => {
 
 app.put('/v1/categories/:categoryId', (req, res) => {
     pool.query(
-        'UPDATE categories SET name = :name , name_ru = :nameRu , slug = :slug , updated_at = NOW() , updated_by = :userId WHERE id = :categoryId',
-        { "name": req.body.name, "nameRu": req.body.nameRu, "slug": req.body.slug, "userId": req.body.userId, "categoryId": req.params.categoryId },
+        'UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId',
+        { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "user_id": req.body.user_id, "categoryId": req.params.categoryId },
         (err, rows, fields) => {
             if (err) {
                 throw err
