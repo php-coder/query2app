@@ -46,7 +46,7 @@ const createApp = async (destDir, lang) => {
 const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 
 // "WHERE id = :p.categoryId OR id = :b.id" => "WHERE id = :categoryId OR id = :id"
-const removePlaceholders = (query) => query.replace(/:[pb]\./g, ':');
+const removePlaceholders = (query) => query.replace(/(?<=:)[pb]\./g, '');
 
 // "/categories/:id" => "/categories/{id}"
 // (used only with Golang's go-chi)
@@ -91,12 +91,7 @@ const createEndpoints = async (destDir, lang, config) => {
             "endpoints": config,
 
             // "... WHERE id = :p.id" => [ "p.id" ] => [ "p.id" ]
-            "extractParams": (query) => {
-                const params = query.match(/:[pb]\.\w+/g) || [];
-                return params.length > 0
-                    ? params.map(p => p.substring(1))
-                    : params;
-            },
+            "extractParams": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
 
             // [ "p.page", "b.num" ] => '{ "page" : req.params.page, "num": req.body.num }'
             "formatParams": (params) => {
