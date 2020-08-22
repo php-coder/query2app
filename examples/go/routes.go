@@ -13,6 +13,24 @@ type Category struct {
 	Slug   *string `json:"slug"`
 }
 
+type Dto1 struct {
+	Counter string `json:"counter"`
+}
+
+type Dto3 struct {
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	NameRu string `json:"nameRu"`
+	Slug   string `json:"slug"`
+}
+
+type Dto4 struct {
+	Name   string `json:"name"`
+	NameRu string `json:"nameRu"`
+	Slug   string `json:"slug"`
+	UserId string `json:"userId"`
+}
+
 func registerRoutes(r chi.Router) {
 	categories := make(map[int]Category)
 	cnt := 0

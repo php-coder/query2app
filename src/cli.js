@@ -7,6 +7,8 @@ const path = require('path');
 
 const parseArgs = require('minimist');
 
+const { Parser } = require('node-sql-parser');
+
 const endpointsFile = 'endpoints.yaml';
 
 const parseCommandLineArgs = (args) => {
@@ -83,6 +85,8 @@ const createEndpoints = async (destDir, lang, config) => {
         'b': 'req.body'
     }
 
+    const parser = new Parser();
+
     const resultedCode = await ejs.renderFile(
         `${__dirname}/templates/routes.${lang}.ejs`,
         {
@@ -105,6 +109,12 @@ const createEndpoints = async (destDir, lang, config) => {
 
             // (used only with Golang's go-chi)
             "convertPathPlaceholders": convertPathPlaceholders,
+
+            // (used only with Golang)
+            "sqlParser": parser,
+
+            // (used only with Golang)
+            "removePlaceholders": removePlaceholders,
         }
     );
 

@@ -13,6 +13,157 @@ type Category struct {
 	Slug   *string `json:"slug"`
 }
 
+<%
+// {'columns':
+//   [
+//     {
+//       expr: { type: 'column_ref', table: null, column: 'name_ru' },
+//       as: 'nameRu'
+//     }
+//   ]
+// } => [ 'nameRu' ]
+function extractSelectParameters(queryAst) {
+	return queryAst.columns
+		.map(column => column.as !== null ? column.as : column.expr.column);
+}
+
+// {'values':
+//   [
+//     {
+//       type: 'expr_list',
+//       value: [ { type: 'param', value: 'user_id' } ]
+//     }
+//   ]
+// } => [ 'user_id' ]
+function extractInsertValues(queryAst) {
+	const values = queryAst.values.flatMap(elem => elem.value)
+		.map(elem => elem.type === 'param' ? elem.value : null)
+		.filter(elem => elem); // filter out nulls
+	return Array.from(new Set(values));
+}
+
+// {'set':
+//   [
+//     {
+//       column: 'updated_by',
+//       value: { type: 'param', value: 'user_id' },
+//       table: null
+//     }
+//   ]
+// } => [ 'user_id' ]
+function extractUpdateValues(queryAst) {
+	// TODO: distinguish between b.param and q.param and extract only first
+	return queryAst.set.map(elem => elem.value.type === 'param' ? elem.value.value : null)
+		.filter(value => value) // filter out nulls
+}
+
+function extractProperties(queryAst) {
+	if (queryAst.type === 'select') {
+		return extractSelectParameters(queryAst);
+	}
+
+	if (queryAst.type === 'insert') {
+		return extractInsertValues(queryAst);
+	}
+
+	if (queryAst.type === 'update') {
+		return extractUpdateValues(queryAst);
+	}
+
+	return [];
+}
+
+function addTypes(props) {
+	return props.map(prop => {
+		return {
+			"name": prop,
+			// TODO: resolve/autoguess types
+			"type": "string"
+		}
+	});
+}
+
+function query2dto(parser, query) {
+	const queryAst = parser.astify(query);
+	const props = extractProperties(queryAst).map(snake2camelCase);
+	if (props.length === 0) {
+		console.warn('Could not create DTO for query:', formatQuery(query));
+		console.debug('Query AST:');
+		console.debug(queryAst);
+		return null;
+	}
+	const propsWithTypes = addTypes(props);
+	return {
+		// TODO: assign DTO name dynamically
+		"name":  "Dto" + ++globalDtoCounter,
+		"props": propsWithTypes,
+		// max length is needed for proper formatting
+		"maxFieldNameLength": lengthOfLongestString(props),
+		// required for de-duplication
+		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
+		// TODO: sort before join
+		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
+	};
+}
+
+// "nameRu" => "NameRu"
+function capitalize(str) {
+	return str[0].toUpperCase() + str.slice(1);
+}
+
+// "name_ru" => "nameRu"
+function snake2camelCase(str) {
+	return str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
+}
+
+// ["a", "bb", "ccc"] => 3
+function lengthOfLongestString(arr) {
+	return arr
+		.map(el => el.length)
+		.reduce(
+			(acc, val) => val > acc ? val : acc,
+			0 /* initial value */
+		);
+}
+
+function dto2struct(dto) {
+	let result = `type ${dto.name} struct {\n`;
+	dto.props.forEach(prop => {
+		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength);
+		result += `\t${fieldName} ${prop.type} \`json:"${prop.name}"\`\n`
+	});
+	result += '}\n';
+
+	return result;
+}
+
+let globalDtoCounter = 0;
+
+const dtoCache = {};
+function cacheDto(dto) {
+	dtoCache[dto.signature] = dto.name;
+	return dto;
+}
+function dtoInCache(dto) {
+	return dtoCache.hasOwnProperty(dto.signature);
+}
+
+const verbs_with_dto = [ 'get', 'get_list', 'post', 'put' ]
+endpoints.forEach(function(endpoint) {
+	const dtos = Object.keys(endpoint)
+		.filter(propName => verbs_with_dto.includes(propName))
+		.map(propName => endpoint[propName])
+		.map(query => query2dto(sqlParser, removePlaceholders(query)))
+		.filter(elem => elem) // filter out nulls
+		.filter(dto => !dtoInCache(dto))
+		.map(dto => dto2struct(cacheDto(dto)))
+		.forEach(struct => {
+-%>
+<%- struct %>
+<%
+	});
+});
+-%>
 func registerRoutes(r chi.Router) {
 	categories := make(map[int]Category)
 	cnt := 0
