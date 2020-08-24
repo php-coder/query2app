@@ -7,14 +7,17 @@ endpoints.forEach(function(endpoint) {
     endpoint.methods.forEach(function(method) {
         const hasGetOne = method.name === 'get';
         const hasGetMany = method.name === 'get_list';
+        const sql = formatQuery(method.query);
+        const params = extractParams(method.query);
+        const formattedParams = params.length > 0
+            ? '\n        ' + formatParams(params) + ','
+            : ''
 
         if (hasGetOne || hasGetMany) {
-            const sql = method.query;
-            const params = extractParams(sql);
 %>
 app.get('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(sql) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- sql %>,<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -34,11 +37,10 @@ app.get('<%- path %>', (req, res) => {
 <%
         }
         if (method.name === 'post') {
-            const params = extractParams(method.query);
 %>
 app.post('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- sql %>,<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -50,11 +52,10 @@ app.post('<%- path %>', (req, res) => {
 <%
         }
         if (method.name === 'put') {
-            const params = extractParams(method.query);
 %>
 app.put('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- sql %>,<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -66,11 +67,10 @@ app.put('<%- path %>', (req, res) => {
 <%
         }
         if (method.name === 'delete') {
-            const params = extractParams(method.query);
 %>
 app.delete('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- sql %>,<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
