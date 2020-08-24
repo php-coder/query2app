@@ -57,6 +57,7 @@ function extractUpdateValues(queryAst) {
 		.filter(value => value) // filter out nulls
 }
 
+// TODO: consider taking into account b.params from WHERE clause
 function extractProperties(queryAst) {
 	if (queryAst.type === 'select') {
 		return extractSelectParameters(queryAst);
