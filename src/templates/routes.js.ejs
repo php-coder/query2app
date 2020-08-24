@@ -3,11 +3,14 @@ const register = (app, pool) => {
 <%
 endpoints.forEach(function(endpoint) {
     const path = endpoint.path;
-    const hasGetOne = endpoint.hasOwnProperty('get');
-    const hasGetMany = endpoint.hasOwnProperty('get_list');
-    if (hasGetOne || hasGetMany) {
-        const sql = hasGetOne ? endpoint.get : endpoint.get_list;
-        const params = extractParams(sql);
+
+    endpoint.methods.forEach(function(method) {
+        const hasGetOne = method.name === 'get';
+        const hasGetMany = method.name === 'get_list';
+
+        if (hasGetOne || hasGetMany) {
+            const sql = method.query;
+            const params = extractParams(sql);
 %>
 app.get('<%- path %>', (req, res) => {
     pool.query(
@@ -16,26 +19,26 @@ app.get('<%- path %>', (req, res) => {
             if (err) {
                 throw err
             }
-<% if (hasGetMany) { -%>
+<%          if (hasGetMany) { -%>
             res.json(rows)
-<% } else { -%>
+<%          } else { -%>
             if (rows.length === 0) {
                 res.status(404).end()
                 return
             }
             res.json(rows[0])
-<% } -%>
+<%          } -%>
         }
     )
 })
 <%
-    }
-    if (endpoint.hasOwnProperty('post')) {
-        const params = extractParams(endpoint.post);
+        }
+        if (method.name === 'post') {
+            const params = extractParams(method.query);
 %>
 app.post('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.post) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -45,13 +48,13 @@ app.post('<%- path %>', (req, res) => {
     )
 })
 <%
-    }
-    if (endpoint.hasOwnProperty('put')) {
-        const params = extractParams(endpoint.put);
+        }
+        if (method.name === 'put') {
+            const params = extractParams(method.query);
 %>
 app.put('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.put) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -61,13 +64,13 @@ app.put('<%- path %>', (req, res) => {
     )
 })
 <%
-    }
-    if (endpoint.hasOwnProperty('delete')) {
-        const params = extractParams(endpoint.delete);
+        }
+        if (method.name === 'delete') {
+            const params = extractParams(method.query);
 %>
 app.delete('<%- path %>', (req, res) => {
     pool.query(
-        <%- formatQuery(endpoint.delete) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
+        <%- formatQuery(method.query) %>,<%- params.length > 0 ? '\n        ' + formatParams(params) + ',' : '' %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -77,7 +80,8 @@ app.delete('<%- path %>', (req, res) => {
     )
 })
 <%
-    }
+        }
+    });
 });
 %>
 

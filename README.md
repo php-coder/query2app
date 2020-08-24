@@ -15,26 +15,31 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ```console
    $ vim endpoints.yaml
    - path: /v1/categories
-     get_list: >-
-       SELECT id, name, name_ru, slug
-         FROM categories
-     post: >-
-       INSERT INTO categories(name, slug, created_at, created_by, updated_at, updated_by)
-       VALUES (:b.name, :b.slug, NOW(), :b.user_id, NOW(), :b.user_id)
+     get_list:
+       query: >-
+         SELECT id, name, name_ru, slug
+           FROM categories
+     post:
+       query: >-
+         INSERT INTO categories(name, slug, created_at, created_by, updated_at, updated_by)
+         VALUES (:b.name, :b.slug, NOW(), :b.user_id, NOW(), :b.user_id)
 
    - path: /v1/categories/:categoryId
-     get: >-
-       SELECT id, name, name_ru, slug
-         FROM categories
-        WHERE id = :p.categoryId
-     put: >-
-       UPDATE categories
-          SET name = :b.name, name_ru = :b.name_ru, slug = :b.slug, updated_at = NOW(), updated_by = :b.user_id
-        WHERE id = :p.categoryId
-     delete: >-
-       DELETE
-         FROM categories
-        WHERE id = :p.categoryId
+     get:
+       query: >-
+         SELECT id, name, name_ru, slug
+           FROM categories
+          WHERE id = :p.categoryId
+     put:
+       query: >-
+         UPDATE categories
+            SET name = :b.name, name_ru = :b.name_ru, slug = :b.slug, updated_at = NOW(), updated_by = :b.user_id
+          WHERE id = :p.categoryId
+     delete:
+       query: >-
+         DELETE
+           FROM categories
+          WHERE id = :p.categoryId
    ```
    Note that the queries use a little unusual named parameters: `:b.name`, `:p.categoryId`, etc The prefixes `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
 

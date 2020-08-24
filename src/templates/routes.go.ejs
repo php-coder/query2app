@@ -149,11 +149,11 @@ function dtoInCache(dto) {
 	return dtoCache.hasOwnProperty(dto.signature);
 }
 
-const verbs_with_dto = [ 'get', 'get_list', 'post', 'put' ]
+const verbs_with_dto = [ 'get', 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
-	const dtos = Object.keys(endpoint)
-		.filter(propName => verbs_with_dto.includes(propName))
-		.map(propName => endpoint[propName])
+	const dtos = endpoint.methods
+		.filter(method => verbs_with_dto.includes(method.verb))
+		.map(method => method.query)
 		.map(query => query2dto(sqlParser, removePlaceholders(query)))
 		.filter(elem => elem) // filter out nulls
 		.filter(dto => !dtoInCache(dto))
@@ -171,24 +171,26 @@ func registerRoutes(r chi.Router) {
 <%
 endpoints.forEach(function(endpoint) {
 	const path = convertPathPlaceholders(endpoint.path);
-	const hasGetOne = endpoint.hasOwnProperty('get');
-	const hasGetMany = endpoint.hasOwnProperty('get_list');
-	if (hasGetOne || hasGetMany) {
+
+	endpoint.methods.forEach(function(method) {
+		const hasGetOne = method.name === 'get';
+		const hasGetMany = method.name === 'get_list';
+		if (hasGetOne || hasGetMany) {
 %>
 	r.Get("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 <%
-		if (path === '/v1/categories/count') {
+			if (path === '/v1/categories/count') {
 -%>
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		fmt.Fprintf(w, `{"counter": %d}`, len(categories))
 <%
-		} else if (hasGetMany) {
+			} else if (hasGetMany) {
 -%>
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		list := []Category{categories[1]}
 		json.NewEncoder(w).Encode(&list)
 <%
-		} else {
+			} else {
 -%>
 		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
 		category, exist := categories[id]
@@ -199,12 +201,12 @@ endpoints.forEach(function(endpoint) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		json.NewEncoder(w).Encode(&category)
 <%
-		}
+			}
 %>
 	})
 <%
-	}
-	if (endpoint.hasOwnProperty('post')) {
+		}
+		if (method.name === 'post') {
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var category Category
@@ -215,8 +217,8 @@ endpoints.forEach(function(endpoint) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 <%
-	}
-	if (endpoint.hasOwnProperty('put')) {
+		}
+		if (method.name === 'put') {
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
@@ -226,8 +228,8 @@ endpoints.forEach(function(endpoint) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 <%
-	}
-	if (endpoint.hasOwnProperty('delete')) {
+		}
+		if (method.name === 'delete') {
 %>
 	r.Delete("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
@@ -235,7 +237,8 @@ endpoints.forEach(function(endpoint) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 <%
-	}
+		}
+	});
 })
 %>
 }

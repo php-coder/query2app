@@ -1,59 +1,66 @@
 - path: /v1/categories/count
-  get:  SELECT COUNT(*) AS counter FROM categories
+  get:
+    query: SELECT COUNT(*) AS counter FROM categories
 
 - path: /v1/collections/:collectionId/categories/count
-  get: >-
-    SELECT COUNT(DISTINCT s.category_id) AS counter
-      FROM collections_series cs
-      JOIN series s
-        ON s.id = cs.series_id
-     WHERE cs.collection_id = :p.collectionId
+  get:
+    query: >-
+      SELECT COUNT(DISTINCT s.category_id) AS counter
+        FROM collections_series cs
+        JOIN series s
+          ON s.id = cs.series_id
+       WHERE cs.collection_id = :p.collectionId
 
 - path: /v1/categories
-  get_list: >-
-    SELECT id
-         , name
-         , name_ru
-         , slug
-      FROM categories
-  post: >-
-    INSERT
-      INTO categories
-         ( name
-         , name_ru
-         , slug
-         , created_at
-         , created_by
-         , updated_at
-         , updated_by
-         )
-    VALUES
-        ( :b.name
-        , :b.name_ru
-        , :b.slug
-        , NOW()
-        , :b.user_id
-        , NOW()
-        , :b.user_id
-        )
+  get_list:
+    query: >-
+      SELECT id
+           , name
+           , name_ru
+           , slug
+        FROM categories
+  post:
+    query: >-
+      INSERT
+        INTO categories
+           ( name
+           , name_ru
+           , slug
+           , created_at
+           , created_by
+           , updated_at
+           , updated_by
+           )
+      VALUES
+          ( :b.name
+          , :b.name_ru
+          , :b.slug
+          , NOW()
+          , :b.user_id
+          , NOW()
+          , :b.user_id
+          )
 
 - path: /v1/categories/:categoryId
-  get: >-
-    SELECT id
-         , name
-         , name_ru
-         , slug
-      FROM categories
-     WHERE id = :p.categoryId
-  put: >-
-    UPDATE categories
-       SET name = :b.name
-         , name_ru = :b.name_ru
-         , slug = :b.slug
-         , updated_at = NOW()
-         , updated_by = :b.user_id
-     WHERE id = :p.categoryId
-  delete: >-
-    DELETE
-      FROM categories
-     WHERE id = :p.categoryId
+  get:
+    query: >-
+      SELECT id
+           , name
+           , name_ru
+           , slug
+        FROM categories
+       WHERE id = :p.categoryId
+  put:
+    query: >-
+      UPDATE categories
+         SET name = :b.name
+           , name_ru = :b.name_ru
+           , slug = :b.slug
+           , updated_at = NOW()
+           , updated_by = :b.user_id
+       WHERE id = :p.categoryId
+  delete:
+    query: >-
+      DELETE
+        FROM categories
+       WHERE id = :p.categoryId

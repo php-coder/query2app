@@ -23,11 +23,43 @@ const parseCommandLineArgs = (args) => {
     return argv;
 }
 
+// Restructure YAML configuration to simplify downstream code.
+//
+// Converts
+//   {
+//     get_list: { query: <sql> },
+//     put:      { query: <sql> }
+//   }
+// into
+//   {
+//     methods: [
+//       { name: get_list, verb: get, query: <sql> },
+//       { name: put,      verb: put, query: <sql> }
+//     ]
+//   }
+const restructureConfiguration = (config) => {
+    for (const endpoint of config) {
+        endpoint.methods = [];
+        [ 'get', 'get_list', 'post', 'put', 'delete' ].forEach(method => {
+            if (!endpoint.hasOwnProperty(method)) {
+                return;
+            }
+            endpoint.methods.push({
+                'name': method,
+                'verb': method !== 'get_list' ? method : 'get',
+                ...endpoint[method],
+            });
+            delete endpoint[method];
+        });
+    }
+};
+
 const loadConfig = (endpointsFile) => {
     console.log('Read', endpointsFile);
     try {
         const content = fs.readFileSync(endpointsFile, 'utf8');
         const config = yaml.safeLoad(content);
+        restructureConfiguration(config);
         //console.debug(config);
         return config;
     } catch (ex) {
@@ -64,20 +96,12 @@ const createEndpoints = async (destDir, lang, config) => {
         if (lang === 'go') {
             path = convertPathPlaceholders(path)
         }
-        if (endpoint.hasOwnProperty('get')) {
-            console.log('GET', path, '=>', removePlaceholders(flattenQuery(endpoint.get)));
-        } else if (endpoint.hasOwnProperty('get_list')) {
-            console.log('GET', path, '=>', removePlaceholders(flattenQuery(endpoint.get_list)));
-        }
-        if (endpoint.hasOwnProperty('post')) {
-            console.log('POST', path, '=>', removePlaceholders(flattenQuery(endpoint.post)));
-        }
-        if (endpoint.hasOwnProperty('put')) {
-            console.log('PUT', path, '=>', removePlaceholders(flattenQuery(endpoint.put)));
-        }
-        if (endpoint.hasOwnProperty('delete')) {
-            console.log('DELETE', path, '=>', removePlaceholders(flattenQuery(endpoint.delete)));
-        }
+        endpoint.methods.forEach(method => {
+            const sql = removePlaceholders(flattenQuery(method.query));
+            const verb = method.verb.toUpperCase();
+
+            console.log(`${verb} ${path} => ${sql}`);
+        });
     }
 
     const placeholdersMap = {
