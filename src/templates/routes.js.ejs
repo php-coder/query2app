@@ -10,7 +10,7 @@ endpoints.forEach(function(endpoint) {
         const sql = formatQuery(method.query);
         const params = extractParams(method.query);
         const formattedParams = params.length > 0
-            ? '\n        ' + formatParams(params) + ','
+            ? '\n        ' + formatParamsAsJavaScriptObject(params) + ','
             : ''
 
         if (hasGetOne || hasGetMany) {

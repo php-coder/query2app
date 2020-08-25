@@ -121,7 +121,7 @@ const createEndpoints = async (destDir, lang, config) => {
 
             // [ "p.page", "b.num" ] => '{ "page" : req.params.page, "num": req.body.num }'
             // (used only with Express)
-            "formatParams": (params) => {
+            "formatParamsAsJavaScriptObject": (params) => {
                 return params.length > 0
                     ? '{ ' + Array.from(new Set(params), p => `"${p.substring(2)}": ${placeholdersMap[p.substring(0, 1)]}.${p.substring(2)}`).join(', ') + ' }'
                     : params;
