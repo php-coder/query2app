@@ -34,7 +34,7 @@ func main() {
 	defer db.Close()
 
 	if err = db.Ping(); err != nil {
-		fmt.Fprintf(os.Stderr, "Could not connect to database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Ping failed: could not connect to database: %v\n", err)
 		os.Exit(1)
 	}
 
