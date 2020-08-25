@@ -85,6 +85,7 @@ function addTypes(props) {
 }
 
 function query2dto(parser, query) {
+	query = removePlaceholders(query);
 	const queryAst = parser.astify(query);
 	const props = extractProperties(queryAst).map(snake2camelCase);
 	if (props.length === 0) {
@@ -154,7 +155,7 @@ endpoints.forEach(function(endpoint) {
 	const dtos = endpoint.methods
 		.filter(method => verbs_with_dto.includes(method.verb))
 		.map(method => method.query)
-		.map(query => query2dto(sqlParser, removePlaceholders(query)))
+		.map(query => query2dto(sqlParser, query))
 		.filter(elem => elem) // filter out nulls
 		.filter(dto => !dtoInCache(dto))
 		.map(dto => dto2struct(cacheDto(dto)))
