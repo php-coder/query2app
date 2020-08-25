@@ -127,9 +127,9 @@ const createEndpoints = async (destDir, lang, config) => {
                     : params;
             },
 
-            // "SELECT *\n   FROM foo" => "'SELECT * FROM foo'"
+            // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
             "formatQuery": (query) => {
-                return "'" + removePlaceholders(flattenQuery(query)) + "'";
+                return removePlaceholders(flattenQuery(query));
             },
 
             // (used only with Golang's go-chi)

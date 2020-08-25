@@ -17,7 +17,7 @@ endpoints.forEach(function(endpoint) {
 %>
 app.get('<%- path %>', (req, res) => {
     pool.query(
-        <%- sql %>,<%- formattedParams %>
+        '<%- sql %>',<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -40,7 +40,7 @@ app.get('<%- path %>', (req, res) => {
 %>
 app.post('<%- path %>', (req, res) => {
     pool.query(
-        <%- sql %>,<%- formattedParams %>
+        '<%- sql %>',<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -55,7 +55,7 @@ app.post('<%- path %>', (req, res) => {
 %>
 app.put('<%- path %>', (req, res) => {
     pool.query(
-        <%- sql %>,<%- formattedParams %>
+        '<%- sql %>',<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
@@ -70,7 +70,7 @@ app.put('<%- path %>', (req, res) => {
 %>
 app.delete('<%- path %>', (req, res) => {
     pool.query(
-        <%- sql %>,<%- formattedParams %>
+        '<%- sql %>',<%- formattedParams %>
         (err, rows, fields) => {
             if (err) {
                 throw err
