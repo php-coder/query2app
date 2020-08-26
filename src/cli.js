@@ -127,6 +127,16 @@ const createEndpoints = async (destDir, lang, config) => {
                     : params;
             },
 
+            // [ "p.page", "b.num" ] => 'chi.URLParam(r, "page"), chi.URLParam(r, "num")'
+            // (used only with Golang's go-chi)
+            // TODO: do we need to de-deduplicate (new Set(params))?
+            // TODO: handle b.params
+            "formatParamsAsGolangVararg": (params) => {
+                return params.length > 0
+                    ? Array.from(params, p => `chi.URLParam(r, "${p.substring(2)}")`).join(', ')
+                    : params;
+            },
+
             // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
             "formatQuery": (query) => {
                 return removePlaceholders(flattenQuery(query));

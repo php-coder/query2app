@@ -1,10 +1,10 @@
 package main
 
-import "database/sql"
 import "fmt"
 import "net/http"
 import "os"
 import "github.com/go-chi/chi"
+import "github.com/jmoiron/sqlx"
 
 import _ "github.com/go-sql-driver/mysql"
 
@@ -26,9 +26,9 @@ func main() {
 	}
 
 	dsn := os.Expand("${DB_USER}:${DB_PASSWORD}@tcp(${DB_HOST}:3306)/${DB_NAME}", mapper)
-	db, err := sql.Open("mysql", dsn)
+	db, err := sqlx.Open("mysql", dsn)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "sql.Open failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "sqlx.Open failed: %v\n", err)
 		os.Exit(1)
 	}
 	defer db.Close()
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	r := chi.NewRouter()
-	registerRoutes(r)
+	registerRoutes(r, db)
 
 	port := os.Getenv("PORT")
 	if port == "" {

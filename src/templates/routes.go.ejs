@@ -1,16 +1,19 @@
 package main
 
+import "database/sql"
 import "encoding/json"
 import "fmt"
 import "net/http"
+import "os"
 import "strconv"
 import "github.com/go-chi/chi"
+import "github.com/jmoiron/sqlx"
 
 type Category struct {
-	Id     int     `json:"id"`
-	Name   *string `json:"name"`
-	NameRu *string `json:"name_ru"`
-	Slug   *string `json:"slug"`
+	Id     int     `json:"id" db:"id"`
+	Name   string  `json:"name" db:"name"`
+	NameRu *string `json:"name_ru" db:"name_ru"`
+	Slug   string  `json:"slug" db:"slug"`
 }
 
 <%
@@ -79,7 +82,7 @@ function addTypes(props) {
 		return {
 			"name": prop,
 			// TODO: resolve/autoguess types
-			"type": "string"
+			"type": "*string"
 		}
 	});
 }
@@ -87,7 +90,7 @@ function addTypes(props) {
 function query2dto(parser, query) {
 	query = removePlaceholders(query);
 	const queryAst = parser.astify(query);
-	const props = extractProperties(queryAst).map(snake2camelCase);
+	const props = extractProperties(queryAst);
 	if (props.length === 0) {
 		console.warn('Could not create DTO for query:', formatQuery(query));
 		console.debug('Query AST:');
@@ -118,9 +121,11 @@ function snake2camelCase(str) {
 	return str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
 }
 
-// ["a", "bb", "ccc"] => 3
+// ["a", "b__b", "ccc"] => 3
+// Note that it doesn't count underscores.
 function lengthOfLongestString(arr) {
 	return arr
+		.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))
 		.map(el => el.length)
 		.reduce(
 			(acc, val) => val > acc ? val : acc,
@@ -132,7 +137,7 @@ function dto2struct(dto) {
 	let result = `type ${dto.name} struct {\n`;
 	dto.props.forEach(prop => {
 		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength);
-		result += `\t${fieldName} ${prop.type} \`json:"${prop.name}"\`\n`
+		result += `\t${fieldName} ${prop.type} \`json:"${prop.name},omitempty" db:"${prop.name}"\`\n`
 	});
 	result += '}\n';
 
@@ -166,7 +171,7 @@ endpoints.forEach(function(endpoint) {
 	});
 });
 -%>
-func registerRoutes(r chi.Router) {
+func registerRoutes(r chi.Router, db *sqlx.DB) {
 	categories := make(map[int]Category)
 	cnt := 0
 <%
@@ -177,33 +182,47 @@ endpoints.forEach(function(endpoint) {
 		const hasGetOne = method.name === 'get';
 		const hasGetMany = method.name === 'get_list';
 		if (hasGetOne || hasGetMany) {
+			const dto = query2dto(sqlParser, method.query);
+			// TODO: do we really need signature and cache?
+			const cacheKey = dto ? dto.signature : null;
+			const dataType = hasGetMany ? '[]' + dtoCache[cacheKey] : dtoCache[cacheKey];
+
+			const params = extractParams(method.query);
+			const formattedParams = formatParamsAsGolangVararg(params);
+			const queryFunction = hasGetOne ? 'Get' : 'Select';
+			// TODO: handle only particular method (get/post/put)
+			// TODO: include method/path into an error message
 %>
 	r.Get("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 <%
-			if (path === '/v1/categories/count') {
+			if (params.length > 0) {
 -%>
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		fmt.Fprintf(w, `{"counter": %d}`, len(categories))
-<%
-			} else if (hasGetMany) {
--%>
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		list := []Category{categories[1]}
-		json.NewEncoder(w).Encode(&list)
-<%
-			} else {
--%>
-		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		category, exist := categories[id]
-		if !exist {
-			w.WriteHeader(http.StatusNotFound)
+		nstmt, err := db.PrepareNamed("<%- formatQuery(method.query) %>")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		json.NewEncoder(w).Encode(&category)
-<%
-			}
-%>
+
+		var result <%- dataType %>
+		args := map[string]interface{}{
+			<%- params.map(p => `"${p.substring(2)}": chi.URLParam(r, "${p.substring(2)}"),`).join('\n\t\t\t') %>
+		}
+		err = nstmt.Get(&result, args)
+<%			} else { -%>
+		var result <%- dataType %>
+		err := db.<%- queryFunction %>(&result, "<%- formatQuery(method.query) %>")
+<%			} -%>
+		switch err {
+		case sql.ErrNoRows:
+			w.WriteHeader(http.StatusNotFound)
+		case nil:
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			json.NewEncoder(w).Encode(&result)
+		default:
+			fmt.Fprintf(os.Stderr, "<%- queryFunction %> failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	})
 <%
 		}
