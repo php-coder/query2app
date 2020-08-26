@@ -1,6 +1,8 @@
 - path: /v1/categories/count
   get:
     query: SELECT COUNT(*) AS counter FROM categories
+    dto:
+      name: CounterDto
 
 - path: /v1/collections/:collectionId/categories/count
   get:
@@ -19,6 +21,8 @@
            , name_ru
            , slug
         FROM categories
+    dto:
+      name: CategoryDto
   post:
     query: >-
       INSERT
@@ -40,6 +44,8 @@
           , NOW()
           , :b.user_id
           )
+    dto:
+      name: CreateCategoryDto
 
 - path: /v1/categories/:categoryId
   get:

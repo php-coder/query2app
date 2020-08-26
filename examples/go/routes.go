@@ -9,25 +9,18 @@ import "strconv"
 import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
-type Category struct {
-	Id     int     `json:"id" db:"id"`
-	Name   string  `json:"name" db:"name"`
-	NameRu *string `json:"name_ru" db:"name_ru"`
-	Slug   string  `json:"slug" db:"slug"`
-}
-
-type Dto1 struct {
+type CounterDto struct {
 	Counter *string `json:"counter,omitempty" db:"counter"`
 }
 
-type Dto3 struct {
+type CategoryDto struct {
 	Id     *string `json:"id,omitempty" db:"id"`
 	Name   *string `json:"name,omitempty" db:"name"`
 	NameRu *string `json:"name_ru,omitempty" db:"name_ru"`
 	Slug   *string `json:"slug,omitempty" db:"slug"`
 }
 
-type Dto4 struct {
+type CreateCategoryDto struct {
 	Name   *string `json:"name,omitempty" db:"name"`
 	NameRu *string `json:"name_ru,omitempty" db:"name_ru"`
 	Slug   *string `json:"slug,omitempty" db:"slug"`
@@ -35,11 +28,11 @@ type Dto4 struct {
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
-	categories := make(map[int]Category)
+	categories := make(map[int]CategoryDto)
 	cnt := 0
 
 	r.Get("/v1/categories/count", func(w http.ResponseWriter, r *http.Request) {
-		var result Dto1
+		var result CounterDto
 		err := db.Get(&result, "SELECT COUNT(*) AS counter FROM categories")
 		switch err {
 		case sql.ErrNoRows:
@@ -61,7 +54,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			return
 		}
 
-		var result Dto1
+		var result CounterDto
 		args := map[string]interface{}{
 			"collectionId": chi.URLParam(r, "collectionId"),
 		}
@@ -79,7 +72,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		var result []Dto3
+		var result []CategoryDto
 		err := db.Select(&result, "SELECT id , name , name_ru , slug FROM categories")
 		switch err {
 		case sql.ErrNoRows:
@@ -94,10 +87,11 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Post("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		var category Category
+		var category CategoryDto
 		json.NewDecoder(r.Body).Decode(&category)
 		cnt += 1
-		category.Id = cnt
+		id := strconv.Itoa(cnt)
+		category.Id = &id
 		categories[cnt] = category
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -110,7 +104,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			return
 		}
 
-		var result Dto3
+		var result CategoryDto
 		args := map[string]interface{}{
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
@@ -129,7 +123,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 
 	r.Put("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
 		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		var category Category
+		var category CategoryDto
 		json.NewDecoder(r.Body).Decode(&category)
 		categories[id] = category
 		w.WriteHeader(http.StatusNoContent)

@@ -9,13 +9,6 @@ import "strconv"
 import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
-type Category struct {
-	Id     int     `json:"id" db:"id"`
-	Name   string  `json:"name" db:"name"`
-	NameRu *string `json:"name_ru" db:"name_ru"`
-	Slug   string  `json:"slug" db:"slug"`
-}
-
 <%
 // {'columns':
 //   [
@@ -87,8 +80,8 @@ function addTypes(props) {
 	});
 }
 
-function query2dto(parser, query) {
-	query = removePlaceholders(query);
+function query2dto(parser, method) {
+	const query = removePlaceholders(method.query);
 	const queryAst = parser.astify(query);
 	const props = extractProperties(queryAst);
 	if (props.length === 0) {
@@ -98,9 +91,10 @@ function query2dto(parser, query) {
 		return null;
 	}
 	const propsWithTypes = addTypes(props);
+	const hasName = method.dto && method.dto.name && method.dto.name.length > 0;
+	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
 	return {
-		// TODO: assign DTO name dynamically
-		"name":  "Dto" + ++globalDtoCounter,
+		"name": name,
 		"props": propsWithTypes,
 		// max length is needed for proper formatting
 		"maxFieldNameLength": lengthOfLongestString(props),
@@ -159,8 +153,7 @@ const verbs_with_dto = [ 'get', 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
 	const dtos = endpoint.methods
 		.filter(method => verbs_with_dto.includes(method.verb))
-		.map(method => method.query)
-		.map(query => query2dto(sqlParser, query))
+		.map(method => query2dto(sqlParser, method))
 		.filter(elem => elem) // filter out nulls
 		.filter(dto => !dtoInCache(dto))
 		.map(dto => dto2struct(cacheDto(dto)))
@@ -172,7 +165,7 @@ endpoints.forEach(function(endpoint) {
 });
 -%>
 func registerRoutes(r chi.Router, db *sqlx.DB) {
-	categories := make(map[int]Category)
+	categories := make(map[int]CategoryDto)
 	cnt := 0
 <%
 endpoints.forEach(function(endpoint) {
@@ -182,7 +175,7 @@ endpoints.forEach(function(endpoint) {
 		const hasGetOne = method.name === 'get';
 		const hasGetMany = method.name === 'get_list';
 		if (hasGetOne || hasGetMany) {
-			const dto = query2dto(sqlParser, method.query);
+			const dto = query2dto(sqlParser, method);
 			// TODO: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dataType = hasGetMany ? '[]' + dtoCache[cacheKey] : dtoCache[cacheKey];
@@ -229,10 +222,11 @@ endpoints.forEach(function(endpoint) {
 		if (method.name === 'post') {
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var category Category
+		var category CategoryDto
 		json.NewDecoder(r.Body).Decode(&category)
 		cnt += 1
-		category.Id = cnt
+		id := strconv.Itoa(cnt)
+		category.Id = &id
 		categories[cnt] = category
 		w.WriteHeader(http.StatusNoContent)
 	})
@@ -242,7 +236,7 @@ endpoints.forEach(function(endpoint) {
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		var category Category
+		var category CategoryDto
 		json.NewDecoder(r.Body).Decode(&category)
 		categories[id] = category
 		w.WriteHeader(http.StatusNoContent)
