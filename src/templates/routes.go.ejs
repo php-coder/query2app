@@ -95,6 +95,7 @@ function query2dto(parser, method) {
 	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
 	return {
 		"name": name,
+		"hasUserProvidedName": hasName,
 		"props": propsWithTypes,
 		// max length is needed for proper formatting
 		"maxFieldNameLength": lengthOfLongestString(props),
@@ -146,6 +147,10 @@ function cacheDto(dto) {
 	return dto;
 }
 function dtoInCache(dto) {
+	// always prefer user specified name even when we have a similar DTO in cache
+	if (dto.hasUserProvidedName) {
+		return false;
+	}
 	return dtoCache.hasOwnProperty(dto.signature);
 }
 
@@ -178,7 +183,8 @@ endpoints.forEach(function(endpoint) {
 			const dto = query2dto(sqlParser, method);
 			// TODO: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
-			const dataType = hasGetMany ? '[]' + dtoCache[cacheKey] : dtoCache[cacheKey];
+			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const dataType = hasGetMany ? '[]' + dtoName : dtoName;
 
 			const params = extractParams(method.query);
 			const formattedParams = formatParamsAsGolangVararg(params);
