@@ -3,6 +3,9 @@
     query: SELECT COUNT(*) AS counter FROM categories
     dto:
       name: CounterDto
+      fields:
+        counter:
+          type: integer
 
 - path: /v1/collections/:collectionId/categories/count
   get:
@@ -12,6 +15,10 @@
         JOIN series s
           ON s.id = cs.series_id
        WHERE cs.collection_id = :p.collectionId
+    dto:
+      fields:
+        counter:
+          type: integer
 
 - path: /v1/categories
   get_list:

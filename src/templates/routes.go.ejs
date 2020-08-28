@@ -70,12 +70,12 @@ function extractProperties(queryAst) {
 	return [];
 }
 
-function addTypes(props) {
+function addTypes(props, fieldsInfo) {
 	return props.map(prop => {
+		const hasTypeInfo = fieldsInfo.hasOwnProperty(prop) && fieldsInfo[prop].hasOwnProperty('type');
 		return {
 			"name": prop,
-			// TODO: resolve/autoguess types
-			"type": "*string"
+			"type": hasTypeInfo ? '*' + fieldsInfo[prop].type : '*string'
 		}
 	});
 }
@@ -90,7 +90,8 @@ function query2dto(parser, method) {
 		console.debug(queryAst);
 		return null;
 	}
-	const propsWithTypes = addTypes(props);
+	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {};
+	const propsWithTypes = addTypes(props, fieldsInfo);
 	const hasName = method.dto && method.dto.name && method.dto.name.length > 0;
 	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
 	return {
