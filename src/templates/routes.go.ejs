@@ -70,12 +70,20 @@ function extractProperties(queryAst) {
 	return [];
 }
 
+function findOutType(fieldsInfo, fieldName) {
+	const defaultType = '*string';
+	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type');
+	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
+		return '*int';
+	}
+	return defaultType;
+}
+
 function addTypes(props, fieldsInfo) {
 	return props.map(prop => {
-		const hasTypeInfo = fieldsInfo.hasOwnProperty(prop) && fieldsInfo[prop].hasOwnProperty('type');
 		return {
 			"name": prop,
-			"type": hasTypeInfo ? '*' + fieldsInfo[prop].type : '*string'
+			"type": findOutType(fieldsInfo, prop),
 		}
 	});
 }

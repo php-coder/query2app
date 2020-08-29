@@ -10,7 +10,7 @@ import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
 type CounterDto struct {
-	Counter *integer `json:"counter,omitempty" db:"counter"`
+	Counter *int `json:"counter,omitempty" db:"counter"`
 }
 
 type CategoryDto struct {
