@@ -115,16 +115,6 @@ function query2dto(parser, method) {
 	};
 }
 
-// "nameRu" => "NameRu"
-function capitalize(str) {
-	return str[0].toUpperCase() + str.slice(1);
-}
-
-// "name_ru" => "nameRu"
-function snake2camelCase(str) {
-	return str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
-}
-
 // ["a", "b__b", "ccc"] => 3
 // Note that it doesn't count underscores.
 function lengthOfLongestString(arr) {

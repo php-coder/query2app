@@ -86,6 +86,14 @@ const removePlaceholders = (query) => query.replace(/(?<=:)[pb]\./g, '');
 // (used only with Golang's go-chi)
 const convertPathPlaceholders = (path) => path.replace(/:([^\/]+)/g, '{$1}');
 
+// "name_ru" => "nameRu"
+// (used only with Golang's go-chi)
+const snake2camelCase = (str) => str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
+
+// "nameRu" => "NameRu"
+// (used only with Golang's go-chi)
+const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
+
 const createEndpoints = async (destDir, lang, config) => {
     const fileName = `routes.${lang}`
     console.log('Generate', fileName);
@@ -140,6 +148,8 @@ const createEndpoints = async (destDir, lang, config) => {
 
             // (used only with Golang)
             "removePlaceholders": removePlaceholders,
+            "snake2camelCase": snake2camelCase,
+            "capitalize": capitalize,
         }
     );
 
