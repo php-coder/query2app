@@ -162,7 +162,12 @@ const createEndpoints = async (destDir, lang, config) => {
                 }
                 return Array.from(
                         new Set(params),
-                        p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)]}.${capitalize(snake2camelCase(p.substring(2)))},`
+                        p => {
+                            const bindTarget = p.substring(0, 1);
+                            const paramName = p.substring(2);
+                            const fieldName = capitalize(snake2camelCase(paramName));
+                            return `"${paramName}": ${placeholdersMap['go'][bindTarget]}.${fieldName},`
+                        }
                     ).join('\n\t\t\t');
             },
         }
