@@ -131,7 +131,7 @@ function dto2struct(dto) {
 	let result = `type ${dto.name} struct {\n`;
 	dto.props.forEach(prop => {
 		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength);
-		result += `\t${fieldName} ${prop.type} \`json:"${prop.name},omitempty" db:"${prop.name}"\`\n`
+		result += `\t${fieldName} ${prop.type} \`json:"${prop.name}" db:"${prop.name}"\`\n`
 	});
 	result += '}\n';
 

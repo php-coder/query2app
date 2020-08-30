@@ -10,28 +10,28 @@ import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
 type CounterDto struct {
-	Counter *int `json:"counter,omitempty" db:"counter"`
+	Counter *int `json:"counter" db:"counter"`
 }
 
 type CategoryDto struct {
-	Id     *string `json:"id,omitempty" db:"id"`
-	Name   *string `json:"name,omitempty" db:"name"`
-	NameRu *string `json:"name_ru,omitempty" db:"name_ru"`
-	Slug   *string `json:"slug,omitempty" db:"slug"`
+	Id     *string `json:"id" db:"id"`
+	Name   *string `json:"name" db:"name"`
+	NameRu *string `json:"name_ru" db:"name_ru"`
+	Slug   *string `json:"slug" db:"slug"`
 }
 
 type CreateCategoryDto struct {
-	Name   *string `json:"name,omitempty" db:"name"`
-	NameRu *string `json:"name_ru,omitempty" db:"name_ru"`
-	Slug   *string `json:"slug,omitempty" db:"slug"`
-	UserId *string `json:"user_id,omitempty" db:"user_id"`
+	Name   *string `json:"name" db:"name"`
+	NameRu *string `json:"name_ru" db:"name_ru"`
+	Slug   *string `json:"slug" db:"slug"`
+	UserId *string `json:"user_id" db:"user_id"`
 }
 
 type CategoryInfoDto struct {
-	Id     *string `json:"id,omitempty" db:"id"`
-	Name   *string `json:"name,omitempty" db:"name"`
-	NameRu *string `json:"name_ru,omitempty" db:"name_ru"`
-	Slug   *string `json:"slug,omitempty" db:"slug"`
+	Id     *string `json:"id" db:"id"`
+	Name   *string `json:"name" db:"name"`
+	NameRu *string `json:"name_ru" db:"name_ru"`
+	Slug   *string `json:"slug" db:"slug"`
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
