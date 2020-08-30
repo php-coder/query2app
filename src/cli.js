@@ -158,7 +158,6 @@ const createEndpoints = async (destDir, lang, config) => {
             "capitalize": capitalize,
 
             // [ "p.page", "b.num" ] => '"page": dto.Page),\n\t\t\t"num": dto.Num),'
-            // TODO: add support for non-body params (like path params)
             // (used only with Golang's go-chi)
             "formatParamsAsGolangMap": (params) => {
                 if (params.length === 0) {
