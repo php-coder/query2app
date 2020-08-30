@@ -106,24 +106,12 @@ function query2dto(parser, method) {
 		"hasUserProvidedName": hasName,
 		"props": propsWithTypes,
 		// max length is needed for proper formatting
-		"maxFieldNameLength": lengthOfLongestString(props),
+		"maxFieldNameLength": lengthOfLongestString(props.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))),
 		// required for de-duplication
 		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
 		// TODO: sort before join
 		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
 	};
-}
-
-// ["a", "b__b", "ccc"] => 3
-// Note that it doesn't count underscores.
-function lengthOfLongestString(arr) {
-	return arr
-		.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))
-		.map(el => el.length)
-		.reduce(
-			(acc, val) => val > acc ? val : acc,
-			0 /* initial value */
-		);
 }
 
 function dto2struct(dto) {
@@ -225,7 +213,6 @@ endpoints.forEach(function(endpoint) {
 			// TODO: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
-			// TODO: align args properly (like gofmt does)
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var dto <%- dataType %>
@@ -253,7 +240,6 @@ endpoints.forEach(function(endpoint) {
 			// TODO: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
-			// TODO: align args properly (like gofmt does)
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var dto <%- dataType %>

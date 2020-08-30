@@ -95,9 +95,9 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		json.NewDecoder(r.Body).Decode(&dto)
 
 		args := map[string]interface{}{
-			"name": dto.Name,
+			"name":    dto.Name,
 			"name_ru": dto.NameRu,
-			"slug": dto.Slug,
+			"slug":    dto.Slug,
 			"user_id": dto.UserId,
 		}
 		_, err := db.NamedExec(
@@ -143,10 +143,10 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		json.NewDecoder(r.Body).Decode(&dto)
 
 		args := map[string]interface{}{
-			"name": dto.Name,
-			"name_ru": dto.NameRu,
-			"slug": dto.Slug,
-			"user_id": dto.UserId,
+			"name":       dto.Name,
+			"name_ru":    dto.NameRu,
+			"slug":       dto.Slug,
+			"user_id":    dto.UserId,
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
 		_, err := db.NamedExec(

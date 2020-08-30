@@ -94,6 +94,15 @@ const snake2camelCase = (str) => str.replace(/_([a-z])/g, (match, group1) => gro
 // (used only with Golang's go-chi)
 const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
 
+// ["a", "bb", "ccc"] => 3
+// (used only with Golang's go-chi)
+const lengthOfLongestString = (arr) => arr
+		.map(el => el.length)
+		.reduce(
+			(acc, val) => val > acc ? val : acc,
+			0 /* initial value */
+		);
+
 const createEndpoints = async (destDir, lang, config) => {
     const fileName = `routes.${lang}`
     console.log('Generate', fileName);
@@ -156,6 +165,7 @@ const createEndpoints = async (destDir, lang, config) => {
             "removePlaceholders": removePlaceholders,
             "snake2camelCase": snake2camelCase,
             "capitalize": capitalize,
+            "lengthOfLongestString": lengthOfLongestString,
 
             // [ "p.page", "b.num" ] => '"page": dto.Page),\n\t\t\t"num": dto.Num),'
             // (used only with Golang's go-chi)
@@ -163,13 +173,17 @@ const createEndpoints = async (destDir, lang, config) => {
                 if (params.length === 0) {
                     return params;
                 }
+                const maxParamNameLength = lengthOfLongestString(params);
                 return Array.from(
                         new Set(params),
                         p => {
                             const bindTarget = p.substring(0, 1);
                             const paramName = p.substring(2);
                             const formatFunc = placeholdersMap['go'][bindTarget];
-                            return `"${paramName}": ${formatFunc(paramName)},`
+                            const quotedParam = '"' + paramName + '":';
+                            // We don't count quotes and colon because they are compensated by "p." prefix.
+                            // We do +1 because the longest parameter will also have an extra space as a delimiter.
+                            return `${quotedParam.padEnd(maxParamNameLength+1)} ${formatFunc(paramName)},`
                         }
                     ).join('\n\t\t\t');
             },
