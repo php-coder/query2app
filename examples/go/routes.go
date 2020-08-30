@@ -14,7 +14,7 @@ type CounterDto struct {
 }
 
 type CategoryDto struct {
-	Id     *string `json:"id" db:"id"`
+	Id     *int `json:"id" db:"id"`
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
@@ -28,7 +28,7 @@ type CreateCategoryDto struct {
 }
 
 type CategoryInfoDto struct {
-	Id     *string `json:"id" db:"id"`
+	Id     *int `json:"id" db:"id"`
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`

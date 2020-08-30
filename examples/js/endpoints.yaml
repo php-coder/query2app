@@ -30,6 +30,9 @@
         FROM categories
     dto:
       name: CategoryDto
+      fields:
+        id:
+          type: integer
   post:
     query: >-
       INSERT
@@ -65,6 +68,9 @@
        WHERE id = :p.categoryId
     dto:
       name: CategoryInfoDto
+      fields:
+        id:
+          type: integer
   put:
     query: >-
       UPDATE categories
