@@ -113,8 +113,14 @@ const createEndpoints = async (destDir, lang, config) => {
     }
 
     const placeholdersMap = {
-        'p': 'req.params',
-        'b': 'req.body'
+        'js': {
+            'p': 'req.params',
+            'b': 'req.body',
+        },
+        'go': {
+            'p': 'dto',
+            'b': 'dto',
+        }
     }
 
     const parser = new Parser();
@@ -131,7 +137,7 @@ const createEndpoints = async (destDir, lang, config) => {
             // (used only with Express)
             "formatParamsAsJavaScriptObject": (params) => {
                 return params.length > 0
-                    ? '{ ' + Array.from(new Set(params), p => `"${p.substring(2)}": ${placeholdersMap[p.substring(0, 1)]}.${p.substring(2)}`).join(', ') + ' }'
+                    ? '{ ' + Array.from(new Set(params), p => `"${p.substring(2)}": ${placeholdersMap['js'][p.substring(0, 1)]}.${p.substring(2)}`).join(', ') + ' }'
                     : params;
             },
 
@@ -156,7 +162,7 @@ const createEndpoints = async (destDir, lang, config) => {
                 }
                 return Array.from(
                         new Set(params),
-                        p => `"${p.substring(2)}": dto.${capitalize(snake2camelCase(p.substring(2)))},`
+                        p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)]}.${capitalize(snake2camelCase(p.substring(2)))},`
                     ).join('\n\t\t\t');
             },
         }
