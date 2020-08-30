@@ -176,7 +176,7 @@ const createEndpoints = async (destDir, lang, config) => {
             "capitalize": capitalize,
             "lengthOfLongestString": lengthOfLongestString,
 
-            // [ "p.page", "b.num" ] => '"page": dto.Page),\n\t\t\t"num": dto.Num),'
+            // [ "p.page", "b.num" ] => '"page": chi.URLParam(r, "page"),\n\t\t\t"num": dto.Num),'
             // (used only with Golang's go-chi)
             "formatParamsAsGolangMap": (params) => {
                 if (params.length === 0) {
