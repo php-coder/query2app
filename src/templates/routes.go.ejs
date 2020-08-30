@@ -196,7 +196,6 @@ endpoints.forEach(function(endpoint) {
 			const dataType = hasGetMany ? '[]' + dtoName : dtoName;
 
 			const params = extractParams(method.query);
-			const formattedParams = formatParamsAsGolangVararg(params);
 			const queryFunction = hasGetOne ? 'Get' : 'Select';
 			// TODO: handle only particular method (get/post/put)
 			// TODO: include method/path into an error message
