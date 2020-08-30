@@ -150,6 +150,19 @@ const createEndpoints = async (destDir, lang, config) => {
             "removePlaceholders": removePlaceholders,
             "snake2camelCase": snake2camelCase,
             "capitalize": capitalize,
+
+            // [ "p.page", "b.num" ] => '"page": dto.Page),\n\t\t\t"num": dto.Num),'
+            // TODO: add support for non-body params (like path params)
+            // (used only with Golang's go-chi)
+            "formatParamsAsGolangMap": (params) => {
+                if (params.length === 0) {
+                    return params;
+                }
+                return Array.from(
+                        new Set(params),
+                        p => `"${p.substring(2)}": dto.${capitalize(snake2camelCase(p.substring(2)))},`
+                    ).join('\n\t\t\t');
+            },
         }
     );
 

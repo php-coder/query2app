@@ -170,7 +170,6 @@ endpoints.forEach(function(endpoint) {
 -%>
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 	categories := make(map[int]CategoryDto)
-	cnt := 0
 <%
 endpoints.forEach(function(endpoint) {
 	const path = convertPathPlaceholders(endpoint.path);
@@ -224,14 +223,31 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'post') {
+			const dto = query2dto(sqlParser, method);
+			// TODO: do we really need signature and cache?
+			const cacheKey = dto ? dto.signature : null;
+			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+
+			// TODO: align args properly (like gofmt does)
+			const params = extractParams(method.query);
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var category CategoryDto
-		json.NewDecoder(r.Body).Decode(&category)
-		cnt += 1
-		id := strconv.Itoa(cnt)
-		category.Id = &id
-		categories[cnt] = category
+		var dto <%- dataType %>
+		json.NewDecoder(r.Body).Decode(&dto)
+
+		args := map[string]interface{}{
+			<%- formatParamsAsGolangMap(params) %>
+		}
+		_, err := db.NamedExec(
+			"<%- formatQuery(method.query) %>",
+			args,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 <%

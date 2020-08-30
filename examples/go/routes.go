@@ -36,7 +36,6 @@ type CategoryInfoDto struct {
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 	categories := make(map[int]CategoryDto)
-	cnt := 0
 
 	r.Get("/v1/categories/count", func(w http.ResponseWriter, r *http.Request) {
 		var result CounterDto
@@ -94,12 +93,25 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Post("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		var category CategoryDto
-		json.NewDecoder(r.Body).Decode(&category)
-		cnt += 1
-		id := strconv.Itoa(cnt)
-		category.Id = &id
-		categories[cnt] = category
+		var dto CreateCategoryDto
+		json.NewDecoder(r.Body).Decode(&dto)
+
+		args := map[string]interface{}{
+			"name": dto.Name,
+			"name_ru": dto.NameRu,
+			"slug": dto.Slug,
+			"user_id": dto.UserId,
+		}
+		_, err := db.NamedExec(
+			"INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , NOW() , :user_id , NOW() , :user_id )",
+			args,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 
