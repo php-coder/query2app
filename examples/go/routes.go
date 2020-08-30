@@ -141,10 +141,26 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Put("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		var category CategoryDto
-		json.NewDecoder(r.Body).Decode(&category)
-		categories[id] = category
+		var dto CreateCategoryDto
+		json.NewDecoder(r.Body).Decode(&dto)
+
+		args := map[string]interface{}{
+			"name": dto.Name,
+			"name_ru": dto.NameRu,
+			"slug": dto.Slug,
+			"user_id": dto.UserId,
+			"categoryId": chi.URLParam(r, "categoryId"),
+		}
+		_, err := db.NamedExec(
+			"UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId",
+			args,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 

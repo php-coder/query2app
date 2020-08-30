@@ -253,12 +253,31 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'put') {
+			const dto = query2dto(sqlParser, method);
+			// TODO: do we really need signature and cache?
+			const cacheKey = dto ? dto.signature : null;
+			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+
+			// TODO: align args properly (like gofmt does)
+			const params = extractParams(method.query);
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		var category CategoryDto
-		json.NewDecoder(r.Body).Decode(&category)
-		categories[id] = category
+		var dto <%- dataType %>
+		json.NewDecoder(r.Body).Decode(&dto)
+
+		args := map[string]interface{}{
+			<%- formatParamsAsGolangMap(params) %>
+		}
+		_, err := db.NamedExec(
+			"<%- formatQuery(method.query) %>",
+			args,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 <%

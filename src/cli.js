@@ -118,8 +118,12 @@ const createEndpoints = async (destDir, lang, config) => {
             'b': 'req.body',
         },
         'go': {
-            'p': 'dto',
-            'b': 'dto',
+            'p': function(param) {
+                return `chi.URLParam(r, "${param}")`
+            },
+            'b': function(param) {
+                return 'dto.' + capitalize(snake2camelCase(param));
+            },
         }
     }
 
@@ -165,8 +169,8 @@ const createEndpoints = async (destDir, lang, config) => {
                         p => {
                             const bindTarget = p.substring(0, 1);
                             const paramName = p.substring(2);
-                            const fieldName = capitalize(snake2camelCase(paramName));
-                            return `"${paramName}": ${placeholdersMap['go'][bindTarget]}.${fieldName},`
+                            const formatFunc = placeholdersMap['go'][bindTarget];
+                            return `"${paramName}": ${formatFunc(paramName)},`
                         }
                     ).join('\n\t\t\t');
             },
