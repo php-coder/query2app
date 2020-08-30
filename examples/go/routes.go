@@ -5,7 +5,6 @@ import "encoding/json"
 import "fmt"
 import "net/http"
 import "os"
-import "strconv"
 import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
@@ -35,7 +34,6 @@ type CategoryInfoDto struct {
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
-	categories := make(map[int]CategoryDto)
 
 	r.Get("/v1/categories/count", func(w http.ResponseWriter, r *http.Request) {
 		var result CounterDto
@@ -165,8 +163,19 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Delete("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-		id, _ := strconv.Atoi(chi.URLParam(r, "categoryId"))
-		delete(categories, id)
+		args := map[string]interface{}{
+			"categoryId": chi.URLParam(r, "categoryId"),
+		}
+		_, err := db.NamedExec(
+			"DELETE FROM categories WHERE id = :categoryId",
+			args,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		w.WriteHeader(http.StatusNoContent)
 	})
 
