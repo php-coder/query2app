@@ -140,13 +140,9 @@ const createEndpoints = async (destDir, lang, config) => {
                 return removePlaceholders(flattenQuery(query));
             },
 
-            // (used only with Golang's go-chi)
+            // (used only with Golang)
             "convertPathPlaceholders": convertPathPlaceholders,
-
-            // (used only with Golang)
             "sqlParser": parser,
-
-            // (used only with Golang)
             "removePlaceholders": removePlaceholders,
             "snake2camelCase": snake2camelCase,
             "capitalize": capitalize,
