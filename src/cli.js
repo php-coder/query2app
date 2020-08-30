@@ -146,12 +146,21 @@ const createEndpoints = async (destDir, lang, config) => {
             // "... WHERE id = :p.id" => [ "p.id" ] => [ "p.id" ]
             "extractParams": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
 
-            // [ "p.page", "b.num" ] => '{ "page" : req.params.page, "num": req.body.num }'
+            // [ "p.page", "b.num" ] => '"page": req.params.page, "num": req.body.num'
             // (used only with Express)
             "formatParamsAsJavaScriptObject": (params) => {
-                return params.length > 0
-                    ? '{ ' + Array.from(new Set(params), p => `"${p.substring(2)}": ${placeholdersMap['js'][p.substring(0, 1)]}.${p.substring(2)}`).join(', ') + ' }'
-                    : params;
+                if (params.length === 0) {
+                    return params;
+                }
+                return Array.from(
+                        new Set(params),
+                        p => {
+                            const bindTarget = p.substring(0, 1);
+                            const paramName = p.substring(2);
+                            const prefix = placeholdersMap['js'][bindTarget];
+                            return `"${paramName}": ${prefix}.${paramName}`
+                        }
+                    ).join(', ');
             },
 
             // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
