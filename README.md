@@ -43,18 +43,16 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ```
    Note that the queries use a little unusual named parameters: `:b.name`, `:p.categoryId`, etc The prefixes `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
 
-1. Generate code
-   ```console
-   $ npx query2app
-   ```
-   An example of generated code can be inspect at [examples/js](examples/js) directory.
+1. Generate code   
+   | Language   | Command for code generation | Example of generated files | Libraries |
+   | -----------| ----------------------------| ---------------------------| --------- |
+   | JavaScript | `npx query2app --lang js`   | [`app.js`](examples/js/app.js)<br/>[`routes.js`](examples/js/routes.js)<br/>[`package.json`](examples/js/package.json) | Web: [`express`](https://www.npmjs.com/package/express), [`body-parser`](https://www.npmjs.com/package/body-parser)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
 
 1. Run the application
-   ```console
-   $ npm install
-   $ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password
-   $ npm start
-   ```
+   | Language   | Commands to run the application |
+   | -----------| --------------------------------|
+   | JavaScript | <pre>$ npm install<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
+   
    ---
    :bulb: **NOTE**
    
