@@ -73,6 +73,8 @@ const lang2extension = (lang) => {
         case 'js':
         case 'go':
             return lang
+        case 'python':
+            return 'py'
         default:
             throw new Error(`Unsupported language: ${lang}`)
     }
@@ -222,6 +224,9 @@ const createDependenciesDescriptor = async (destDir, lang) => {
     } else if (lang === 'go') {
         fileName = 'go.mod'
 
+    } else if (lang === 'python') {
+        fileName = 'requirements.txt'
+
     } else {
         return;
     }
@@ -259,6 +264,12 @@ or
   go build -o app
   ./app
 to build and run it`)
+    } else if (lang === 'python') {
+        console.info(`Use
+  pip install -r requirements.txt
+to install its dependencies and
+  uvicorn app:app
+afteward to run`)
     }
 };
 
