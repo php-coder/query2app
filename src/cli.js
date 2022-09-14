@@ -68,12 +68,23 @@ const loadConfig = (endpointsFile) => {
     }
 };
 
+const lang2extension = (lang) => {
+    switch (lang) {
+        case 'js':
+        case 'go':
+            return lang
+        default:
+            throw new Error(`Unsupported language: ${lang}`)
+    }
+}
+
 const createApp = async (destDir, lang) => {
-    const fileName = `app.${lang}`
+    const ext = lang2extension(lang)
+    const fileName = `app.${ext}`
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
-    fs.copyFileSync(`${__dirname}/templates/app.${lang}`, resultFile)
+    fs.copyFileSync(`${__dirname}/templates/app.${ext}`, resultFile)
 };
 
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
@@ -104,7 +115,8 @@ const lengthOfLongestString = (arr) => arr
 		);
 
 const createEndpoints = async (destDir, lang, config) => {
-    const fileName = `routes.${lang}`
+    const ext = lang2extension(lang)
+    const fileName = `routes.${ext}`
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
@@ -139,7 +151,7 @@ const createEndpoints = async (destDir, lang, config) => {
     const parser = new Parser();
 
     const resultedCode = await ejs.renderFile(
-        `${__dirname}/templates/routes.${lang}.ejs`,
+        `${__dirname}/templates/routes.${ext}.ejs`,
         {
             "endpoints": config,
 
