@@ -103,6 +103,10 @@ const convertPathPlaceholders = (path) => path.replace(/:([^\/]+)/g, '{$1}');
 // (used only with Golang's go-chi)
 const snake2camelCase = (str) => str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
 
+// "categoryId" => "category_id"
+// (used only with Python's FastAPI)
+const camel2snakeCase = (str) => str.replace(/([A-Z])/g, (match, group) => '_' + group.toLowerCase());
+
 // "nameRu" => "NameRu"
 // (used only with Golang's go-chi)
 const capitalize = (str) => str[0].toUpperCase() + str.slice(1);
@@ -189,6 +193,9 @@ const createEndpoints = async (destDir, lang, config) => {
             "snake2camelCase": snake2camelCase,
             "capitalize": capitalize,
             "lengthOfLongestString": lengthOfLongestString,
+
+            // used only with Pyth
+            "camel2snakeCase": camel2snakeCase,
 
             // [ "p.page", "b.num" ] => '"page": chi.URLParam(r, "page"),\n\t\t\t"num": dto.Num),'
             // (used only with Golang's go-chi)

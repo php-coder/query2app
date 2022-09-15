@@ -2,6 +2,51 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get('/')
-def home():
-	return { "hello": "world" }
+<%
+// { "get", "/v1/categories/:categoryId" } => "get_v1_categories_category_id"
+function generate_method_name(method, path) {
+    const name = camel2snakeCase(path).replace(/\//g, '_').replace(/[^_a-z0-9]/g, '');
+    return `${method}${name}`
+}
+
+endpoints.forEach(function(endpoint) {
+    const path = endpoint.path
+
+    endpoint.methods.forEach(function(method) {
+        const pythonMethodName = generate_method_name(method.name, path)
+
+        if (method.name === 'get' || method.name === 'get_list') {
+%>
+@router.get('<%- path %>')
+def <%- pythonMethodName %>():
+    pass
+<%
+
+        }
+        if (method.name === 'post') {
+%>
+@router.post('<%- path %>')
+def <%- pythonMethodName %>():
+    pass
+<%
+
+        }
+        if (method.name === 'put') {
+%>
+@router.put('<%- path %>')
+def <%- pythonMethodName %>():
+    pass
+<%
+
+        }
+        if (method.name === 'delete') {
+%>
+@router.delete('<%- path %>')
+def <%- pythonMethodName %>():
+    pass
+<%
+
+        }
+    })
+})
+%>
