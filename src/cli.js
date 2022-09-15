@@ -101,7 +101,7 @@ const convertPathPlaceholders = (path) => path.replace(/:([^\/]+)/g, '{$1}');
 
 // "name_ru" => "nameRu"
 // (used only with Golang's go-chi)
-const snake2camelCase = (str) => str.replace(/_([a-z])/g, (match, group1) => group1.toUpperCase());
+const snake2camelCase = (str) => str.replace(/_([a-z])/g, (match, group) => group.toUpperCase());
 
 // "categoryId" => "category_id"
 // (used only with Python's FastAPI)
