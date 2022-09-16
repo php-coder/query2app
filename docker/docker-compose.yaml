@@ -17,5 +17,5 @@ services:
     ports:
       - '3306:3306'
     volumes:
-      - ./categories.sql:/docker-entrypoint-initdb.d/categories.sql
+      - ./categories.mysql.sql:/docker-entrypoint-initdb.d/categories.sql
 
