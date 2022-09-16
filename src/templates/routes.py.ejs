@@ -1,3 +1,6 @@
+import os
+import psycopg2
+
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -14,14 +17,32 @@ endpoints.forEach(function(endpoint) {
 
     endpoint.methods.forEach(function(method) {
         const pythonMethodName = generate_method_name(method.name, path)
+        const sql = formatQuery(method.query)
 
         if (method.name === 'get' || method.name === 'get_list') {
 %>
 @router.get('<%- path %>')
 def <%- pythonMethodName %>():
+<%          if (method.name === 'get') { -%>
+    conn = psycopg2.connect(
+        database = os.getenv('DB_NAME'),
+        user = os.getenv('DB_USER'),
+        password = os.getenv('DB_PASSWORD'),
+        host = os.getenv('DB_HOST', 'localhost'),
+        port = 5432)
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute('<%- sql %>')
+                return cur.fetchone()[0]
+    finally:
+        conn.close()
+<%
+            } else {
+-%>
     pass
 <%
-
+            }
         }
         if (method.name === 'post') {
 %>

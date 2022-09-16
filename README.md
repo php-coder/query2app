@@ -48,14 +48,14 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    | -----------| ----------------------------| ---------------------------| --------- |
    | JavaScript | `npx query2app --lang js`   | [`app.js`](examples/js/app.js)<br/>[`routes.js`](examples/js/routes.js)<br/>[`package.json`](examples/js/package.json) | Web: [`express`](https://www.npmjs.com/package/express), [`body-parser`](https://www.npmjs.com/package/body-parser)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
    | Golang     | `npx query2app --lang go`   | [`app.go`](examples/go/app.go)<br/>[`routes.go`](examples/go/routes.go)<br/>[`go.mod`](examples/go/go.mod) | Web: [`go-chi/chi`](https://github.com/go-chi/chi)<br/>Database: [`go-sql-driver/mysql`](https://github.com/go-sql-driver/mysql), [`jmoiron/sqlx`](https://github.com/jmoiron/sqlx) |
-   | Python     | `npx query2app --lang python` | [`app.py`](examples/python/app.py)<br/>[`routes.py`](examples/python/routes.py)<br/>[`requirements.txt`](examples/python/requirements.txt) | Web: [FastAPI](https://github.com/tiangolo/fastapi), [Uvicorn](https://www.uvicorn.org) |
+   | Python     | `npx query2app --lang python` | [`app.py`](examples/python/app.py)<br/>[`routes.py`](examples/python/routes.py)<br/>[`requirements.txt`](examples/python/requirements.txt) | Web: [FastAPI](https://github.com/tiangolo/fastapi), [Uvicorn](https://www.uvicorn.org)<br/>Database: [](https://pypi.org/project/psycopg2/) |
 
 1. Run the application
    | Language   | Commands to run the application |
    | -----------| --------------------------------|
    | JavaScript | <pre>$ npm install<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
    | Golang     | <pre>$ go run *.go</pre>or<pre>$ go build -o app<br/>$ ./app</pre> |
-   | Python     | <pre>$ pip install -r requirements.txt<br/>$ uvicorn app:app</pre> |
+   | Python     | <pre>$ pip install -r requirements.txt<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ uvicorn app:app</pre> |
    
    ---
    :bulb: **NOTE**
