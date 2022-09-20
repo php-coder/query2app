@@ -161,7 +161,7 @@ const createEndpoints = async (destDir, lang, config) => {
         {
             "endpoints": config,
 
-            // "... WHERE id = :p.id" => [ "p.id" ] => [ "p.id" ]
+            // "... WHERE id = :p.id" => [ "p.id" ]
             "extractParams": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
 
             // [ "p.page", "b.num" ] => '"page": req.params.page, "num": req.body.num'
@@ -181,7 +181,7 @@ const createEndpoints = async (destDir, lang, config) => {
                     ).join(', ');
             },
 
-            // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
+            // "SELECT *\n   FROM foo WHERE id = :p.id" => "SELECT * FROM foo WHERE id = :id"
             "formatQuery": (query) => {
                 return removePlaceholders(flattenQuery(query));
             },
