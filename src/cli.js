@@ -162,7 +162,7 @@ const createEndpoints = async (destDir, lang, config) => {
             "endpoints": config,
 
             // "... WHERE id = :p.id" => [ "p.id" ]
-            "extractParams": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
+            "extractParamsFromQuery": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
 
             // [ "p.page", "b.num" ] => '"page": req.params.page, "num": req.body.num'
             // (used only with Express)

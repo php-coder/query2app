@@ -161,7 +161,7 @@ endpoints.forEach(function(endpoint) {
 	const path = convertPathPlaceholders(endpoint.path);
 
 	endpoint.methods.forEach(function(method) {
-		const params = extractParams(method.query);
+		const params = extractParamsFromQuery(method.query);
 		const hasGetOne = method.name === 'get';
 		const hasGetMany = method.name === 'get_list';
 		if (hasGetOne || hasGetMany) {
