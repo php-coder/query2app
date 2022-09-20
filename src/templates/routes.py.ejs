@@ -12,8 +12,14 @@ function generate_method_name(method, path) {
     return `${method}${name}`
 }
 
+// "/categories/:categoryId" => "/categories/{categoryId}"
+function convertToFastApiPath(path) {
+    return path.replace(/:([_a-zA-Z]+)/g, '{$1}')
+}
+
+
 endpoints.forEach(function(endpoint) {
-    const path = endpoint.path
+    const path = convertToFastApiPath(endpoint.path)
 
     endpoint.methods.forEach(function(method) {
         const hasGetOne = method.name === 'get'

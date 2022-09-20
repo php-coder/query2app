@@ -22,7 +22,7 @@ def get_v1_categories_count():
     finally:
         conn.close()
 
-@router.get('/v1/collections/:collectionId/categories/count')
+@router.get('/v1/collections/{collectionId}/categories/count')
 def get_v1_collections_collection_id_categories_count():
     conn = psycopg2.connect(
         database = os.getenv('DB_NAME'),
@@ -46,7 +46,7 @@ def get_list_v1_categories():
 def post_v1_categories():
     pass
 
-@router.get('/v1/categories/:categoryId')
+@router.get('/v1/categories/{categoryId}')
 def get_v1_categories_category_id():
     conn = psycopg2.connect(
         database = os.getenv('DB_NAME'),
@@ -62,11 +62,11 @@ def get_v1_categories_category_id():
     finally:
         conn.close()
 
-@router.put('/v1/categories/:categoryId')
+@router.put('/v1/categories/{categoryId}')
 def put_v1_categories_category_id():
     pass
 
-@router.delete('/v1/categories/:categoryId')
+@router.delete('/v1/categories/{categoryId}')
 def delete_v1_categories_category_id():
     pass
 
