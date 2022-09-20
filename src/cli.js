@@ -164,6 +164,10 @@ const createEndpoints = async (destDir, lang, config) => {
             // "... WHERE id = :p.id" => [ "p.id" ]
             "extractParamsFromQuery": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
 
+            // "/categories/:categoryId" => [ "categoryId" ]
+            // (used only with FastAPI)
+            "extractParamsFromPath": (query) => query.match(/(?<=:)\w+/g) || [],
+            
             // [ "p.page", "b.num" ] => '"page": req.params.page, "num": req.body.num'
             // (used only with Express)
             "formatParamsAsJavaScriptObject": (params) => {

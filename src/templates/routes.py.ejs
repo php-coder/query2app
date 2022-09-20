@@ -1,7 +1,8 @@
 import os
 import psycopg2
+import psycopg2.extras
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
@@ -12,6 +13,12 @@ function generate_method_name(method, path) {
     return `${method}${name}`
 }
 
+// "INSERT INTO ... VALUES(:categoryId)" => "INSERT INTO ... VALUES(%(categoryId)s)"
+// See: https://www.psycopg.org/docs/usage.html#passing-parameters-to-sql-queries
+function convertToPsycopgNamedArguments(sql) {
+    return sql.replace(/:([_a-zA-Z]+)/g, '%($1)s')
+}
+
 // "/categories/:categoryId" => "/categories/{categoryId}"
 function convertToFastApiPath(path) {
     return path.replace(/:([_a-zA-Z]+)/g, '{$1}')
@@ -20,17 +27,23 @@ function convertToFastApiPath(path) {
 
 endpoints.forEach(function(endpoint) {
     const path = convertToFastApiPath(endpoint.path)
+    const paramsFromPath = extractParamsFromPath(endpoint.path)
 
     endpoint.methods.forEach(function(method) {
         const hasGetOne = method.name === 'get'
         const hasGetMany = method.name === 'get_list'
         const pythonMethodName = generate_method_name(method.name, path)
-        const sql = formatQuery(method.query)
+        const sql = convertToPsycopgNamedArguments(formatQuery(method.query))
+        const params = extractParamsFromQuery(method.query);
+        const formattedParams = params.length > 0
+            // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
+            ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
+            : ''
 
         if (hasGetOne || hasGetMany) {
 %>
 @router.get('<%- path %>')
-def <%- pythonMethodName %>():
+def <%- pythonMethodName %>(<%- paramsFromPath.join(', ') %>):
 <%          if (hasGetOne) { -%>
     conn = psycopg2.connect(
         database = os.getenv('DB_NAME'),
@@ -40,9 +53,12 @@ def <%- pythonMethodName %>():
         port = 5432)
     try:
         with conn:
-            with conn.cursor() as cur:
-                cur.execute('<%- sql %>')
-                return cur.fetchone()[0]
+            with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
+                cur.execute('<%- sql %>'<%- formattedParams %>)
+                result = cur.fetchone()
+                if result is None:
+                    raise HTTPException(status_code=404)
+                return result
     finally:
         conn.close()
 <%
