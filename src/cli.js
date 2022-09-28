@@ -132,10 +132,17 @@ const createEndpoints = async (destDir, lang, config) => {
             path = convertPathPlaceholders(path)
         }
         endpoint.methods.forEach(method => {
-            const sql = removePlaceholders(flattenQuery(method.query));
             const verb = method.verb.toUpperCase();
+            console.log(`${verb} ${path}`);
 
-            console.log(`${verb} ${path}\n\t${sql}`);
+            let queries = []
+            if (method.query) {
+                queries.push(method.query)
+            }
+            queries.forEach(query => {
+                const sql = removePlaceholders(flattenQuery(query));
+                console.log(`\t${sql}`);
+            })
         });
     }
 
