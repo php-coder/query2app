@@ -33,12 +33,21 @@ endpoints.forEach(function(endpoint) {
         const hasGetOne = method.name === 'get'
         const hasGetMany = method.name === 'get_list'
         const pythonMethodName = generate_method_name(method.name, path)
-        const sql = convertToPsycopgNamedArguments(formatQuery(method.query))
-        const params = extractParamsFromQuery(method.query);
-        const formattedParams = params.length > 0
-            // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
-            ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
-            : ''
+
+        let queries = []
+        if (method.query) {
+            queries.push(method.query)
+        }
+
+        queries = queries.map(query => {
+            const sql = convertToPsycopgNamedArguments(formatQuery(query))
+            const params = extractParamsFromQuery(query);
+            const formattedParams = params.length > 0
+                // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
+                ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
+                : ''
+            return ({ sql : sql, formattedParams: formattedParams })
+        })
 
         if (hasGetOne || hasGetMany) {
 %>
@@ -54,11 +63,13 @@ def <%- pythonMethodName %>(<%- paramsFromPath.join(', ') %>):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute('<%- sql %>'<%- formattedParams %>)
+<%              queries.forEach(query => { -%>
+                cur.execute('<%- query.sql %>'<%- query.formattedParams %>)
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
                 return result
+<%              }) -%>
     finally:
         conn.close()
 <%
