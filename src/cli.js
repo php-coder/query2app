@@ -135,7 +135,7 @@ const createEndpoints = async (destDir, lang, config) => {
             const sql = removePlaceholders(flattenQuery(method.query));
             const verb = method.verb.toUpperCase();
 
-            console.log(`${verb} ${path} => ${sql}`);
+            console.log(`${verb} ${path}\n\t${sql}`);
         });
     }
 
