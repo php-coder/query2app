@@ -5,6 +5,10 @@ endpoints.forEach(function(endpoint) {
     const path = endpoint.path;
 
     endpoint.methods.forEach(function(method) {
+        if (!method.query) {
+            // filter out aggregated_queries for a while (see #17)
+            return
+        }
         const hasGetOne = method.name === 'get';
         const hasGetMany = method.name === 'get_list';
         const sql = formatQuery(method.query);

@@ -143,6 +143,7 @@ function dtoInCache(dto) {
 const verbs_with_dto = [ 'get', 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
 	const dtos = endpoint.methods
+		.filter(method => method.query) // filter out aggregated_queries for a while (see #17)
 		.filter(method => verbs_with_dto.includes(method.verb))
 		.map(method => query2dto(sqlParser, method))
 		.filter(elem => elem) // filter out nulls
@@ -161,6 +162,10 @@ endpoints.forEach(function(endpoint) {
 	const path = convertPathPlaceholders(endpoint.path);
 
 	endpoint.methods.forEach(function(method) {
+		if (!method.query) {
+			// filter out aggregated_queries for a while (see #17)
+			return
+		}
 		const params = extractParamsFromQuery(method.query);
 		const hasGetOne = method.name === 'get';
 		const hasGetMany = method.name === 'get_list';
