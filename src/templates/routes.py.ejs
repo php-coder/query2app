@@ -2,9 +2,17 @@ import os
 import psycopg2
 import psycopg2.extras
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
+
+async def db_connection():
+    return psycopg2.connect(
+        database = os.getenv('DB_NAME'),
+        user = os.getenv('DB_USER'),
+        password = os.getenv('DB_PASSWORD'),
+        host = os.getenv('DB_HOST', 'localhost'),
+        port = 5432)
 
 <%
 // { "get", "/v1/categories/:categoryId" } => "get_v1_categories_category_id"
@@ -27,7 +35,8 @@ function convertToFastApiPath(path) {
 
 endpoints.forEach(function(endpoint) {
     const path = convertToFastApiPath(endpoint.path)
-    const paramsFromPath = extractParamsFromPath(endpoint.path)
+    const methodArgs = extractParamsFromPath(endpoint.path)
+    methodArgs.push('conn = Depends(db_connection)')
 
     endpoint.methods.forEach(function(method) {
         const hasGetOne = method.name === 'get'
@@ -59,14 +68,8 @@ endpoints.forEach(function(endpoint) {
         if (hasGetOne || hasGetMany) {
 %>
 @router.get('<%- path %>')
-def <%- pythonMethodName %>(<%- paramsFromPath.join(', ') %>):
+def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%          if (hasGetOne) { -%>
-    conn = psycopg2.connect(
-        database = os.getenv('DB_NAME'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        host = os.getenv('DB_HOST', 'localhost'),
-        port = 5432)
     try:
         with conn:
 <%              if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>

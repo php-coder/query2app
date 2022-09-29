@@ -2,19 +2,21 @@ import os
 import psycopg2
 import psycopg2.extras
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 
-
-@router.get('/v1/categories/count')
-def get_v1_categories_count():
-    conn = psycopg2.connect(
+async def db_connection():
+    return psycopg2.connect(
         database = os.getenv('DB_NAME'),
         user = os.getenv('DB_USER'),
         password = os.getenv('DB_PASSWORD'),
         host = os.getenv('DB_HOST', 'localhost'),
         port = 5432)
+
+
+@router.get('/v1/categories/count')
+def get_v1_categories_count(conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
@@ -27,13 +29,7 @@ def get_v1_categories_count():
         conn.close()
 
 @router.get('/v1/categories/stat')
-def get_v1_categories_stat():
-    conn = psycopg2.connect(
-        database = os.getenv('DB_NAME'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        host = os.getenv('DB_HOST', 'localhost'),
-        port = 5432)
+def get_v1_categories_stat(conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
@@ -51,13 +47,7 @@ def get_v1_categories_stat():
         conn.close()
 
 @router.get('/v1/collections/{collectionId}/categories/count')
-def get_v1_collections_collection_id_categories_count(collectionId):
-    conn = psycopg2.connect(
-        database = os.getenv('DB_NAME'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        host = os.getenv('DB_HOST', 'localhost'),
-        port = 5432)
+def get_v1_collections_collection_id_categories_count(collectionId, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
@@ -70,7 +60,7 @@ def get_v1_collections_collection_id_categories_count(collectionId):
         conn.close()
 
 @router.get('/v1/categories')
-def get_list_v1_categories():
+def get_list_v1_categories(conn = Depends(db_connection)):
     pass
 
 @router.post('/v1/categories')
@@ -78,13 +68,7 @@ def post_v1_categories():
     pass
 
 @router.get('/v1/categories/{categoryId}')
-def get_v1_categories_category_id(categoryId):
-    conn = psycopg2.connect(
-        database = os.getenv('DB_NAME'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        host = os.getenv('DB_HOST', 'localhost'),
-        port = 5432)
+def get_v1_categories_category_id(categoryId, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
