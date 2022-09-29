@@ -47,12 +47,12 @@ function extractInsertValues(queryAst) {
 //   ]
 // } => [ 'user_id' ]
 function extractUpdateValues(queryAst) {
-	// TODO: distinguish between b.param and q.param and extract only first
+	// LATER: distinguish between b.param and q.param and extract only first
 	return queryAst.set.map(elem => elem.value.type === 'param' ? elem.value.value : null)
 		.filter(value => value) // filter out nulls
 }
 
-// TODO: consider taking into account b.params from WHERE clause
+// LATER: consider taking into account b.params from WHERE clause
 function extractProperties(queryAst) {
 	if (queryAst.type === 'select') {
 		return extractSelectParameters(queryAst);
@@ -109,7 +109,7 @@ function query2dto(parser, method) {
 		"maxFieldNameLength": lengthOfLongestString(props.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))),
 		// required for de-duplication
 		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
-		// TODO: sort before join
+		// LATER: sort before join
 		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
 	};
 }
@@ -171,14 +171,14 @@ endpoints.forEach(function(endpoint) {
 		const hasGetMany = method.name === 'get_list';
 		if (hasGetOne || hasGetMany) {
 			const dto = query2dto(sqlParser, method);
-			// TODO: do we really need signature and cache?
+			// LATER: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 			const dataType = hasGetMany ? '[]' + dtoName : dtoName;
 
 			const queryFunction = hasGetOne ? 'Get' : 'Select';
-			// TODO: handle only particular method (get/post/put)
-			// TODO: include method/path into an error message
+			// LATER: handle only particular method (get/post/put)
+			// LATER: include method/path into an error message
 %>
 	r.Get("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 <%
@@ -215,7 +215,7 @@ endpoints.forEach(function(endpoint) {
 		}
 		if (method.name === 'post') {
 			const dto = query2dto(sqlParser, method);
-			// TODO: do we really need signature and cache?
+			// LATER: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 %>
@@ -242,7 +242,7 @@ endpoints.forEach(function(endpoint) {
 		}
 		if (method.name === 'put') {
 			const dto = query2dto(sqlParser, method);
-			// TODO: do we really need signature and cache?
+			// LATER: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 %>
