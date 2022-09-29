@@ -34,19 +34,26 @@ endpoints.forEach(function(endpoint) {
         const hasGetMany = method.name === 'get_list'
         const pythonMethodName = generate_method_name(method.name, path)
 
-        let queries = []
+        const queriesWithNames = []
         if (method.query) {
-            queries.push(method.query)
+            queriesWithNames.push({ "result" : method.query })
+        } else if (method.aggregated_queries) {
+            for (const [key, value] of Object.entries(method.aggregated_queries)) {
+                queriesWithNames.push({ [key]: value })
+            }
         }
 
-        queries = queries.map(query => {
-            const sql = convertToPsycopgNamedArguments(formatQuery(query))
-            const params = extractParamsFromQuery(query);
-            const formattedParams = params.length > 0
-                // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
-                ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
-                : ''
-            return ({ sql : sql, formattedParams: formattedParams })
+        const queries = []
+        queriesWithNames.forEach(queryWithName => {
+            for (const [name, query] of Object.entries(queryWithName)) {
+                const sql = convertToPsycopgNamedArguments(formatQuery(query))
+                const params = extractParamsFromQuery(query);
+                const formattedParams = params.length > 0
+                    // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
+                    ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
+                    : ''
+                queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
+            }
         })
 
         if (hasGetOne || hasGetMany) {
@@ -62,14 +69,29 @@ def <%- pythonMethodName %>(<%- paramsFromPath.join(', ') %>):
         port = 5432)
     try:
         with conn:
+<%              if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>
+            with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
+                result = {}
+<%                  queries.forEach(queryInfo => {
+                        for (const [name, query] of Object.entries(queryInfo)) {
+-%>
+                cur.execute('<%- query.sql %>'<%- query.formattedParams %>)
+                result['<%- name %>'] = cur.fetchone()[0]
+<%                      }
+                    })
+-%>
+                return result
+<%
+                } else {
+                    const query = queries[0].result
+-%>
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-<%              queries.forEach(query => { -%>
                 cur.execute('<%- query.sql %>'<%- query.formattedParams %>)
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
                 return result
-<%              }) -%>
+<%              } -%>
     finally:
         conn.close()
 <%

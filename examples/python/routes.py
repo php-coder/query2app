@@ -26,6 +26,30 @@ def get_v1_categories_count():
     finally:
         conn.close()
 
+@router.get('/v1/categories/stat')
+def get_v1_categories_stat():
+    conn = psycopg2.connect(
+        database = os.getenv('DB_NAME'),
+        user = os.getenv('DB_USER'),
+        password = os.getenv('DB_PASSWORD'),
+        host = os.getenv('DB_HOST', 'localhost'),
+        port = 5432)
+    try:
+        with conn:
+            with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
+                result = {}
+                cur.execute('SELECT COUNT(*) FROM categories')
+                result['total'] = cur.fetchone()[0]
+                cur.execute('SELECT COUNT(*) FROM categories WHERE name_ru IS NOT NULL')
+                result['in_russian'] = cur.fetchone()[0]
+                cur.execute('SELECT COUNT(*) FROM categories WHERE name IS NOT NULL')
+                result['in_english'] = cur.fetchone()[0]
+                cur.execute('SELECT COUNT(*) FROM categories WHERE name IS NOT NULL AND name_ru IS NOT NULL')
+                result['fully_translated'] = cur.fetchone()[0]
+                return result
+    finally:
+        conn.close()
+
 @router.get('/v1/collections/{collectionId}/categories/count')
 def get_v1_collections_collection_id_categories_count(collectionId):
     conn = psycopg2.connect(

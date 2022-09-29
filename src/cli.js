@@ -138,6 +138,8 @@ const createEndpoints = async (destDir, lang, config) => {
             let queries = []
             if (method.query) {
                 queries.push(method.query)
+            } else if (method.aggregated_queries) {
+                queries = Object.values(method.aggregated_queries)
             }
             queries.forEach(query => {
                 const sql = removePlaceholders(flattenQuery(query));

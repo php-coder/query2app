@@ -7,6 +7,14 @@
         counter:
           type: integer
 
+- path: /v1/categories/stat
+  get:
+    aggregated_queries:
+      total:            SELECT COUNT(*) FROM categories
+      in_russian:       SELECT COUNT(*) FROM categories WHERE name_ru IS NOT NULL
+      in_english:       SELECT COUNT(*) FROM categories WHERE name IS NOT NULL
+      fully_translated: SELECT COUNT(*) FROM categories WHERE name IS NOT NULL AND name_ru IS NOT NULL
+
 - path: /v1/collections/:collectionId/categories/count
   get:
     query: >-
