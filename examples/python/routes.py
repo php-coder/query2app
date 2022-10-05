@@ -20,7 +20,7 @@ def get_v1_categories_count(conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute('SELECT COUNT(*) AS counter FROM categories')
+                cur.execute("SELECT COUNT(*) AS counter FROM categories")
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
@@ -34,13 +34,13 @@ def get_v1_categories_stat(conn = Depends(db_connection)):
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
                 result = {}
-                cur.execute('SELECT COUNT(*) FROM categories')
+                cur.execute("SELECT COUNT(*) FROM categories")
                 result['total'] = cur.fetchone()[0]
-                cur.execute('SELECT COUNT(*) FROM categories WHERE name_ru IS NOT NULL')
+                cur.execute("SELECT COUNT(*) FROM categories WHERE name_ru IS NOT NULL")
                 result['in_russian'] = cur.fetchone()[0]
-                cur.execute('SELECT COUNT(*) FROM categories WHERE name IS NOT NULL')
+                cur.execute("SELECT COUNT(*) FROM categories WHERE name IS NOT NULL")
                 result['in_english'] = cur.fetchone()[0]
-                cur.execute('SELECT COUNT(*) FROM categories WHERE name IS NOT NULL AND name_ru IS NOT NULL')
+                cur.execute("SELECT COUNT(*) FROM categories WHERE name IS NOT NULL AND name_ru IS NOT NULL")
                 result['fully_translated'] = cur.fetchone()[0]
                 return result
     finally:
@@ -51,7 +51,7 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn = Depen
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute('SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = %(collectionId)s', { "collectionId": collectionId })
+                cur.execute("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = %(collectionId)s", { "collectionId": collectionId })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
@@ -72,7 +72,7 @@ def get_v1_categories_category_id(categoryId, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute('SELECT id , name , name_ru , slug FROM categories WHERE id = %(categoryId)s', { "categoryId": categoryId })
+                cur.execute("SELECT id , name , name_ru , slug FROM categories WHERE id = %(categoryId)s", { "categoryId": categoryId })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)

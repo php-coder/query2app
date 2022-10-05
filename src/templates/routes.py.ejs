@@ -78,7 +78,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%                  queries.forEach(queryInfo => {
                         for (const [name, query] of Object.entries(queryInfo)) {
 -%>
-                cur.execute('<%- query.sql %>'<%- query.formattedParams %>)
+                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
                 result['<%- name %>'] = cur.fetchone()[0]
 <%                      }
                     })
@@ -89,7 +89,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
                     const query = queries[0].result
 -%>
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute('<%- query.sql %>'<%- query.formattedParams %>)
+                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
