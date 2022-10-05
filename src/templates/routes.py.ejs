@@ -24,7 +24,7 @@ function generate_method_name(method, path) {
 // "INSERT INTO ... VALUES(:categoryId)" => "INSERT INTO ... VALUES(%(categoryId)s)"
 // See: https://www.psycopg.org/docs/usage.html#passing-parameters-to-sql-queries
 function convertToPsycopgNamedArguments(sql) {
-    return sql.replace(/:([_a-zA-Z]+)/g, '%($1)s')
+    return sql.replace(/(?<!:):([_a-zA-Z]+)/g, '%($1)s')
 }
 
 // "/categories/:categoryId" => "/categories/{categoryId}"
