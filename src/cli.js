@@ -89,6 +89,8 @@ const createApp = async (destDir, lang) => {
     fs.copyFileSync(`${__dirname}/templates/app.${ext}`, resultFile)
 };
 
+const removeComments = (query) => query.replace(/--.*\n/g, '');
+
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
 const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 
@@ -142,7 +144,7 @@ const createEndpoints = async (destDir, lang, config) => {
                 queries = Object.values(method.aggregated_queries)
             }
             queries.forEach(query => {
-                const sql = removePlaceholders(flattenQuery(query));
+                const sql = removePlaceholders(flattenQuery(removeComments(query)));
                 console.log(`\t${sql}`);
             })
         });
@@ -204,7 +206,7 @@ const createEndpoints = async (destDir, lang, config) => {
 
             // "SELECT *\n   FROM foo WHERE id = :p.id" => "SELECT * FROM foo WHERE id = :id"
             "formatQuery": (query) => {
-                return removePlaceholders(flattenQuery(query));
+                return removePlaceholders(flattenQuery(removeComments(query)));
             },
 
             // (used only with Golang)
