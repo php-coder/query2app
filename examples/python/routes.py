@@ -61,7 +61,13 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn = Depen
 
 @router.get('/v1/categories')
 def get_list_v1_categories(conn = Depends(db_connection)):
-    pass
+    try:
+        with conn:
+            with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT id , name , name_ru , slug FROM categories")
+                return cur.fetchall()
+    finally:
+        conn.close()
 
 @router.post('/v1/categories')
 def post_v1_categories():

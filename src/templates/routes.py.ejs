@@ -69,10 +69,10 @@ endpoints.forEach(function(endpoint) {
 %>
 @router.get('<%- path %>')
 def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
-<%          if (hasGetOne) { -%>
     try:
         with conn:
-<%              if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>
+<%          if (hasGetOne) {
+                if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>
             with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
                 result = {}
 <%                  queries.forEach(queryInfo => {
@@ -94,15 +94,19 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
                 if result is None:
                     raise HTTPException(status_code=404)
                 return result
-<%              } -%>
+<%              }
+            } else {
+                const query = queries[0].result
+-%>
+            with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
+                return cur.fetchall()
+<%
+            }
+-%>
     finally:
         conn.close()
 <%
-            } else {
--%>
-    pass
-<%
-            }
         }
         if (method.name === 'post') {
 %>
