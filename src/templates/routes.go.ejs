@@ -193,7 +193,7 @@ endpoints.forEach(function(endpoint) {
 
 		var result <%- dataType %>
 		args := map[string]interface{}{
-			<%- params.map(p => `"${p.substring(2)}": chi.URLParam(r, "${p.substring(2)}"),`).join('\n\t\t\t') %>
+			<%- /* LATER: extract */ params.map(p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)](p.substring(2))},`).join('\n\t\t\t') %>
 		}
 		err = nstmt.Get(&result, args)
 <%			} else { -%>

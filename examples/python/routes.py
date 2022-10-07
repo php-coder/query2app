@@ -60,11 +60,11 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn = Depen
         conn.close()
 
 @router.get('/v1/categories')
-def get_list_v1_categories(conn = Depends(db_connection)):
+def get_list_v1_categories(limit, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT id , name , name_ru , slug FROM categories")
+                cur.execute("SELECT id , name , name_ru , slug FROM categories LIMIT %(limit)s", { "limit": limit })
                 return cur.fetchall()
     finally:
         conn.close()

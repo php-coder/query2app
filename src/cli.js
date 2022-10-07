@@ -92,8 +92,8 @@ const createApp = async (destDir, lang) => {
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
 const flattenQuery = (query) => query.replace(/\n[ ]*/g, ' ');
 
-// "WHERE id = :p.categoryId OR id = :b.id" => "WHERE id = :categoryId OR id = :id"
-const removePlaceholders = (query) => query.replace(/(?<=:)[pb]\./g, '');
+// "WHERE id = :p.categoryId OR id = :b.id LIMIT :q.limit" => "WHERE id = :categoryId OR id = :id LIMIT :limit"
+const removePlaceholders = (query) => query.replace(/(?<=:)[pbq]\./g, '');
 
 // "/categories/:id" => "/categories/{id}"
 // (used only with Golang's go-chi)
@@ -152,6 +152,7 @@ const createEndpoints = async (destDir, lang, config) => {
         'js': {
             'p': 'req.params',
             'b': 'req.body',
+            'q': 'req.query',
         },
         'go': {
             'p': function(param) {
@@ -159,6 +160,9 @@ const createEndpoints = async (destDir, lang, config) => {
             },
             'b': function(param) {
                 return 'dto.' + capitalize(snake2camelCase(param));
+            },
+            'q': function(param) {
+                return `r.URL.Query().Get("${param}")`
             },
         }
     }
@@ -171,7 +175,11 @@ const createEndpoints = async (destDir, lang, config) => {
             "endpoints": config,
 
             // "... WHERE id = :p.id" => [ "p.id" ]
-            "extractParamsFromQuery": (query) => query.match(/(?<=:)[pb]\.\w+/g) || [],
+            "extractParamsFromQuery": (query) => query.match(/(?<=:)[pbq]\.\w+/g) || [],
+
+            // "p.id" => "id" + the same for "q" and "b"
+            // (used only with FastAPI)
+            "stipOurPrefixes": (str) => str.replace(/^[pbq]\./, ''),
 
             // "/categories/:categoryId" => [ "categoryId" ]
             // (used only with FastAPI)
@@ -230,6 +238,8 @@ const createEndpoints = async (destDir, lang, config) => {
                         }
                     ).join('\n\t\t\t');
             },
+
+            "placeholdersMap": placeholdersMap,
         }
     );
 

@@ -35,13 +35,16 @@ function convertToFastApiPath(path) {
 
 endpoints.forEach(function(endpoint) {
     const path = convertToFastApiPath(endpoint.path)
-    const methodArgs = extractParamsFromPath(endpoint.path)
-    methodArgs.push('conn = Depends(db_connection)')
+    const argsFromPath = extractParamsFromPath(endpoint.path)
 
     endpoint.methods.forEach(function(method) {
         const hasGetOne = method.name === 'get'
         const hasGetMany = method.name === 'get_list'
         const pythonMethodName = generate_method_name(method.name, path)
+
+        // LATER: add support for aggregated_queries (#17)
+        const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
+        const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn = Depends(db_connection)']))
 
         const queriesWithNames = []
         if (method.query) {

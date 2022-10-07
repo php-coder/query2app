@@ -36,7 +36,8 @@ app.get('/v1/collections/:collectionId/categories/count', (req, res) => {
 
 app.get('/v1/categories', (req, res) => {
     pool.query(
-        'SELECT id , name , name_ru , slug FROM categories',
+        'SELECT id , name , name_ru , slug FROM categories LIMIT :limit',
+        { "limit": req.query.limit },
         (err, rows, fields) => {
             if (err) {
                 throw err
