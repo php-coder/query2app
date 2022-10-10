@@ -18,11 +18,10 @@
 - path: /v1/collections/:collectionId/categories/count
   get:
     query: |-
-      -- comment
+      -- Comments before query is allowed
       SELECT COUNT(DISTINCT s.category_id) AS counter
-      -- comment2
+      -- ... as well as within a query
         FROM collections_series cs
-      -- comment3
         JOIN series s
           ON s.id = cs.series_id
        WHERE cs.collection_id = :p.collectionId
