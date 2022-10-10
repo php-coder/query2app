@@ -33,7 +33,7 @@
 
 - path: /v1/categories
   get_list:
-    query: |-
+    query: >-
       SELECT id
            , name
            , name_ru
@@ -46,7 +46,7 @@
         id:
           type: integer
   post:
-    query: |-
+    query: >-
       INSERT
         INTO categories
            ( name
@@ -71,7 +71,7 @@
 
 - path: /v1/categories/:categoryId
   get:
-    query: |-
+    query: >-
       SELECT id
            , name
            , name_ru
@@ -84,7 +84,7 @@
         id:
           type: integer
   put:
-    query: |-
+    query: >-
       UPDATE categories
          SET name = :b.name
            , name_ru = :b.name_ru
@@ -93,7 +93,7 @@
            , updated_by = :b.user_id
        WHERE id = :p.categoryId
   delete:
-    query: |-
+    query: >-
       DELETE
         FROM categories
        WHERE id = :p.categoryId
