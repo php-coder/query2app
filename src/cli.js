@@ -89,6 +89,7 @@ const createApp = async (destDir, lang) => {
     fs.copyFileSync(`${__dirname}/templates/app.${ext}`, resultFile)
 };
 
+// "-- comment\nSELECT * FROM foo" => "SELECT * FROM foo"
 const removeComments = (query) => query.replace(/--.*\n/g, '');
 
 // "SELECT *\n   FROM foo" => "SELECT * FROM foo"
