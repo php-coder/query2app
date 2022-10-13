@@ -13,9 +13,11 @@ const endpointsFile = 'endpoints.yaml';
 
 const parseCommandLineArgs = (args) => {
     const opts = {
-        'string': [ 'lang' ],
+        // @todo #24 Document --dest-dir option
+        'string': [ 'lang', 'dest-dir' ],
         'default': {
-            'lang': 'js'
+            'lang': 'js',
+            'dest-dir': '.'
         }
     };
     const argv = parseArgs(args, opts);
@@ -268,6 +270,7 @@ const createDependenciesDescriptor = async (destDir, lang) => {
     console.log('Generate', fileName);
 
     const resultFile = path.join(destDir, fileName);
+    // @todo #24 [js] Possibly incorrect project name with --dest-dir option
     const projectName = path.basename(destDir);
     console.log('Project name:', projectName);
 
@@ -308,7 +311,7 @@ afteward to run`)
 };
 
 const absolutePathToDestDir = (argv) => {
-    const relativeDestDir = argv._.length > 0 ? argv._[0] : '.'
+    const relativeDestDir = argv._.length > 0 ? argv._[0] : argv['dest-dir']
     return path.resolve(process.cwd(), relativeDestDir)
 }
 
