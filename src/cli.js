@@ -310,15 +310,18 @@ to install its dependencies and
 afteward to run`);
     } else if (lang === 'go') {
         console.info(`Use
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   go run *.go
 or
   go build -o app
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   ./app
 to build and run it`)
     } else if (lang === 'python') {
         console.info(`Use
   pip install -r requirements.txt
 to install its dependencies and
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   uvicorn app:app
 afteward to run`)
     }
