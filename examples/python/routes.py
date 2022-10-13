@@ -51,7 +51,14 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn = Depen
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = %(collectionId)s", { "collectionId": collectionId })
+                cur.execute(
+                    """
+                    SELECT COUNT(DISTINCT s.category_id) AS counter
+                      FROM collections_series cs
+                      JOIN series s
+                        ON s.id = cs.series_id
+                     WHERE cs.collection_id = %(collectionId)s
+                    """, { "collectionId": collectionId })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
@@ -64,7 +71,15 @@ def get_list_v1_categories(limit, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT id , name , name_ru , slug FROM categories LIMIT %(limit)s", { "limit": limit })
+                cur.execute(
+                    """
+                    SELECT id
+                         , name
+                         , name_ru
+                         , slug
+                     FROM categories
+                    LIMIT %(limit)s
+                    """, { "limit": limit })
                 return cur.fetchall()
     finally:
         conn.close()
@@ -78,7 +93,15 @@ def get_v1_categories_category_id(categoryId, conn = Depends(db_connection)):
     try:
         with conn:
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT id , name , name_ru , slug FROM categories WHERE id = %(categoryId)s", { "categoryId": categoryId })
+                cur.execute(
+                    """
+                    SELECT id
+                         , name
+                         , name_ru
+                         , slug
+                      FROM categories
+                     WHERE id = %(categoryId)s
+                    """, { "categoryId": categoryId })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)

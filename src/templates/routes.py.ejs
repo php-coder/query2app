@@ -32,6 +32,19 @@ function convertToFastApiPath(path) {
     return path.replace(/:([_a-zA-Z]+)/g, '{$1}')
 }
 
+// Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
+// and also use """ for multiline strings
+function formatQueryForPython(query, indentLevel) {
+    const sql = removePlaceholders(removeComments(query))
+    const isMultilineSql = sql.indexOf('\n') >= 0
+    if (isMultilineSql) {
+        const indent = ' '.repeat(indentLevel)
+        const indentedSql = sql.replace(/\n/g, '\n' + indent)
+        return `\n${indent}"""\n${indent}${indentedSql}\n${indent}"""`;
+    }
+    return `"${sql}"`
+}
+
 
 endpoints.forEach(function(endpoint) {
     const path = convertToFastApiPath(endpoint.path)
@@ -58,7 +71,7 @@ endpoints.forEach(function(endpoint) {
         const queries = []
         queriesWithNames.forEach(queryWithName => {
             for (const [name, query] of Object.entries(queryWithName)) {
-                const sql = convertToPsycopgNamedArguments(formatQuery(query))
+                const sql = convertToPsycopgNamedArguments(formatQueryForPython(query, 20))
                 const params = extractParamsFromQuery(query);
                 const formattedParams = params.length > 0
                     // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
@@ -81,7 +94,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%                  queries.forEach(queryInfo => {
                         for (const [name, query] of Object.entries(queryInfo)) {
 -%>
-                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
+                cur.execute(<%- query.sql %><%- query.formattedParams %>)
                 result['<%- name %>'] = cur.fetchone()[0]
 <%                      }
                     })
@@ -92,7 +105,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
                     const query = queries[0].result
 -%>
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
+                cur.execute(<%- query.sql %><%- query.formattedParams %>)
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=404)
@@ -102,7 +115,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
                 const query = queries[0].result
 -%>
             with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("<%- query.sql %>"<%- query.formattedParams %>)
+                cur.execute(<%- query.sql %><%- query.formattedParams %>)
                 return cur.fetchall()
 <%
             }

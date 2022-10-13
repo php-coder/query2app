@@ -243,6 +243,7 @@ const createEndpoints = async (destDir, lang, config) => {
             },
 
             "placeholdersMap": placeholdersMap,
+            "removeComments": removeComments,
         }
     );
 
