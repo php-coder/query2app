@@ -6,14 +6,14 @@ from fastapi import APIRouter, Depends, HTTPException
 
 router = APIRouter()
 
+
 async def db_connection():
     return psycopg2.connect(
-        database = os.getenv('DB_NAME'),
-        user = os.getenv('DB_USER'),
-        password = os.getenv('DB_PASSWORD'),
-        host = os.getenv('DB_HOST', 'localhost'),
-        port = 5432)
-
+        database=os.getenv('DB_NAME'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=5432)
 <%
 // { "get", "/v1/categories/:categoryId" } => "get_v1_categories_category_id"
 function generate_method_name(method, path) {
@@ -57,7 +57,7 @@ endpoints.forEach(function(endpoint) {
 
         // LATER: add support for aggregated_queries (#17)
         const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
-        const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn = Depends(db_connection)']))
+        const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
         const queriesWithNames = []
         if (method.query) {
@@ -75,7 +75,7 @@ endpoints.forEach(function(endpoint) {
                 const params = extractParamsFromQuery(query);
                 const formattedParams = params.length > 0
                     // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
-                    ? ', { ' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + ' }'
+                    ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + '}'
                     : ''
                 queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
             }
@@ -83,13 +83,14 @@ endpoints.forEach(function(endpoint) {
 
         if (hasGetOne || hasGetMany) {
 %>
+
 @router.get('<%- path %>')
 def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
     try:
         with conn:
 <%          if (hasGetOne) {
                 if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>
-            with conn.cursor(cursor_factory = psycopg2.extras.DictCursor) as cur:
+            with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
                 result = {}
 <%                  queries.forEach(queryInfo => {
                         for (const [name, query] of Object.entries(queryInfo)) {
@@ -104,7 +105,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
                 } else {
                     const query = queries[0].result
 -%>
-            with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
                 cur.execute(<%- query.sql %><%- query.formattedParams %>)
                 result = cur.fetchone()
                 if result is None:
@@ -114,7 +115,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
             } else {
                 const query = queries[0].result
 -%>
-            with conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor) as cur:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
                 cur.execute(<%- query.sql %><%- query.formattedParams %>)
                 return cur.fetchall()
 <%
@@ -126,6 +127,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
         }
         if (method.name === 'post') {
 %>
+
 @router.post('<%- path %>')
 def <%- pythonMethodName %>():
     pass
@@ -134,6 +136,7 @@ def <%- pythonMethodName %>():
         }
         if (method.name === 'put') {
 %>
+
 @router.put('<%- path %>')
 def <%- pythonMethodName %>():
     pass
@@ -142,6 +145,7 @@ def <%- pythonMethodName %>():
         }
         if (method.name === 'delete') {
 %>
+
 @router.delete('<%- path %>')
 def <%- pythonMethodName %>():
     pass
