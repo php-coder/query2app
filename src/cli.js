@@ -307,13 +307,16 @@ afteward to run`)
     }
 };
 
+const absolutePathToDestDir = (argv) => {
+    const relativeDestDir = argv._.length > 0 ? argv._[0] : '.'
+    return path.resolve(process.cwd(), relativeDestDir)
+}
 
 const argv = parseCommandLineArgs(process.argv.slice(2));
 
 const config = loadConfig(endpointsFile);
 
-let destDir = argv._.length > 0 ? argv._[0] : '.';
-destDir = path.resolve(process.cwd(), destDir);
+const destDir = absolutePathToDestDir(argv)
 console.log('Destination directory:', destDir)
 
 if (!fs.existsSync(destDir)) {
