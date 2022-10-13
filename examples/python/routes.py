@@ -1,19 +1,11 @@
-import os
 import psycopg2
 import psycopg2.extras
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from db import db_connection
+
 router = APIRouter()
-
-
-async def db_connection():
-    return psycopg2.connect(
-        database=os.getenv('DB_NAME'),
-        user=os.getenv('DB_USER'),
-        password=os.getenv('DB_PASSWORD'),
-        host=os.getenv('DB_HOST', 'localhost'),
-        port=5432)
 
 
 @router.get('/v1/categories/count')

@@ -88,8 +88,20 @@ const createApp = async (destDir, lang) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
-    fs.copyFileSync(`${__dirname}/templates/app.${ext}`, resultFile)
+    fs.copyFileSync(`${__dirname}/templates/${fileName}`, resultFile)
 };
+
+const createDb = async (destDir, lang) => {
+    if (lang !== 'python') {
+        return
+    }
+    const fileName = 'db.py'
+    console.log('Generate', fileName);
+    const resultFile = path.join(destDir, fileName);
+
+    // @todo #28 Create db.py with async API
+    fs.copyFileSync(`${__dirname}/templates/${fileName}`, resultFile)
+}
 
 // "-- comment\nSELECT * FROM foo" => "SELECT * FROM foo"
 const removeComments = (query) => query.replace(/--.*\n/g, '');
@@ -330,6 +342,7 @@ if (!fs.existsSync(destDir)) {
 }
 
 createApp(destDir, argv.lang, config);
+createDb(destDir, argv.lang)
 createEndpoints(destDir, argv.lang, config);
 createDependenciesDescriptor(destDir, argv.lang);
 showInstructions(argv.lang);
