@@ -272,7 +272,9 @@ const createDependenciesDescriptor = async (destDir, lang) => {
     const resultFile = path.join(destDir, fileName);
     // @todo #24 [js] Possibly incorrect project name with --dest-dir option
     const projectName = path.basename(destDir);
-    console.log('Project name:', projectName);
+    if (lang === 'js') {
+        console.log('Project name:', projectName);
+    }
 
     const minimalPackageJson = await ejs.renderFile(
         `${__dirname}/templates/${fileName}.ejs`,
