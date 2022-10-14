@@ -82,15 +82,25 @@ const lang2extension = (lang) => {
     }
 }
 
+const findFileNamesEndWith = (dir, postfix) => {
+    return fs.readdirSync(dir).filter(name => name.endsWith(postfix))
+}
+
 const createApp = async (destDir, lang) => {
     const ext = lang2extension(lang)
     const fileName = `app.${ext}`
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
+    const customRouters = findFileNamesEndWith(destDir, `_routes.${ext}`)
+    if (customRouters.length > 0) {
+        customRouters.forEach(filename => console.log(`Include a custom router from ${filename}`))
+    }
 
     const resultedCode = await ejs.renderFile(
         `${__dirname}/templates/${fileName}.ejs`,
         {
+            // @todo #27 Document usage of user defined routes
+            'customRouteFilenames': customRouters
         }
     )
 

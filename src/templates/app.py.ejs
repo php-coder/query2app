@@ -1,6 +1,25 @@
+<%
+
+// "custom_routes.py" => "custom_route"
+function fileName2routerName(filename) {
+    return filename.replace(/_routes\.py$/, '_route')
+}
+
+// "custom_routes.py" => "custom_routes"
+function removeExtension(filename) {
+    return filename.replace(/\.py$/, '')
+}
+
+-%>
 from fastapi import FastAPI
 from routes import router
+<% customRouteFilenames.forEach(filename => { %>
+from <%= removeExtension(filename) %> import router as <%= fileName2routerName(filename) %>
+<% }) -%>
 
 app = FastAPI()
 
 app.include_router(router)
+<% customRouteFilenames.forEach(filename => { %>
+app.include_router(<%= fileName2routerName(filename) %>)
+<% }) -%>
