@@ -88,7 +88,13 @@ const createApp = async (destDir, lang) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
-    fs.copyFileSync(`${__dirname}/templates/${fileName}`, resultFile)
+    const resultedCode = await ejs.renderFile(
+        `${__dirname}/templates/${fileName}.ejs`,
+        {
+        }
+    )
+
+    fs.writeFileSync(resultFile, resultedCode);
 };
 
 const createDb = async (destDir, lang) => {
