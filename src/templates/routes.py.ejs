@@ -3,6 +3,8 @@ import psycopg2.extras
 
 from fastapi import APIRouter, Depends, HTTPException
 
+from starlette import status
+
 from db import db_connection
 
 router = APIRouter()
@@ -120,7 +122,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
         if (method.name === 'post') {
 %>
 
-@router.post('<%- path %>')
+@router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
 def <%- pythonMethodName %>():
     pass
 <%
@@ -129,7 +131,7 @@ def <%- pythonMethodName %>():
         if (method.name === 'put') {
 %>
 
-@router.put('<%- path %>')
+@router.put('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
 def <%- pythonMethodName %>():
     pass
 <%
@@ -138,7 +140,7 @@ def <%- pythonMethodName %>():
         if (method.name === 'delete') {
 %>
 
-@router.delete('<%- path %>')
+@router.delete('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
 def <%- pythonMethodName %>():
     pass
 <%
