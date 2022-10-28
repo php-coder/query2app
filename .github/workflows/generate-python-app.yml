@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-node@v3.5.1 # https://github.com/actions/setup-node
         with:
           node-version: 16
+          cache: 'npm'
       - name: Install project dependencies
         run: npm ci # https://docs.npmjs.com/cli/v8/commands/npm-ci
       - name: Generate Python + FastAPI application
