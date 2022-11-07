@@ -3,6 +3,7 @@
 const yaml = require('js-yaml')
 const ejs = require('ejs')
 const fs = require('fs')
+const fsPromises = require('fs/promises')
 const path = require('path')
 
 const parseArgs = require('minimist')
@@ -132,7 +133,7 @@ const createApp = async (destDir, { lang, overwrite }) => {
     )
 
     const fsFlags = overwrite ? 'w' : 'wx'
-    await fs.writeFile(resultFile, resultedCode, { 'flag': fsFlags }, fileExistsHandler)
+    return fsPromises.writeFile(resultFile, resultedCode, { 'flag': fsFlags }).catch(fileExistsHandler)
 }
 
 const createDb = async (destDir, { lang, overwrite }) => {
@@ -143,8 +144,8 @@ const createDb = async (destDir, { lang, overwrite }) => {
     console.log('Generate', fileName)
     const resultFile = path.join(destDir, fileName)
 
-    const mode = overwrite ? 0 : fs.constants.COPYFILE_EXCL
-    await fs.copyFile(`${__dirname}/templates/${fileName}`, resultFile, mode, fileExistsHandler)
+    const mode = overwrite ? 0 : fsPromises.constants.COPYFILE_EXCL
+    return fsPromises.copyFile(`${__dirname}/templates/${fileName}`, resultFile, mode).catch(fileExistsHandler)
 }
 
 // "-- comment\nSELECT * FROM foo" => "SELECT * FROM foo"
@@ -306,7 +307,7 @@ const createEndpoints = async (destDir, { lang, overwrite }, config) => {
     )
 
     const fsFlags = overwrite ? 'w' : 'wx'
-    await fs.writeFile(resultFile, resultedCode, { 'flag': fsFlags }, fileExistsHandler)
+    return fsPromises.writeFile(resultFile, resultedCode, { 'flag': fsFlags }).catch(fileExistsHandler)
 }
 
 const createDependenciesDescriptor = async (destDir, { lang, overwrite }) => {
@@ -342,7 +343,7 @@ const createDependenciesDescriptor = async (destDir, { lang, overwrite }) => {
     )
 
     const fsFlags = overwrite ? 'w' : 'wx'
-    await fs.writeFile(resultFile, minimalPackageJson, { 'flag': fsFlags }, fileExistsHandler)
+    return fsPromises.writeFile(resultFile, minimalPackageJson, { 'flag': fsFlags }).catch(fileExistsHandler)
 }
 
 const showInstructions = (lang) => {
@@ -378,7 +379,7 @@ const absolutePathToDestDir = (argv) => {
     return path.resolve(process.cwd(), relativeDestDir)
 }
 
-const main = (argv) => {
+const main = async (argv) => {
     const config = loadConfig(endpointsFile)
 
     const destDir = absolutePathToDestDir(argv)
@@ -389,10 +390,10 @@ const main = (argv) => {
         fs.mkdirSync(destDir, {recursive: true})
     }
 
-    createApp(destDir, argv)
-    createDb(destDir, argv)
-    createEndpoints(destDir, argv, config)
-    createDependenciesDescriptor(destDir, argv)
+    await createApp(destDir, argv)
+    await createDb(destDir, argv)
+    await createEndpoints(destDir, argv, config)
+    await createDependenciesDescriptor(destDir, argv)
     showInstructions(argv.lang)
 }
 
