@@ -13,3 +13,15 @@ jobs:
         with:
           # Whether to configure the token or SSH key with the local git config. Default: true
           persist-credentials: false
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3.5.1 # https://github.com/actions/setup-node
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
+      - name: Generate JavaScript + Express application
+        run: ../../src/cli.js --lang js
+        working-directory: examples/js
+      - name: Check whether files were modified
+        run: git status --short
