@@ -86,7 +86,7 @@ const findFileNamesEndWith = (dir, postfix) => {
     return fs.readdirSync(dir).filter(name => name.endsWith(postfix))
 }
 
-const createApp = async (destDir, lang) => {
+const createApp = async (destDir, { lang }) => {
     const ext = lang2extension(lang)
     const fileName = `app.${ext}`
     console.log('Generate', fileName);
@@ -108,7 +108,7 @@ const createApp = async (destDir, lang) => {
     fs.writeFileSync(resultFile, resultedCode);
 };
 
-const createDb = async (destDir, lang) => {
+const createDb = async (destDir, { lang }) => {
     if (lang !== 'python') {
         return
     }
@@ -154,7 +154,7 @@ const lengthOfLongestString = (arr) => arr
 			0 /* initial value */
 		);
 
-const createEndpoints = async (destDir, lang, config) => {
+const createEndpoints = async (destDir, { lang }, config) => {
     const ext = lang2extension(lang)
     const fileName = `routes.${ext}`
     console.log('Generate', fileName);
@@ -281,7 +281,7 @@ const createEndpoints = async (destDir, lang, config) => {
     fs.writeFileSync(resultFile, resultedCode);
 };
 
-const createDependenciesDescriptor = async (destDir, lang) => {
+const createDependenciesDescriptor = async (destDir, { lang }) => {
     let fileName;
     if (lang === 'js') {
         fileName = 'package.json'
@@ -361,8 +361,8 @@ if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, {recursive: true});
 }
 
-createApp(destDir, argv.lang);
-createDb(destDir, argv.lang)
-createEndpoints(destDir, argv.lang, config);
-createDependenciesDescriptor(destDir, argv.lang);
+createApp(destDir, argv);
+createDb(destDir, argv)
+createEndpoints(destDir, argv, config);
+createDependenciesDescriptor(destDir, argv);
 showInstructions(argv.lang);
