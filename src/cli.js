@@ -361,7 +361,7 @@ if (!fs.existsSync(destDir)) {
     fs.mkdirSync(destDir, {recursive: true});
 }
 
-createApp(destDir, argv.lang, config);
+createApp(destDir, argv.lang);
 createDb(destDir, argv.lang)
 createEndpoints(destDir, argv.lang, config);
 createDependenciesDescriptor(destDir, argv.lang);
