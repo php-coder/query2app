@@ -15,9 +15,12 @@ const parseCommandLineArgs = (args) => {
     const opts = {
         // @todo #24 Document --dest-dir option
         'string': [ 'lang', 'dest-dir' ],
+        // @todo #33 Document --overwrite option
+        'boolean': [ 'overwrite' ],
         'default': {
             'lang': 'js',
-            'dest-dir': '.'
+            'dest-dir': '.',
+            'overwrite': false,
         }
     };
     const argv = parseArgs(args, opts);
@@ -86,7 +89,30 @@ const findFileNamesEndWith = (dir, postfix) => {
     return fs.readdirSync(dir).filter(name => name.endsWith(postfix))
 }
 
-const createApp = async (destDir, { lang }) => {
+const stripPrefix = (text, prefix) => {
+    if (text.startsWith(prefix)) {
+        return text.slice(prefix.length)
+    }
+    return text
+}
+
+const fileExistsHandler = (err) => {
+    if (err === null) {
+        // Success
+        return
+    }
+    //console.log(err)
+    if (err.code === 'EEXIST') {
+        // copyFile() puts original file name in err.path, so we use err.dest in that case
+        const filePath = err.dest || err.path
+        const file = stripPrefix(filePath, process.cwd() + '/')
+        console.warn(`WARNING: File ${file} already exists and won't be rewritten to preserve possible modifications. In order to overwrite the file, re-run the application with --overwrite option`)
+        return
+    }
+    throw err
+}
+
+const createApp = async (destDir, { lang, overwrite }) => {
     const ext = lang2extension(lang)
     const fileName = `app.${ext}`
     console.log('Generate', fileName);
@@ -105,10 +131,11 @@ const createApp = async (destDir, { lang }) => {
         }
     )
 
-    fs.writeFileSync(resultFile, resultedCode);
+    const fsFlags = overwrite ? 'w' : 'wx'
+    await fs.writeFile(resultFile, resultedCode, { 'flag': fsFlags }, fileExistsHandler)
 };
 
-const createDb = async (destDir, { lang }) => {
+const createDb = async (destDir, { lang, overwrite }) => {
     if (lang !== 'python') {
         return
     }
@@ -116,8 +143,8 @@ const createDb = async (destDir, { lang }) => {
     console.log('Generate', fileName);
     const resultFile = path.join(destDir, fileName);
 
-    // @todo #28 Create db.py with async API
-    fs.copyFileSync(`${__dirname}/templates/${fileName}`, resultFile)
+    const mode = overwrite ? 0 : fs.constants.COPYFILE_EXCL
+    await fs.copyFile(`${__dirname}/templates/${fileName}`, resultFile, mode, fileExistsHandler)
 }
 
 // "-- comment\nSELECT * FROM foo" => "SELECT * FROM foo"
@@ -154,7 +181,7 @@ const lengthOfLongestString = (arr) => arr
 			0 /* initial value */
 		);
 
-const createEndpoints = async (destDir, { lang }, config) => {
+const createEndpoints = async (destDir, { lang, overwrite }, config) => {
     const ext = lang2extension(lang)
     const fileName = `routes.${ext}`
     console.log('Generate', fileName);
@@ -278,10 +305,11 @@ const createEndpoints = async (destDir, { lang }, config) => {
         }
     );
 
-    fs.writeFileSync(resultFile, resultedCode);
+    const fsFlags = overwrite ? 'w' : 'wx'
+    await fs.writeFile(resultFile, resultedCode, { 'flag': fsFlags }, fileExistsHandler)
 };
 
-const createDependenciesDescriptor = async (destDir, { lang }) => {
+const createDependenciesDescriptor = async (destDir, { lang, overwrite }) => {
     let fileName;
     if (lang === 'js') {
         fileName = 'package.json'
@@ -313,7 +341,8 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
         }
     );
 
-    fs.writeFileSync(resultFile, minimalPackageJson);
+    const fsFlags = overwrite ? 'w' : 'wx'
+    await fs.writeFile(resultFile, minimalPackageJson, { 'flag': fsFlags }, fileExistsHandler)
 };
 
 const showInstructions = (lang) => {
