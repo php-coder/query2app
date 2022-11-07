@@ -378,20 +378,24 @@ const absolutePathToDestDir = (argv) => {
     return path.resolve(process.cwd(), relativeDestDir)
 }
 
-const argv = parseCommandLineArgs(process.argv.slice(2))
+const main = (argv) => {
+    const config = loadConfig(endpointsFile)
 
-const config = loadConfig(endpointsFile)
+    const destDir = absolutePathToDestDir(argv)
+    console.log('Destination directory:', destDir)
 
-const destDir = absolutePathToDestDir(argv)
-console.log('Destination directory:', destDir)
+    if (!fs.existsSync(destDir)) {
+        console.log('Create', destDir)
+        fs.mkdirSync(destDir, {recursive: true})
+    }
 
-if (!fs.existsSync(destDir)) {
-    console.log('Create', destDir)
-    fs.mkdirSync(destDir, {recursive: true})
+    createApp(destDir, argv)
+    createDb(destDir, argv)
+    createEndpoints(destDir, argv, config)
+    createDependenciesDescriptor(destDir, argv)
+    showInstructions(argv.lang)
 }
 
-createApp(destDir, argv)
-createDb(destDir, argv)
-createEndpoints(destDir, argv, config)
-createDependenciesDescriptor(destDir, argv)
-showInstructions(argv.lang)
+
+const argv = parseCommandLineArgs(process.argv.slice(2))
+main(argv)
