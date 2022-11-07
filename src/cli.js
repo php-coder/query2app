@@ -100,6 +100,7 @@ const createApp = async (destDir, lang) => {
         `${__dirname}/templates/${fileName}.ejs`,
         {
             // @todo #27 Document usage of user defined routes
+            // @todo #27 Add integration test to ensure that custom router is picked up
             'customRouteFilenames': customRouters
         }
     )
