@@ -21,7 +21,7 @@ jobs:
       - name: Install project dependencies
         run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
       - name: Generate JavaScript + Express application
-        run: ../../src/cli.js --overwrite --lang js
+        run: ../../src/cli.js --lang js
         working-directory: examples/js
       - name: Check whether files were modified
         run: git status --short
