@@ -25,9 +25,9 @@ jobs:
         working-directory: examples/python
       - name: Check whether all modified files have been committed
         run: >-
-          MODIFIED_FILES="$(git status --short)"
+          MODIFIED_FILES="$(git status --short)";
           if [ -n "$MODIFIED_FILES" ]; then
-            echo >&2 "ERROR: the following generated files have not been committed:"
-            echo >&2 "$MODIFIED_FILES"
-            exit 1
+            echo >&2 "ERROR: the following generated files have not been committed:";
+            echo >&2 "$MODIFIED_FILES";
+            exit 1;
           fi
