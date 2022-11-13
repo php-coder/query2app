@@ -23,5 +23,11 @@ jobs:
       - name: Generate Golang + Chi application
         run: ../../src/cli.js --lang go
         working-directory: examples/go
-      - name: Check whether files were modified
-        run: git status --short
+      - name: Check whether all modified files have been committed
+        run: >-
+          MODIFIED_FILES="$(git status --short)"
+          if [ -n "$MODIFIED_FILES" ]; then
+            echo >&2 "ERROR: the following generated files have not been committed:"
+            echo >&2 "$MODIFIED_FILES"
+            exit 1
+          fi
