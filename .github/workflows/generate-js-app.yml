@@ -3,6 +3,12 @@ name: Generate JavaScript app
 on:
   push:
 
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  # NOTE: actions/upload-artifact makes no use of permissions
+  # See https://github.com/actions/upload-artifact/issues/197#issuecomment-832279436
+  contents: read # for "git clone"
+
 jobs:
   generate-app:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
