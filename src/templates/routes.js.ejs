@@ -1,5 +1,4 @@
 const register = (app, pool) => {
-
 <%
 endpoints.forEach(function(endpoint) {
     const path = endpoint.path;
@@ -14,81 +13,80 @@ endpoints.forEach(function(endpoint) {
         const sql = formatQuery(method.query);
         const params = extractParamsFromQuery(method.query);
         const formattedParams = params.length > 0
-            ? '\n        { ' + formatParamsAsJavaScriptObject(params) + ' },'
+            ? '\n            { ' + formatParamsAsJavaScriptObject(params) + ' },'
             : ''
 
         if (hasGetOne || hasGetMany) {
 %>
-app.get('<%- path %>', (req, res) => {
-    pool.query(
-        '<%- sql %>',<%- formattedParams %>
-        (err, rows, fields) => {
-            if (err) {
-                throw err
-            }
+    app.get('<%- path %>', (req, res) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
 <%          if (hasGetMany) { -%>
-            res.json(rows)
+                res.json(rows)
 <%          } else { -%>
-            if (rows.length === 0) {
-                res.status(404).end()
-                return
-            }
-            res.json(rows[0])
+                if (rows.length === 0) {
+                    res.status(404).end()
+                    return
+                }
+                res.json(rows[0])
 <%          } -%>
-        }
-    )
-})
+            }
+        )
+    })
 <%
         }
         if (method.name === 'post') {
 %>
-app.post('<%- path %>', (req, res) => {
-    pool.query(
-        '<%- sql %>',<%- formattedParams %>
-        (err, rows, fields) => {
-            if (err) {
-                throw err
+    app.post('<%- path %>', (req, res) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
             }
-            res.sendStatus(204)
-        }
-    )
-})
+        )
+    })
 <%
         }
         if (method.name === 'put') {
 %>
-app.put('<%- path %>', (req, res) => {
-    pool.query(
-        '<%- sql %>',<%- formattedParams %>
-        (err, rows, fields) => {
-            if (err) {
-                throw err
+    app.put('<%- path %>', (req, res) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
             }
-            res.sendStatus(204)
-        }
-    )
-})
+        )
+    })
 <%
         }
         if (method.name === 'delete') {
 %>
-app.delete('<%- path %>', (req, res) => {
-    pool.query(
-        '<%- sql %>',<%- formattedParams %>
-        (err, rows, fields) => {
-            if (err) {
-                throw err
+    app.delete('<%- path %>', (req, res) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
             }
-            res.sendStatus(204)
-        }
-    )
-})
+        )
+    })
 <%
         }
     });
 });
 %>
-
 }
 
 exports.register = register;
