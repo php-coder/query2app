@@ -14,20 +14,20 @@ const pool = mysql.createPool({
     // Support of named placeholders (https://github.com/mysqljs/mysql#custom-format)
     queryFormat: function(query, values) {
         if (!values) {
-            return query;
+            return query
         }
         return query.replace(/\:(\w+)/g, function(txt, key) {
             if (values.hasOwnProperty(key)) {
-                return this.escape(values[key]);
+                return this.escape(values[key])
             }
-            return txt;
-        }.bind(this));
+            return txt
+        }.bind(this))
     }
 })
 
 routes.register(app, pool)
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Listen on ${port}`)
 })
