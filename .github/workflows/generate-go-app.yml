@@ -21,7 +21,7 @@ jobs:
       - name: Install project dependencies
         run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
       - name: Generate Golang + Chi application
-        run: npm run generate-go-example
+        run: npm run gen-go-example
       - name: Check whether all modified files have been committed
         run: >-
           MODIFIED_FILES="$(git status --short)";
