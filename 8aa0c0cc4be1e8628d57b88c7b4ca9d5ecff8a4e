@@ -1,3 +1,5 @@
 Part of #32
 
 See also: https://github.com/advisories/GHSA-phwq-j96m-2c2q
+
+This also updates minimatch dependency with a fix of ReDoS vulnerability: https://github.com/advisories/GHSA-f8q6-p94x-37v3
