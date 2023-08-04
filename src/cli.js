@@ -309,6 +309,7 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
         `${__dirname}/templates/${fileName}.ejs`,
         {
             // project name is being used only for package.json
+            // @todo #35 [js] Let a user to specify project name
             projectName
         }
     )
