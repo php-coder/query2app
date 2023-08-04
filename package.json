@@ -29,7 +29,7 @@
     "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "gen-js-example": "cd examples/js; ../../src/cli.js --lang js",
-    "gen-go-example": "cd examples/go; ../../src/cli.js --lang go",
+    "gen-go-example": "cd examples/go/chi/mysql; ../../../../src/cli.js --lang go",
     "gen-py-example": "cd examples/python; ../../src/cli.js --lang python"
   },
   "dependencies": {
