@@ -74,6 +74,7 @@ const loadConfig = (endpointsFile) => {
 const lang2extension = (lang) => {
     switch (lang) {
         case 'js':
+        case 'ts':
         case 'go':
             return lang
         case 'python':
@@ -283,7 +284,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
 
 const createDependenciesDescriptor = async (destDir, { lang }) => {
     let fileName
-    if (lang === 'js') {
+    if (lang === 'js' || lang === 'ts') {
         fileName = 'package.json'
 
     } else if (lang === 'go') {
@@ -301,13 +302,14 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
     const resultFile = path.join(destDir, fileName)
     // @todo #24 [js] Possibly incorrect project name with --dest-dir option
     const projectName = path.basename(destDir)
-    if (lang === 'js') {
+    if (lang === 'js' || lang === 'ts') {
         console.log('Project name:', projectName)
     }
 
     const minimalPackageJson = await ejs.renderFile(
         `${__dirname}/templates/${fileName}.ejs`,
         {
+            lang,
             // project name is being used only for package.json
             // @todo #35 [js] Let a user to specify project name
             projectName
@@ -317,12 +319,37 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
     return fsPromises.writeFile(resultFile, minimalPackageJson)
 }
 
+const createTypeScriptConfig = async (destDir, lang) => {
+    if (lang !== 'ts') {
+        return
+    }
+    const fileName = 'tsconfig.json'
+    console.log('Generate', fileName)
+
+    const resultFile = path.join(destDir, fileName)
+
+    const tsConfigJson = await ejs.renderFile(
+        `${__dirname}/templates/${fileName}.ejs`
+    )
+
+    return fsPromises.writeFile(resultFile, tsConfigJson)
+}
+
 const showInstructions = (lang) => {
     console.info('The application has been generated!')
     if (lang === 'js') {
         console.info(`Use
   npm install
 to install its dependencies and
+  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
+  npm start
+afteward to run`)
+    } else if (lang === 'ts') {
+        console.info(`Use
+  npm install
+to install its dependencies,
+  npm run build
+to build the application, and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
 afteward to run`)
@@ -365,6 +392,7 @@ const main = async (argv) => {
     await createDb(destDir, argv)
     await createEndpoints(destDir, argv, config)
     await createDependenciesDescriptor(destDir, argv)
+    await createTypeScriptConfig(destDir, argv.lang)
     showInstructions(argv.lang)
 }
 

@@ -1,0 +1,95 @@
+import { Express, Request, Response } from 'express'
+import { Pool } from 'mysql'
+
+const register = (app: Express, pool: Pool) => {
+<%
+endpoints.forEach(function(endpoint) {
+    const path = endpoint.path;
+
+    endpoint.methods.forEach(function(method) {
+        if (!method.query) {
+            // filter out aggregated_queries for a while (see #17)
+            return
+        }
+        const hasGetOne = method.name === 'get';
+        const hasGetMany = method.name === 'get_list';
+        const sql = formatQuery(method.query);
+        const params = extractParamsFromQuery(method.query);
+        const formattedParams = params.length > 0
+            ? '\n            { ' + formatParamsAsJavaScriptObject(params) + ' },'
+            : ''
+
+        if (hasGetOne || hasGetMany) {
+%>
+    app.get('<%- path %>', (req: Request, res: Response) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+<%          if (hasGetMany) { -%>
+                res.json(rows)
+<%          } else { -%>
+                if (rows.length === 0) {
+                    res.status(404).end()
+                    return
+                }
+                res.json(rows[0])
+<%          } -%>
+            }
+        )
+    })
+<%
+        }
+        if (method.name === 'post') {
+%>
+    app.post('<%- path %>', (req: Request, res: Response) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
+            }
+        )
+    })
+<%
+        }
+        if (method.name === 'put') {
+%>
+    app.put('<%- path %>', (req: Request, res: Response) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
+            }
+        )
+    })
+<%
+        }
+        if (method.name === 'delete') {
+%>
+    app.delete('<%- path %>', (req: Request, res: Response) => {
+        pool.query(
+            '<%- sql %>',<%- formattedParams %>
+            (err, rows, fields) => {
+                if (err) {
+                    throw err
+                }
+                res.sendStatus(204)
+            }
+        )
+    })
+<%
+        }
+    });
+});
+%>
+}
+
+exports.register = register;

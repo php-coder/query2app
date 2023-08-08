@@ -1,0 +1,45 @@
+name: Generate TypeScript app
+
+on:
+  push:
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  # NOTE: actions/upload-artifact makes no use of permissions
+  # See https://github.com/actions/upload-artifact/issues/197#issuecomment-832279436
+  contents: read # for "git clone"
+
+defaults:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#defaultsrun
+  run:
+    # Enable fail-fast behavior using set -eo pipefail
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+    shell: bash
+
+jobs:
+  generate-app:
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Clone source code
+        uses: actions/checkout@v3.1.0 # https://github.com/actions/checkout
+        with:
+          # Whether to configure the token or SSH key with the local git config. Default: true
+          persist-credentials: false
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3.5.1 # https://github.com/actions/setup-node
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install project dependencies
+        run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
+      - name: Generate TypeScript + Express application
+        run: npm run gen-ts-example
+      - name: Check whether all modified files have been committed
+        run: >-
+          MODIFIED_FILES="$(git status --short)";
+          if [ -n "$MODIFIED_FILES" ]; then
+            echo >&2 "ERROR: the following generated files have not been committed:";
+            echo >&2 "$MODIFIED_FILES";
+            exit 1;
+          fi
