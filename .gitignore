@@ -1,6 +1,1 @@
 node_modules/
-
-# RobotFramework reports
-tests/log.html
-tests/output.xml
-tests/report.html
