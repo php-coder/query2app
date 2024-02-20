@@ -21,20 +21,25 @@ jobs:
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ubuntu-20.04
     steps:
+
       - name: Clone source code
         uses: actions/checkout@v3.1.0 # https://github.com/actions/checkout
         with:
           # Whether to configure the token or SSH key with the local git config. Default: true
           persist-credentials: false
+
       - name: Setup NodeJS
         uses: actions/setup-node@v3.5.1 # https://github.com/actions/setup-node
         with:
           node-version: 18
           cache: 'npm'
+
       - name: Install project dependencies
         run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
+
       - name: Generate JavaScript + Express application
         run: npm run gen-js-example
+
       - name: Check whether all modified files have been committed
         run: >-
           MODIFIED_FILES="$(git status --short)";
