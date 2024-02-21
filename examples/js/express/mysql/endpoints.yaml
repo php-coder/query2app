@@ -37,8 +37,8 @@
            , name
            , name_ru
            , slug
-       FROM categories
-      LIMIT :q.limit
+        FROM categories
+       LIMIT :q.limit
     dto:
       name: CategoryDto
       fields:

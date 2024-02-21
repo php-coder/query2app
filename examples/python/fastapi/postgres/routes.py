@@ -75,8 +75,8 @@ def get_list_v1_categories(limit, conn=Depends(db_connection)):
                          , name
                          , name_ru
                          , slug
-                     FROM categories
-                    LIMIT %(limit)s
+                      FROM categories
+                     LIMIT %(limit)s
                     """, {"limit": limit})
                 return cur.fetchall()
     finally:
