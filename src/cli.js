@@ -335,41 +335,79 @@ const createTypeScriptConfig = async (destDir, lang) => {
     return fsPromises.writeFile(resultFile, tsConfigJson)
 }
 
-const showInstructions = (lang) => {
-    console.info('The application has been generated!')
-    if (lang === 'js') {
-        console.info(`Use
+class JsGenerator {
+
+    usageExampleAsText() {
+        return `Use
   npm install
 to install its dependencies and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
-afteward to run`)
-    } else if (lang === 'ts') {
-        console.info(`Use
+afteward to run`
+    }
+
+}
+
+class TsGenerator {
+
+    usageExampleAsText() {
+        return `Use
   npm install
 to install its dependencies,
   npm run build
 to build the application, and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   npm start
-afteward to run`)
-    } else if (lang === 'go') {
-        console.info(`Use
+afteward to run`
+    }
+
+}
+
+class GoGenerator {
+
+    usageExampleAsText() {
+        return `Use
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   go run *.go
 or
   go build -o app
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   ./app
-to build and run it`)
-    } else if (lang === 'python') {
-        console.info(`Use
+to build and run it`
+    }
+
+}
+
+class PyGenerator {
+
+    usageExampleAsText() {
+        return `Use
   pip install -r requirements.txt
 to install its dependencies and
   export DB_NAME=db DB_USER=user DB_PASSWORD=secret
   uvicorn app:app
-afteward to run`)
+afteward to run`
     }
+
+}
+
+class Generator {
+
+    static for(lang) {
+        switch (lang) {
+            case 'js':
+                return new JsGenerator()
+            case 'ts':
+                return new TsGenerator()
+            case 'go':
+                return new GoGenerator()
+            case 'python':
+                return new PyGenerator()
+            default:
+                throw new Error(`Unsupported language: ${lang}`)
+        }
+    }
+
 }
 
 const absolutePathToDestDir = (argv) => {
@@ -388,12 +426,16 @@ const main = async (argv) => {
         fs.mkdirSync(destDir, {recursive: true})
     }
 
+    const generator = Generator.for(argv.lang)
+
     await createApp(destDir, argv)
     await createDb(destDir, argv)
     await createEndpoints(destDir, argv, config)
     await createDependenciesDescriptor(destDir, argv)
     await createTypeScriptConfig(destDir, argv.lang)
-    showInstructions(argv.lang)
+
+    console.info('The application has been generated!')
+    console.info(generator.usageExampleAsText())
 }
 
 
