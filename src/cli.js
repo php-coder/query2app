@@ -10,6 +10,8 @@ const parseArgs = require('minimist')
 
 const { Parser } = require('node-sql-parser')
 
+const Generator = require('./generator/Generator')
+
 const endpointsFile = 'endpoints.yaml'
 
 const parseCommandLineArgs = (args) => {
@@ -333,81 +335,6 @@ const createTypeScriptConfig = async (destDir, lang) => {
     )
 
     return fsPromises.writeFile(resultFile, tsConfigJson)
-}
-
-class JsGenerator {
-
-    usageExampleAsText() {
-        return `Use
-  npm install
-to install its dependencies and
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  npm start
-afteward to run`
-    }
-
-}
-
-class TsGenerator {
-
-    usageExampleAsText() {
-        return `Use
-  npm install
-to install its dependencies,
-  npm run build
-to build the application, and
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  npm start
-afteward to run`
-    }
-
-}
-
-class GoGenerator {
-
-    usageExampleAsText() {
-        return `Use
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  go run *.go
-or
-  go build -o app
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  ./app
-to build and run it`
-    }
-
-}
-
-class PyGenerator {
-
-    usageExampleAsText() {
-        return `Use
-  pip install -r requirements.txt
-to install its dependencies and
-  export DB_NAME=db DB_USER=user DB_PASSWORD=secret
-  uvicorn app:app
-afteward to run`
-    }
-
-}
-
-class Generator {
-
-    static for(lang) {
-        switch (lang) {
-            case 'js':
-                return new JsGenerator()
-            case 'ts':
-                return new TsGenerator()
-            case 'go':
-                return new GoGenerator()
-            case 'python':
-                return new PyGenerator()
-            default:
-                throw new Error(`Unsupported language: ${lang}`)
-        }
-    }
-
 }
 
 const absolutePathToDestDir = (argv) => {
