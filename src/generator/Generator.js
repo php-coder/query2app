@@ -13,7 +13,7 @@ module.exports = class Generator {
                 return new TsGenerator()
             case 'go':
                 return new GoGenerator()
-            case 'python':
+            case 'py':
                 return new PyGenerator()
             default:
                 throw new Error(`Unsupported language: ${lang}`)

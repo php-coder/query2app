@@ -353,7 +353,8 @@ const main = async (argv) => {
         fs.mkdirSync(destDir, {recursive: true})
     }
 
-    const generator = Generator.for(argv.lang)
+    const lang = lang2extension(argv.lang)
+    const generator = Generator.for(lang)
 
     await createApp(destDir, argv)
     await createDb(destDir, argv)
