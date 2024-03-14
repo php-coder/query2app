@@ -56,6 +56,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    | Language   | Commands to run the application |
    | -----------| --------------------------------|
    | JavaScript | <pre>$ npm install<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
+   | TypeScript | <pre>$ npm install<br/>$ npm run build<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
    | Golang     | <pre>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ go run *.go</pre>or<pre>$ go build -o app<br/>$ ./app</pre> |
    | Python     | <pre>$ pip install -r requirements.txt<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ uvicorn app:app</pre> |
    
