@@ -321,6 +321,18 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
     return fsPromises.writeFile(resultFile, minimalPackageJson)
 }
 
+const createDockerfile = async (destDir, lang) => {
+    if (lang == 'go') {
+        return
+    }
+    const fileName = 'Dockerfile'
+    console.log('Generate', fileName)
+
+    const resultFile = path.join(destDir, fileName)
+
+    return fsPromises.copyFile(`${__dirname}/templates/${fileName}.${lang}`, resultFile)
+}
+
 const createTypeScriptConfig = async (destDir, lang) => {
     if (lang !== 'ts') {
         return
@@ -361,6 +373,7 @@ const main = async (argv) => {
     await createEndpoints(destDir, argv, config)
     await createDependenciesDescriptor(destDir, argv)
     await createTypeScriptConfig(destDir, argv.lang)
+    await createDockerfile(destDir, lang)
 
     console.info('The application has been generated!')
     console.info(generator.usageExampleAsText())
