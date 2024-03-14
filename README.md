@@ -77,20 +77,24 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 
 1. Test that it works
    ```console
-   $ curl -i -H 'Content-Type: application/json' -d '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
+   $ curl -i --json '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:33 GMT
    Connection: keep-alive
+
    $ curl http://localhost:3000/v1/categories
    [{"id":1,"name":"Sport","name_ru":"Спорт","slug":"sport"}]
-   $ curl -i -H 'Content-Type: application/json' -d '{"name":"Fauna","name_ru":"Фауна","slug":"fauna","user_id":101}' -X PUT http://localhost:3000/v1/categories/1
+
+   $ curl -i --json '{"name":"Fauna","name_ru":"Фауна","slug":"fauna","user_id":101}' -X PUT http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:34 GMT
    Connection: keep-alive
+
    $ curl http://localhost:3000/v1/categories/1
    {"id":1,"name":"Fauna","name_ru":"Фауна","slug":"fauna"}
+
    $ curl -i -X DELETE http://localhost:3000/v1/categories/1
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
