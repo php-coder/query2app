@@ -322,9 +322,6 @@ const createDependenciesDescriptor = async (destDir, { lang }) => {
 }
 
 const createDockerfile = async (destDir, lang) => {
-    if (lang == 'go') {
-        return
-    }
     const fileName = 'Dockerfile'
     console.log('Generate', fileName)
 
