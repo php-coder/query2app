@@ -32,7 +32,7 @@ jobs:
       - name: Install Hurl
         run: |
           DEB=hurl_4.2.0_amd64.deb
-          curl --no-progress-meter --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/4.2.0/$DEB
+          curl --location --no-progress-meter --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/4.2.0/$DEB
           sudo dpkg --install $DEB
 
       - name: Show tools versions
