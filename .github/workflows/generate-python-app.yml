@@ -18,6 +18,7 @@ defaults:
 
 jobs:
   generate-app:
+    name: Generate app
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ubuntu-20.04
     steps:
