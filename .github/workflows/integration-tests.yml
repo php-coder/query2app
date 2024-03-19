@@ -76,7 +76,7 @@ jobs:
           docker compose down \
             --volumes \
             --remove-orphans \
-            --rmi all
+            --rmi local
 
       - name: Save report
         if: failure()
