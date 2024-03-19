@@ -19,3 +19,16 @@ services:
     volumes:
       - ./categories.mysql.sql:/docker-entrypoint-initdb.d/categories.sql
 
+
+  express-js:
+    build: ../examples/js/express/mysql
+    environment:
+      - DB_NAME=test
+      - DB_USER=test
+      - DB_PASSWORD=test
+      - DB_HOST=mysql # defaults to localhost
+      - PORT=3010     # defaults to 3000
+    ports:
+      - '3010:3010'
+    depends_on:
+      - mysql

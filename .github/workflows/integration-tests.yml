@@ -1,0 +1,88 @@
+name: Integration Tests
+
+on:
+  push:
+
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
+permissions:
+  # NOTE: actions/upload-artifact makes no use of permissions
+  # See https://github.com/actions/upload-artifact/issues/197#issuecomment-832279436
+  contents: read # for "git clone"
+
+defaults:
+  # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#defaultsrun
+  run:
+    # Enable fail-fast behavior using set -eo pipefail
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#exit-codes-and-error-action-preference
+    shell: bash
+
+jobs:
+  run-integration-tests:
+    name: Integration Tests
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ubuntu-20.04
+    steps:
+
+      - name: Clone source code
+        uses: actions/checkout@v3.1.0 # https://github.com/actions/checkout
+        with:
+          # Whether to configure the token or SSH key with the local git config. Default: true
+          persist-credentials: false
+
+      - name: Install Hurl
+        run: |
+          DEB=hurl_4.2.0_amd64.deb
+          curl --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/4.2.0/$DEB
+          dpkg --install $DEB
+
+      - name: Show tools versions
+        run: |
+          hurl --version
+          docker compose version
+          docker version
+
+      - name: Start containers
+        working-directory: docker
+        run: >-
+          docker compose up \
+            --build \
+            --detach \
+            --wait \
+            express-js
+
+      - name: Show container statuses
+        working-directory: docker
+        run: docker compose ps
+
+      - name: Run integration tests
+        run: >-
+          hurl \
+            --error-format long \
+            --report-html hurl-reports \
+            --variable SERVER_URL=http://127.0.0.1:3010 \
+            --test \
+            tests/crud.hurl
+
+      - name: Save container logs
+        if: failure()
+        working-directory: docker
+        run: >-
+          docker compose logs | tee containers-logs.txt
+
+      - name: Stop containers
+        if: always()
+        working-directory: docker
+        run: >-
+          docker compose down \
+            --volumes \
+            --remove-orphans \
+            --rmi all
+
+      - name: Save report
+        if: failure()
+        uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
+        with:
+          name: report-and-logs
+          path: |
+            containers-logs.txt
+            hurl-reports/
