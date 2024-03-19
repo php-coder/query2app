@@ -66,8 +66,7 @@ jobs:
       - name: Save container logs
         if: failure()
         working-directory: docker
-        run: >-
-          docker compose logs | tee containers-logs.txt
+        run: docker compose logs | tee ../hurl-reports/containers-logs.txt
 
       - name: Stop containers
         if: always()
@@ -83,6 +82,4 @@ jobs:
         uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
         with:
           name: report-and-logs
-          path: |
-            containers-logs.txt
-            hurl-reports/
+          path: hurl-reports/
