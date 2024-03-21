@@ -19,6 +19,15 @@ services:
       - '3306:3306'
     volumes:
       - ./categories.mysql.sql:/docker-entrypoint-initdb.d/categories.sql
+    healthcheck:
+      # Specifying "MYSQL_PWD" variable suppresses "Warning: Using a password on the command line interface can be insecure"
+      # Attention: MYSQL_PWD is deprecated as of MySQL 8.0; expect it to be removed in a future version of MySQL
+      # Note: double dollar sign protects variables from docker compose interpolation
+      test: "MYSQL_PWD=$$MYSQL_PASSWORD mysql --user=$$MYSQL_USER --silent --execute 'SELECT \"OK\" AS result'"
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
 
 
   express-js:
@@ -32,4 +41,5 @@ services:
     ports:
       - '3010:3010'
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
