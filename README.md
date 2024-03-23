@@ -47,6 +47,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Generate code
    <details>
    <summary>Example commands</summary>
+
    | Language   | Command                     | Generated files            | Dependencies |
    | -----------| ----------------------------| ---------------------------| ------------ |
    | JavaScript | `npx query2app --lang js`   | [`app.js`](examples/js/express/mysql/app.js)<br/>[`routes.js`](examples/js/express/mysql/routes.js)<br/>[`package.json`](examples/js/express/mysql/package.json)<br/>[`Dockerfile`](examples/js/express/mysql/Dockerfile) | Web: [`express`](https://www.npmjs.com/package/express)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
@@ -58,6 +59,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Run the application
    <details>
    <summary>Example commands</summary>
+
    | Language   | Commands |
    | -----------| ---------|
    | JavaScript | <pre>$ npm install<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
@@ -84,6 +86,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
 1. Test that it works
    <details>
    <summary>Examples for curl</summary>
+
    ```console
    $ curl -i --json '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
    HTTP/1.1 204 No Content
