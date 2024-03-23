@@ -18,12 +18,12 @@ endpoints.forEach(function(endpoint) {
 
         if (hasGetOne || hasGetMany) {
 %>
-    app.get('<%- path %>', (req, res) => {
+    app.get('<%- path %>', (req, res, next) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
 <%          if (hasGetMany) { -%>
                 res.json(rows)
@@ -41,12 +41,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'post') {
 %>
-    app.post('<%- path %>', (req, res) => {
+    app.post('<%- path %>', (req, res, next) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -56,12 +56,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'put') {
 %>
-    app.put('<%- path %>', (req, res) => {
+    app.put('<%- path %>', (req, res, next) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -71,12 +71,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'delete') {
 %>
-    app.delete('<%- path %>', (req, res) => {
+    app.delete('<%- path %>', (req, res, next) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -87,6 +87,10 @@ endpoints.forEach(function(endpoint) {
     });
 });
 %>
+    app.use((error, req, res, next) => {
+        console.error(error)
+        res.status(500).json({ "error": "Internal Server Error" })
+    })
 }
 
 exports.register = register;
