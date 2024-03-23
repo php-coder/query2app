@@ -43,3 +43,17 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+
+  express-ts:
+    build: ../examples/ts/express/mysql
+    environment:
+      - DB_NAME=test
+      - DB_USER=test
+      - DB_PASSWORD=test
+      - DB_HOST=mysql # defaults to localhost
+      - PORT=3020     # defaults to 3000
+    ports:
+      - '3020:3020'
+    depends_on:
+      mysql:
+        condition: service_healthy

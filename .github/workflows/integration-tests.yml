@@ -21,6 +21,17 @@ jobs:
     name: Integration Tests
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
     runs-on: ubuntu-20.04
+    # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs
+    strategy:
+      matrix:
+        # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#example-adding-configurations
+        include:
+          # "docker-service-name" must match "services.$name" from docker-compose.yaml
+          # "application-port" must match "services.$name.environment:PORT" from docker-compose.yaml
+          - docker-service-name: 'express-js'
+            application-port: 3010
+          - service-name: 'express-ts'
+            application-port: 3020
     steps:
 
       - name: Clone source code
@@ -48,7 +59,7 @@ jobs:
             --build \
             --detach \
             --wait \
-            express-js
+            ${{ matrix.docker-service-name }}
 
       - name: Show container statuses
         working-directory: docker
@@ -59,7 +70,7 @@ jobs:
           hurl \
             --error-format long \
             --report-html hurl-reports \
-            --variable SERVER_URL=http://127.0.0.1:3010 \
+            --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --test \
             tests/crud.hurl
 
