@@ -45,14 +45,19 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    Note that the queries use a little unusual named parameters: `:b.name`, `:p.categoryId`, etc The prefixes `q` (query), `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
 
 1. Generate code
+   <details>
+   <summary>Example commands</summary>
    | Language   | Command                     | Generated files            | Dependencies |
    | -----------| ----------------------------| ---------------------------| ------------ |
    | JavaScript | `npx query2app --lang js`   | [`app.js`](examples/js/express/mysql/app.js)<br/>[`routes.js`](examples/js/express/mysql/routes.js)<br/>[`package.json`](examples/js/express/mysql/package.json)<br/>[`Dockerfile`](examples/js/express/mysql/Dockerfile) | Web: [`express`](https://www.npmjs.com/package/express)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
    | TypeScript | `npx query2app --lang ts`   | [`app.ts`](examples/ts/express/mysql/app.ts)<br/>[`routes.ts`](examples/ts/express/mysql/routes.ts)<br/>[`package.json`](examples/ts/express/mysql/package.json)<br/>[`tsconfig.json`](examples/ts/express/mysql/tsconfig.json)<br/>[`Dockerfile`](examples/ts/express/mysql/Dockerfile) | Web: [`express`](https://www.npmjs.com/package/express)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
    | Golang     | `npx query2app --lang go`   | [`app.go`](examples/go/chi/mysql/app.go)<br/>[`routes.go`](examples/go/chi/mysql/routes.go)<br/>[`go.mod`](examples/go/chi/mysql/go.mod)<br/>[`Dockerfile`](examples/go/chi/mysql/Dockerfile) | Web: [`go-chi/chi`](https://github.com/go-chi/chi)<br/>Database: [`go-sql-driver/mysql`](https://github.com/go-sql-driver/mysql), [`jmoiron/sqlx`](https://github.com/jmoiron/sqlx) |
    | Python     | `npx query2app --lang python` | [`app.py`](examples/python/fastapi/postgres/app.py)<br/>[`db.py`](examples/python/fastapi/postgres/db.py)<br/>[`routes.py`](examples/python/fastapi/postgres/routes.py)<br/>[`requirements.txt`](examples/python/fastapi/postgres/requirements.txt)<br/>[`Dockerfile`](examples/python/fastapi/postgres/Dockerfile) | Web: [FastAPI](https://github.com/tiangolo/fastapi), [Uvicorn](https://www.uvicorn.org)<br/>Database: [psycopg2](https://pypi.org/project/psycopg2/) |
+   </details>
 
 1. Run the application
+   <details>
+   <summary>Example commands</summary>
    | Language   | Commands |
    | -----------| ---------|
    | JavaScript | <pre>$ npm install<br/>$ export DB_NAME=my-db DB_USER=my-user DB_PASSWORD=my-password<br/>$ npm start</pre> |
@@ -74,8 +79,11 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    * `DB_HOST` a database host (defaults to `localhost`)
    
    ---
+   </details>
 
 1. Test that it works
+   <details>
+   <summary>Examples for curl</summary>
    ```console
    $ curl -i --json '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
    HTTP/1.1 204 No Content
@@ -101,3 +109,4 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    Date: Wed, 15 Jul 2020 18:06:35 GMT
    Connection: keep-alive
    ```
+   </details>
