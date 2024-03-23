@@ -64,6 +64,7 @@ jobs:
             ${{ matrix.docker-service-name }}
 
       - name: Show container statuses
+        if: always()
         working-directory: docker
         run: docker compose ps
 
