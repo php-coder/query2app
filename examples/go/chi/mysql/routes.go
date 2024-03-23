@@ -51,7 +51,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/collections/{collectionId}/categories/count", func(w http.ResponseWriter, r *http.Request) {
-		nstmt, err := db.PrepareNamed("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId")
+		stmt, err := db.PrepareNamed("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -62,7 +62,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		args := map[string]interface{}{
 			"collectionId": chi.URLParam(r, "collectionId"),
 		}
-		err = nstmt.Get(&result, args)
+		err = stmt.Get(&result, args)
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
@@ -76,7 +76,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		nstmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories LIMIT :limit")
+		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories LIMIT :limit")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -87,7 +87,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		args := map[string]interface{}{
 			"limit": r.URL.Query().Get("limit"),
 		}
-		err = nstmt.Get(&result, args)
+		err = stmt.Get(&result, args)
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
@@ -124,7 +124,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-		nstmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId")
+		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -135,7 +135,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		args := map[string]interface{}{
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
-		err = nstmt.Get(&result, args)
+		err = stmt.Get(&result, args)
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)

@@ -184,7 +184,7 @@ endpoints.forEach(function(endpoint) {
 <%
 			if (params.length > 0) {
 -%>
-		nstmt, err := db.PrepareNamed("<%- formatQuery(method.query) %>")
+		stmt, err := db.PrepareNamed("<%- formatQuery(method.query) %>")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -195,7 +195,7 @@ endpoints.forEach(function(endpoint) {
 		args := map[string]interface{}{
 			<%- /* LATER: extract */ params.map(p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)](p.substring(2))},`).join('\n\t\t\t') %>
 		}
-		err = nstmt.Get(&result, args)
+		err = stmt.Get(&result, args)
 <%			} else { -%>
 		var result <%- dataType %>
 		err := db.<%- queryFunction %>(&result, "<%- formatQuery(method.query) %>")
