@@ -88,7 +88,8 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    <summary>Examples for curl</summary>
 
    ```console
-   $ curl -i --json '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' http://localhost:3000/v1/categories
+   $ curl -i http://localhost:3000/v1/categories \
+       --json '{"name":"Sport","name_ru":"Спорт","slug":"sport","user_id":100}' 
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:33 GMT
@@ -97,7 +98,8 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    $ curl http://localhost:3000/v1/categories
    [{"id":1,"name":"Sport","name_ru":"Спорт","slug":"sport"}]
 
-   $ curl -i --json '{"name":"Fauna","name_ru":"Фауна","slug":"fauna","user_id":101}' -X PUT http://localhost:3000/v1/categories/1
+   $ curl -i -X PUT http://localhost:3000/v1/categories/1 \
+       --json '{"name":"Fauna","name_ru":"Фауна","slug":"fauna","user_id":101}'
    HTTP/1.1 204 No Content
    ETag: W/"a-bAsFyilMr4Ra1hIU5PyoyFRunpI"
    Date: Wed, 15 Jul 2020 18:06:34 GMT
