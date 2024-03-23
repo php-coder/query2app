@@ -32,7 +32,7 @@ jobs:
             application-port: 3010
           - docker-service-name: 'express-ts'
             application-port: 3020
-          - service-name: 'chi'
+          - docker-service-name: 'chi'
             application-port: 3030
     steps:
 
