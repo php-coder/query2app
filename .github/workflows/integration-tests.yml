@@ -30,7 +30,7 @@ jobs:
           # "application-port" must match "services.$name.environment:PORT" from docker-compose.yaml
           - docker-service-name: 'express-js'
             application-port: 3010
-          - service-name: 'express-ts'
+          - docker-service-name: 'express-ts'
             application-port: 3020
           - service-name: 'chi'
             application-port: 3030
