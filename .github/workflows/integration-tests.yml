@@ -32,6 +32,8 @@ jobs:
             application-port: 3010
           - service-name: 'express-ts'
             application-port: 3020
+          - service-name: 'chi'
+            application-port: 3030
     steps:
 
       - name: Clone source code
