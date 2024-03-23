@@ -44,7 +44,7 @@ Generates the endpoints (or a whole app) from a mapping (SQL query -> URL)
    ```
    Note that the queries use a little unusual named parameters: `:b.name`, `:p.categoryId`, etc The prefixes `q` (query), `b` (body) and `p` (path) are used here in order to bind to parameters from the appropriate sources. The prefixes are needed only during code generation and they will absent from the resulted code.
 
-1. Generate code   
+1. Generate code
    | Language   | Command                     | Generated files            | Dependencies |
    | -----------| ----------------------------| ---------------------------| ------------ |
    | JavaScript | `npx query2app --lang js`   | [`app.js`](examples/js/express/mysql/app.js)<br/>[`routes.js`](examples/js/express/mysql/routes.js)<br/>[`package.json`](examples/js/express/mysql/package.json)<br/>[`Dockerfile`](examples/js/express/mysql/Dockerfile) | Web: [`express`](https://www.npmjs.com/package/express)<br>Database: [`mysql`](https://www.npmjs.com/package/mysql) |
