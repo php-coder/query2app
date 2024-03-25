@@ -17,9 +17,9 @@ const pool = mysql.createPool({
             return query
         }
 <%- // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_function_as_the_replacement -%>
-        return query.replace(/\:(\w+)/g, function(matchedSubstring, key) {
-            if (values.hasOwnProperty(key)) {
-                return this.escape(values[key])
+        return query.replace(/\:(\w+)/g, function(matchedSubstring, capturedValue) {
+            if (values.hasOwnProperty(capturedValue)) {
+                return this.escape(values[capturedValue])
             }
             return matchedSubstring
         }.bind(this))
