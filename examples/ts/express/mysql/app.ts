@@ -17,7 +17,7 @@ const pool = mysql.createPool({
         if (!values) {
             return query
         }
-        return query.replace(/\:(\w+)/g, function(matchedSubstring: string, capturedValue) {
+        return query.replace(/\:(\w+)/g, function(matchedSubstring: string, capturedValue: string) {
             if (values.hasOwnProperty(capturedValue)) {
                 return this.escape(values[capturedValue])
             }
