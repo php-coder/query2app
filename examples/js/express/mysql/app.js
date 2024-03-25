@@ -16,11 +16,11 @@ const pool = mysql.createPool({
         if (!values) {
             return query
         }
-        return query.replace(/\:(\w+)/g, function(txt, key) {
+        return query.replace(/\:(\w+)/g, function(matchedSubstring, key) {
             if (values.hasOwnProperty(key)) {
                 return this.escape(values[key])
             }
-            return txt
+            return matchedSubstring
         }.bind(this))
     }
 })
