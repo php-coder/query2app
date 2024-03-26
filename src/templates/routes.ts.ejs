@@ -1,4 +1,4 @@
-import { Express, Request, Response } from 'express'
+import { Express, NextFunction, Request, Response } from 'express'
 import { Pool } from 'mysql'
 
 const register = (app: Express, pool: Pool) => {
@@ -21,12 +21,12 @@ endpoints.forEach(function(endpoint) {
 
         if (hasGetOne || hasGetMany) {
 %>
-    app.get('<%- path %>', (req: Request, res: Response) => {
+    app.get('<%- path %>', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
 <%          if (hasGetMany) { -%>
                 res.json(rows)
@@ -44,12 +44,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'post') {
 %>
-    app.post('<%- path %>', (req: Request, res: Response) => {
+    app.post('<%- path %>', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -59,12 +59,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'put') {
 %>
-    app.put('<%- path %>', (req: Request, res: Response) => {
+    app.put('<%- path %>', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -74,12 +74,12 @@ endpoints.forEach(function(endpoint) {
         }
         if (method.name === 'delete') {
 %>
-    app.delete('<%- path %>', (req: Request, res: Response) => {
+    app.delete('<%- path %>', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             '<%- sql %>',<%- formattedParams %>
             (err, rows, fields) => {
                 if (err) {
-                    throw err
+                    return next(err)
                 }
                 res.sendStatus(204)
             }
@@ -90,6 +90,10 @@ endpoints.forEach(function(endpoint) {
     });
 });
 %>
+    app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+        console.error(error)
+        res.status(500).json({ "error": "Internal Server Error" })
+    })
 }
 
 exports.register = register;
