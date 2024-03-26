@@ -27,12 +27,16 @@ jobs:
         # https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs#example-adding-configurations
         include:
           # "docker-service-name" must match "services.$name" from docker-compose.yaml
+          # "database-service-name" must match "services.$name" from docker-compose.yaml
           # "application-port" must match "services.$name.environment:PORT" from docker-compose.yaml
           - docker-service-name: 'express-js'
+            database-service-name: 'mysql'
             application-port: 3010
           - docker-service-name: 'express-ts'
+            database-service-name: 'mysql'
             application-port: 3020
           - docker-service-name: 'chi'
+            database-service-name: 'mysql'
             application-port: 3030
     env:
       # Prevent interference between builds by setting the project name to a unique value. Otherwise
@@ -86,10 +90,23 @@ jobs:
             --test \
             tests/crud.hurl
 
-      - name: Save container logs
+      - name: Save application logs
         if: failure()
         working-directory: docker
-        run: docker compose logs --timestamps | tee ../hurl-reports/containers-logs.txt
+        run: >-
+          docker compose logs \
+            --no-log-prefix \
+            --timestamps \
+            ${{ matrix.docker-service-name }} | tee ../hurl-reports/application-logs.txt
+
+      - name: Save database logs
+        if: failure()
+        working-directory: docker
+        run: >-
+          docker compose logs \
+            --no-log-prefix \
+            --timestamps \
+            ${{ matrix.database-service-name }} | tee ../hurl-reports/database-logs.txt
 
       - name: Stop containers
         if: always()
