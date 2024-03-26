@@ -104,5 +104,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
         with:
-          name: report-and-logs
+          name: ${{ matrix.docker-service-name }}-report-and-logs
           path: hurl-reports/
