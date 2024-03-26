@@ -74,6 +74,7 @@ jobs:
             --build \
             --detach \
             --wait \
+            --quiet-pull \
             ${{ matrix.docker-service-name }}
 
       - name: Show container statuses
