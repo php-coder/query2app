@@ -13,11 +13,11 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     // Support of named placeholders (https://github.com/mysqljs/mysql#custom-format)
-    queryFormat: function(query, values) {
+    queryFormat: function(this: mysql.Pool, query, values) {
         if (!values) {
             return query
         }
-        return query.replace(/\:(\w+)/g, function(matchedSubstring: string, capturedValue: string) {
+        return query.replace(/\:(\w+)/g, function(this: mysql.Pool, matchedSubstring: string, capturedValue: string) {
             if (values.hasOwnProperty(capturedValue)) {
                 return this.escape(values[capturedValue])
             }
