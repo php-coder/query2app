@@ -54,11 +54,14 @@ jobs:
           curl --location --no-progress-meter --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/4.2.0/$DEB
           sudo dpkg --install $DEB
 
-      - name: Show tools versions
-        run: |
-          hurl --version
-          docker compose version
-          docker version
+      - name: Show Hurl version
+        run: hurl --version
+
+      - name: Show docker version
+        run: docker version
+
+      - name: Show docker compose version
+        run: docker compose version
 
       - name: Start containers
         working-directory: docker
