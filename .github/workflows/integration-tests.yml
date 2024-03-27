@@ -63,6 +63,9 @@ jobs:
       - name: Show docker compose version
         run: docker compose version
 
+      - name: Create directory for reports
+        run: mkdir tests-reports
+
       - name: Start containers
         working-directory: docker
         run: >-
@@ -83,7 +86,7 @@ jobs:
         run: >-
           hurl \
             --error-format long \
-            --report-html hurl-reports \
+            --report-html tests-reports \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --test \
             tests/crud.hurl
@@ -95,7 +98,7 @@ jobs:
           docker compose logs \
             --no-log-prefix \
             --timestamps \
-            ${{ matrix.docker-service-name }} | tee ../hurl-reports/application-logs.txt
+            ${{ matrix.docker-service-name }} | tee ../tests-reports/application-logs.txt
 
       - name: Stop containers
         if: always()
@@ -111,4 +114,4 @@ jobs:
         uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
         with:
           name: ${{ matrix.docker-service-name }}-report-and-logs
-          path: hurl-reports/
+          path: tests-reports/
