@@ -114,6 +114,10 @@ jobs:
             --timestamps \
             ${{ matrix.database-service-name }} | tee ../tests-reports/database-logs.txt
 
+      - name: Save docker logs
+        if: failure()
+        run: journalctl --catalog --unit docker.service | tee tests-reports/docker-logs.txt
+
       - name: Save report
         if: failure()
         uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
