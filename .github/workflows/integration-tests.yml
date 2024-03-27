@@ -100,6 +100,13 @@ jobs:
             --timestamps \
             ${{ matrix.docker-service-name }} | tee ../tests-reports/application-logs.txt
 
+      - name: Save report
+        if: failure()
+        uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
+        with:
+          name: ${{ matrix.docker-service-name }}-report-and-logs
+          path: tests-reports/
+
       - name: Stop containers
         if: always()
         working-directory: docker
@@ -108,10 +115,3 @@ jobs:
             --volumes \
             --remove-orphans \
             --rmi local
-
-      - name: Save report
-        if: failure()
-        uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
-        with:
-          name: ${{ matrix.docker-service-name }}-report-and-logs
-          path: tests-reports/
