@@ -3,6 +3,7 @@ package main
 import "database/sql"
 import "encoding/json"
 import "fmt"
+import "io"
 import "net/http"
 import "os"
 import "github.com/go-chi/chi"
@@ -46,7 +47,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 		}
 	})
 
@@ -54,7 +55,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		stmt, err := db.PrepareNamed("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
@@ -71,7 +72,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 		}
 	})
 
@@ -79,7 +80,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories LIMIT :limit")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
@@ -96,7 +97,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Select failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 		}
 	})
 
@@ -116,7 +117,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
@@ -127,7 +128,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
@@ -144,7 +145,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 		}
 	})
 
@@ -165,7 +166,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
@@ -182,11 +183,17 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			w.WriteHeader(http.StatusInternalServerError)
+			internalServerError(w)
 			return
 		}
 
 		w.WriteHeader(http.StatusNoContent)
 	})
 
+}
+
+func internalServerError(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusInternalServerError)
+	io.WriteString(w, `{"error":"Internal Server Error"}`)
 }
