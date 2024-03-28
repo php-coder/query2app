@@ -75,7 +75,7 @@ jobs:
       - name: Start containers
         working-directory: docker
         run: >-
-          docker --debug compose up \
+          docker compose up \
             --build \
             --detach \
             --wait \
