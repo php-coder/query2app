@@ -67,6 +67,9 @@
           )
     dto:
       name: CreateCategoryDto
+      fields:
+        user_id:
+          type: integer
 
 - path: /v1/categories/:categoryId
   get:
@@ -91,6 +94,10 @@
            , updated_at = NOW()
            , updated_by = :b.user_id
        WHERE id = :p.categoryId
+    dto:
+      fields:
+        user_id:
+          type: integer
   delete:
     query: >-
       DELETE

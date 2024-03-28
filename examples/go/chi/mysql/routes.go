@@ -24,7 +24,7 @@ type CreateCategoryDto struct {
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
-	UserId *string `json:"user_id" db:"user_id"`
+	UserId *int `json:"user_id" db:"user_id"`
 }
 
 type CategoryInfoDto struct {
