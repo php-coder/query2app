@@ -175,7 +175,9 @@ endpoints.forEach(function(endpoint) {
 			// LATER: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
-			const dataType = hasGetMany ? '[]' + dtoName : dtoName;
+			const resultVariableDeclaration = hasGetMany
+				? `result := []${dtoName}\{\}`
+				: `var result ${dtoName}`;
 
 			const queryFunction = hasGetOne ? 'Get' : 'Select';
 			// LATER: handle only particular method (get/post/put)
@@ -192,13 +194,13 @@ endpoints.forEach(function(endpoint) {
 			return
 		}
 
-		var result <%- dataType %>
+		<%- resultVariableDeclaration %>
 		args := map[string]interface{}{
 			<%- /* LATER: extract */ params.map(p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)](p.substring(2))},`).join('\n\t\t\t') %>
 		}
 		err = stmt.<%- queryFunction %>(&result, args)
 <%			} else { -%>
-		var result <%- dataType %>
+		<%- resultVariableDeclaration %>
 		err := db.<%- queryFunction %>(&result, "<%- formatQuery(method.query) %>")
 <%			} -%>
 		switch err {

@@ -84,7 +84,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			return
 		}
 
-		var result []CategoryDto
+		result := []CategoryDto{}
 		args := map[string]interface{}{
 			"limit": r.URL.Query().Get("limit"),
 		}
