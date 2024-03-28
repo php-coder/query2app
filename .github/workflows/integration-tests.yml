@@ -83,7 +83,7 @@ jobs:
             ${{ matrix.docker-service-name }}
 
       - name: Show container statuses
-        if: always()
+        if: '!cancelled()'
         working-directory: docker
         run: docker compose ps
 
