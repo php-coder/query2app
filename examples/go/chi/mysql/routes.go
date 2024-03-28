@@ -88,7 +88,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		args := map[string]interface{}{
 			"limit": r.URL.Query().Get("limit"),
 		}
-		err = stmt.Get(&result, args)
+		err = stmt.Select(&result, args)
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)

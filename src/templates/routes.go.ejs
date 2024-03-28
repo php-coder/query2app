@@ -196,7 +196,7 @@ endpoints.forEach(function(endpoint) {
 		args := map[string]interface{}{
 			<%- /* LATER: extract */ params.map(p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)](p.substring(2))},`).join('\n\t\t\t') %>
 		}
-		err = stmt.Get(&result, args)
+		err = stmt.<%- queryFunction %>(&result, args)
 <%			} else { -%>
 		var result <%- dataType %>
 		err := db.<%- queryFunction %>(&result, "<%- formatQuery(method.query) %>")
