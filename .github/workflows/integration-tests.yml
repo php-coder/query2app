@@ -40,6 +40,9 @@ jobs:
           - docker-service-name: 'chi'
             database-service-name: 'mysql'
             application-port: 3030
+          - docker-service-name: 'fastapi'
+            database-service-name: 'postgres'
+            application-port: 4040
     env:
       # Prevent interference between builds by setting the project name to a unique value. Otherwise
       # "docker compose down" has been stopping containers (especially database) from other builds.

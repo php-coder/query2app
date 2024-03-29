@@ -27,6 +27,15 @@ services:
       retries: 10
       start_period: 1s
 
+  postgres:
+    # https://hub.docker.com/_/postgres
+    image: postgres:12-bookworm
+    environment:
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=test
+    volumes:
+      - ./categories.postgres.sql:/docker-entrypoint-initdb.d/categories.sql
 
   express-js:
     build: ../examples/js/express/mysql
@@ -68,4 +77,18 @@ services:
       - '3030:3030'
     depends_on:
       mysql:
+        condition: service_healthy
+
+  fastapi:
+    build: ../examples/python/fastapi/postgres
+    environment:
+      - DB_NAME=test
+      - DB_USER=test
+      - DB_PASSWORD=test
+      - DB_HOST=postgres # defaults to localhost
+      - PORT=4040        # defaults to 3000
+    ports:
+      - '4040:4040'
+    depends_on:
+      postgres:
         condition: service_healthy
