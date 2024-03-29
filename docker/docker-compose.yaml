@@ -36,6 +36,7 @@ services:
       - POSTGRES_DB=test
     volumes:
       - ./categories.postgres.sql:/docker-entrypoint-initdb.d/categories.sql
+    healthcheck:
       # Note: double dollar sign protects variables from docker compose interpolation
       test: "pg_isready --user $$POSTGRES_USER --quiet --timeout 0"
       interval: 1s
