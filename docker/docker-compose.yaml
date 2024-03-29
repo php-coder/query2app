@@ -36,6 +36,12 @@ services:
       - POSTGRES_DB=test
     volumes:
       - ./categories.postgres.sql:/docker-entrypoint-initdb.d/categories.sql
+      # Note: double dollar sign protects variables from docker compose interpolation
+      test: "pg_isready --user $$POSTGRES_USER --quiet --timeout 0"
+      interval: 1s
+      timeout: 5s
+      retries: 10
+      start_period: 1s
 
   express-js:
     build: ../examples/js/express/mysql
