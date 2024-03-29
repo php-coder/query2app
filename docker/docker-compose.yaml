@@ -1,7 +1,7 @@
 # Usage example:
 #
-# $ docker-compose up -d
-# $ docker-compose exec mysql mysql -u test -ptest test
+# $ docker compose up -d
+# $ docker compose exec mysql mysql -u test -ptest test
 #
 version: '3'
 
