@@ -95,7 +95,7 @@ services:
       - DB_HOST=postgres # defaults to localhost
       - PORT=4040        # defaults to 3000
     ports:
-      - '4040:4040'
+      - '4040:8000'
     depends_on:
       postgres:
         condition: service_healthy
