@@ -3,11 +3,9 @@
 # In order to get the effective configuration, run
 #   docker compose -f docker-compose.yaml -f docker-compose.local.yaml config
 #
-# Usage examples:
+# Usage:
 #
 #   docker compose -f docker-compose.yaml -f docker-compose.local.yaml up -d
-#   docker compose exec mysql mysql -u test -ptest test -e 'SELECT * FROM categories'
-#   docker compose exec postgres psql -U test -c 'SELECT * FROM categories'
 #
 version: '3'
 
