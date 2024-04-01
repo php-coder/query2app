@@ -1,0 +1,21 @@
+# Customize configuration from docker-compose.yaml to run services locally.
+#
+# In order to get the effective configuration, run
+#   docker compose -f docker-compose.yaml -f docker-compose.local.yaml config
+#
+# Usage examples:
+#
+#   docker compose -f docker-compose.yaml -f docker-compose.local.yaml up -d
+#   docker compose exec mysql mysql -u test -ptest test -e 'SELECT * FROM categories'
+#   docker compose exec postgres psql -U test -c 'SELECT * FROM categories'
+#
+version: '3'
+
+services:
+  mysql:
+    ports:
+      - '3306:3306'
+
+  postgres:
+    ports:
+      - '5432:5432'
