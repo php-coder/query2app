@@ -1,9 +1,7 @@
 import psycopg2
 import psycopg2.extras
 
-from fastapi import APIRouter, Depends, HTTPException
-
-from starlette import status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from db import db_connection
 
