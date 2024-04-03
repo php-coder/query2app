@@ -170,7 +170,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
         }
         endpoint.methods.forEach(method => {
             const verb = method.verb.toUpperCase()
-            console.log(`${verb} ${path}`)
+            console.log(`\t${verb} ${path}`)
 
             let queries = []
             if (method.query) {
@@ -178,10 +178,6 @@ const createEndpoints = async (destDir, { lang }, config) => {
             } else if (method.aggregated_queries) {
                 queries = Object.values(method.aggregated_queries)
             }
-            queries.forEach(query => {
-                const sql = removePlaceholders(flattenQuery(removeComments(query)))
-                console.log(`\t${sql}`)
-            })
         })
     }
 
