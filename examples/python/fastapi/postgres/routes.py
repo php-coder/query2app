@@ -3,9 +3,17 @@ import psycopg2.extras
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from pydantic import BaseModel
+
 from db import db_connection
 
 router = APIRouter()
+
+class CreateCategoryDto(BaseModel):
+    name: str
+    name_ru: str
+    slug: str
+    user_id: int
 
 
 @router.get('/v1/categories/count')
@@ -82,7 +90,7 @@ def get_list_v1_categories(limit, conn=Depends(db_connection)):
 
 
 @router.post('/v1/categories', status_code = status.HTTP_204_NO_CONTENT)
-def post_v1_categories():
+def post_v1_categories(payload: CreateCategoryDto):
     pass
 
 

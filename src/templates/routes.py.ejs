@@ -4,6 +4,9 @@ import psycopg2.extras
 <%# https://fastapi.tiangolo.com/reference/status/ -%>
 from fastapi import APIRouter, Depends, HTTPException, status
 
+<%# LATER: add only when POST/PUT endpoints are present -%>
+from pydantic import BaseModel
+
 from db import db_connection
 
 router = APIRouter()
@@ -38,7 +41,119 @@ function formatQueryForPython(query, indentLevel) {
     return `"${sql}"`
 }
 
+// {'values':
+//   [
+//     {
+//       type: 'expr_list',
+//       value: [ { type: 'param', value: 'user_id' } ]
+//     }
+//   ]
+// } => [ 'user_id' ]
+function extractInsertValues(queryAst) {
+	const values = queryAst.values.flatMap(elem => elem.value)
+		.map(elem => elem.type === 'param' ? elem.value : null)
+		.filter(elem => elem); // filter out nulls
+	return Array.from(new Set(values));
+}
 
+// LATER: reduce duplication with routes.go.ejs
+function extractProperties(queryAst) {
+	if (queryAst.type === 'insert') {
+		return extractInsertValues(queryAst);
+	}
+	return [];
+}
+
+// LATER: try to reduce duplication with routes.go.ejs
+function findOutType(fieldsInfo, fieldName) {
+	const defaultType = 'str';
+	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type');
+	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
+		return 'int';
+	}
+	return defaultType;
+}
+
+// LATER: reduce duplication with routes.go.ejs
+function addTypes(props, fieldsInfo) {
+	return props.map(prop => {
+		return {
+			"name": prop,
+			"type": findOutType(fieldsInfo, prop),
+		}
+	});
+}
+
+// LATER: reduce duplication with routes.go.ejs
+function query2dto(parser, method) {
+	const query = removePlaceholders(method.query);
+	const queryAst = parser.astify(query);
+	const props = extractProperties(queryAst);
+	if (props.length === 0) {
+		console.warn('Could not create DTO for query:', formatQuery(query));
+		console.debug('Query AST:');
+		console.debug(queryAst);
+		return null;
+	}
+	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {};
+	const propsWithTypes = addTypes(props, fieldsInfo);
+	const hasName = method.dto && method.dto.name && method.dto.name.length > 0;
+	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
+	return {
+		"name": name,
+		"hasUserProvidedName": hasName,
+		"props": propsWithTypes,
+		// required for de-duplication
+		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
+		// LATER: sort before join
+		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
+	};
+}
+
+// https://fastapi.tiangolo.com/tutorial/body/
+function dto2model(dto) {
+	let result = `class ${dto.name}(BaseModel):\n`;
+	dto.props.forEach(prop => {
+		result += `    ${prop.name}: ${prop.type}\n`
+	});
+	return result;
+}
+
+let globalDtoCounter = 0;
+const dtoCache = {};
+
+// LATER: reduce duplication with routes.go.ejs
+function cacheDto(dto) {
+	dtoCache[dto.signature] = dto.name;
+	return dto;
+}
+
+// LATER: reduce duplication with routes.go.ejs
+function dtoInCache(dto) {
+	// always prefer user specified name even when we have a similar DTO in cache
+	if (dto.hasUserProvidedName) {
+		return false;
+	}
+	return dtoCache.hasOwnProperty(dto.signature);
+}
+
+// Generate models
+const verbs_with_dto = [ 'post' ]
+endpoints.forEach(function(endpoint) {
+	const dtos = endpoint.methods
+		.filter(method => verbs_with_dto.includes(method.verb))
+		.map(method => query2dto(sqlParser, method))
+		.filter(elem => elem) // filter out nulls
+		.filter(dto => !dtoInCache(dto))
+		.map(dto => dto2model(cacheDto(dto)))
+		.forEach(model => {
+%>
+<%- model -%>
+<%
+	});
+});
+
+// Generate endpoints
 endpoints.forEach(function(endpoint) {
     const path = convertToFastApiPath(endpoint.path)
     const argsFromPath = extractParamsFromPath(endpoint.path)
@@ -119,10 +234,14 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%
         }
         if (method.name === 'post') {
+            const dto = query2dto(sqlParser, method);
+			// LATER: do we really need signature and cache?
+			const cacheKey = dto ? dto.signature : null;
+			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 %>
 
 @router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
-def <%- pythonMethodName %>():
+def <%- pythonMethodName %>(payload: <%- model %>):
     pass
 <%
 
