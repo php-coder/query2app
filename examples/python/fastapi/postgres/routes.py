@@ -16,7 +16,7 @@ def get_v1_categories_count(conn=Depends(db_connection)):
                 cur.execute("SELECT COUNT(*) AS counter FROM categories")
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code=404)
+                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
@@ -56,7 +56,7 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn=Depends
                     """, {"collectionId": collectionId})
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code=404)
+                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
@@ -102,7 +102,7 @@ def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
                     """, {"categoryId": categoryId})
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code=404)
+                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
