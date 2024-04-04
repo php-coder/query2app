@@ -5,15 +5,17 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from pydantic import BaseModel
 
+from typing import Optional
+
 from db import db_connection
 
 router = APIRouter()
 
 class CreateCategoryDto(BaseModel):
-    name: str | None = None
-    name_ru: str | None = None
-    slug: str | None = None
-    user_id: int | None = None
+    name: Optional[str] = None
+    name_ru: Optional[str] = None
+    slug: Optional[str] = None
+    user_id: Optional[int] = None
 
 
 @router.get('/v1/categories/count')

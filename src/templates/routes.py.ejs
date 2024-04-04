@@ -7,6 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 <%# LATER: add only when POST/PUT endpoints are present -%>
 from pydantic import BaseModel
 
+<%# LATER: add only when POST/PUT endpoints are present -%>
+from typing import Optional
+
 from db import db_connection
 
 router = APIRouter()
@@ -114,7 +117,7 @@ function query2dto(parser, method) {
 function dto2model(dto) {
 	let result = `class ${dto.name}(BaseModel):\n`;
 	dto.props.forEach(prop => {
-		result += `    ${prop.name}: ${prop.type} | None = None\n`
+		result += `    ${prop.name}: Optional[${prop.type}] = None\n`
 	});
 	return result;
 }
