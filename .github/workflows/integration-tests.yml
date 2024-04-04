@@ -7,8 +7,6 @@ on:
 
 # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#permissions
 permissions:
-  # NOTE: actions/upload-artifact makes no use of permissions
-  # See https://github.com/actions/upload-artifact/issues/197#issuecomment-832279436
   contents: read # for "git clone"
 
 defaults:
@@ -87,42 +85,31 @@ jobs:
       - name: Show Hurl version
         run: hurl --version
 
-      - name: Create directory for reports
-        run: mkdir tests-reports
-
       - name: Run integration tests
         run: >-
           hurl \
             --error-format long \
-            --report-html tests-reports \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --test \
             tests/crud.hurl
 
-      - name: Save application logs
+      - name: Show application logs
         if: failure()
         working-directory: docker
         run: >-
           docker compose logs \
             --no-log-prefix \
             --timestamps \
-            ${{ matrix.docker-service-name }} | tee ../tests-reports/application-logs.txt
+            ${{ matrix.docker-service-name }}
 
-      - name: Save database logs
+      - name: Show database logs
         if: failure()
         working-directory: docker
         run: >-
           docker compose logs \
             --no-log-prefix \
             --timestamps \
-            ${{ matrix.database-service-name }} | tee ../tests-reports/database-logs.txt
-
-      - name: Save report
-        if: failure()
-        uses: actions/upload-artifact@v4.3.1 # https://github.com/actions/upload-artifact
-        with:
-          name: ${{ matrix.docker-service-name }}-report-and-logs
-          path: tests-reports/
+            ${{ matrix.database-service-name }}
 
       - name: Stop containers
         if: always()
