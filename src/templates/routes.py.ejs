@@ -239,11 +239,25 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 			// LATER: do we really need signature and cache?
 			const cacheKey = dto ? dto.signature : null;
 			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+
+            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
+            const params = extractParamsFromQuery(method.query);
+            const formattedParams = params.length > 0
+                // [ "p.categoryId" ] => [ '"categoryId": payload.categoryId' ]
+                ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": payload.${param}`).join(', ') + '}'
+                : ''
+
 %>
 
 @router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
-def <%- pythonMethodName %>(payload: <%- model %>):
-    pass
+<%# LATER: deal with methodArgs %>
+def <%- pythonMethodName %>(payload: <%- model %>, conn=Depends(db_connection)):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(<%- sql %><%- formattedParams %>)
+    finally:
+        conn.close()
 <%
 
         }

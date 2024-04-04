@@ -90,8 +90,35 @@ def get_list_v1_categories(limit, conn=Depends(db_connection)):
 
 
 @router.post('/v1/categories', status_code = status.HTTP_204_NO_CONTENT)
-def post_v1_categories(payload: CreateCategoryDto):
-    pass
+
+def post_v1_categories(payload: CreateCategoryDto, conn=Depends(db_connection)):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT
+                      INTO categories
+                         ( name
+                         , name_ru
+                         , slug
+                         , created_at
+                         , created_by
+                         , updated_at
+                         , updated_by
+                         )
+                    VALUES
+                        ( %(name)s
+                        , %(name_ru)s
+                        , %(slug)s
+                        , NOW()
+                        , %(user_id)s
+                        , NOW()
+                        , %(user_id)s
+                        )
+                    """, {"name": payload.name, "name_ru": payload.name_ru, "slug": payload.slug, "user_id": payload.user_id, "user_id": payload.user_id})
+    finally:
+        conn.close()
 
 
 @router.get('/v1/categories/{categoryId}')
