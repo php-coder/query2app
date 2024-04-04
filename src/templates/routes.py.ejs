@@ -167,29 +167,29 @@ endpoints.forEach(function(endpoint) {
         const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
         const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
-        const queriesWithNames = []
-        if (method.query) {
-            queriesWithNames.push({ "result" : method.query })
-        } else if (method.aggregated_queries) {
-            for (const [key, value] of Object.entries(method.aggregated_queries)) {
-                queriesWithNames.push({ [key]: value })
-            }
-        }
-
-        const queries = []
-        queriesWithNames.forEach(queryWithName => {
-            for (const [name, query] of Object.entries(queryWithName)) {
-                const sql = convertToPsycopgNamedArguments(formatQueryForPython(query, 20))
-                const params = extractParamsFromQuery(query);
-                const formattedParams = params.length > 0
-                    // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
-                    ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + '}'
-                    : ''
-                queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
-            }
-        })
-
         if (hasGetOne || hasGetMany) {
+
+            const queriesWithNames = []
+            if (method.query) {
+                queriesWithNames.push({ "result" : method.query })
+            } else if (method.aggregated_queries) {
+                for (const [key, value] of Object.entries(method.aggregated_queries)) {
+                    queriesWithNames.push({ [key]: value })
+                }
+            }
+
+            const queries = []
+            queriesWithNames.forEach(queryWithName => {
+                for (const [name, query] of Object.entries(queryWithName)) {
+                    const sql = convertToPsycopgNamedArguments(formatQueryForPython(query, 20))
+                    const params = extractParamsFromQuery(query);
+                    const formattedParams = params.length > 0
+                        // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
+                        ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + '}'
+                        : ''
+                    queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
+                }
+            })
 %>
 
 @router.get('<%- path %>')
