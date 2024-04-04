@@ -114,7 +114,7 @@ function query2dto(parser, method) {
 function dto2model(dto) {
 	let result = `class ${dto.name}(BaseModel):\n`;
 	dto.props.forEach(prop => {
-		result += `    ${prop.name}: ${prop.type}\n`
+		result += `    ${prop.name}: ${prop.type} | None = None\n`
 	});
 	return result;
 }

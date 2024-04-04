@@ -10,10 +10,10 @@ from db import db_connection
 router = APIRouter()
 
 class CreateCategoryDto(BaseModel):
-    name: str
-    name_ru: str
-    slug: str
-    user_id: int
+    name: str | None = None
+    name_ru: str | None = None
+    slug: str | None = None
+    user_id: int | None = None
 
 
 @router.get('/v1/categories/count')
