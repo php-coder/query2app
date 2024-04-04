@@ -195,6 +195,11 @@ endpoints.forEach(function(endpoint) {
 @router.get('<%- path %>')
 def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
     try:
+<%#
+    https://www.psycopg.org/docs/usage.html#with-statement
+    https://www.psycopg.org/docs/extras.html#dictionary-like-cursor
+    https://stackoverflow.com/questions/45399347/dictcursor-vs-realdictcursor
+-%>
         with conn:
 <%          if (hasGetOne) {
                 if (queries.length > 1) { /* we can omit cursor_factory but in this case we might get an unused import  */-%>
