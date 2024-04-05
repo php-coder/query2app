@@ -43,7 +43,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		case nil:
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
@@ -68,7 +68,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		case nil:
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
@@ -93,7 +93,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		case nil:
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Select failed: %v\n", err)
@@ -141,7 +141,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		case nil:
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "Get failed: %v\n", err)
@@ -193,7 +193,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 }
 
 func internalServerError(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 	io.WriteString(w, `{"error":"Internal Server Error"}`)
 }

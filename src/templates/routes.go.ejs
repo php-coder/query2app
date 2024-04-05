@@ -207,7 +207,7 @@ endpoints.forEach(function(endpoint) {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
 		case nil:
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(&result)
 		default:
 			fmt.Fprintf(os.Stderr, "<%- queryFunction %> failed: %v\n", err)
@@ -298,7 +298,7 @@ endpoints.forEach(function(endpoint) {
 <%# IMPORTANT: WriteHeader() must be called after w.Header() -%>
 <%# w.Write() vs io.WriteString(): https://stackoverflow.com/questions/37863374/whats-the-difference-between-responsewriter-write-and-io-writestring -%>
 func internalServerError(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
 	io.WriteString(w, `{"error":"Internal Server Error"}`)
 }
