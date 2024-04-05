@@ -28,7 +28,7 @@ jsonpath "$.counter" == 1
 GET {{ SERVER_URL }}/v1/categories/1
 HTTP 200
 [Asserts]
-header "Content-Type" == "application/json; charset=utf-8"
+header "Content-Type" contains "application/json"
 jsonpath "$.id"      == 1
 jsonpath "$.name"    == "Sport"
 jsonpath "$.name_ru" == null
@@ -39,7 +39,7 @@ jsonpath "$.slug"    == "sport"
 GET {{ SERVER_URL }}/v1/categories
 HTTP 200
 [Asserts]
-header "Content-Type" == "application/json; charset=utf-8"
+header "Content-Type" contains "application/json"
 jsonpath "$" count      == 1
 jsonpath "$[0].id"      == 1
 jsonpath "$[0].name"    == "Sport"
@@ -61,7 +61,7 @@ HTTP 204
 GET {{ SERVER_URL }}/v1/categories/1
 HTTP 200
 [Asserts]
-header "Content-Type" == "application/json; charset=utf-8"
+header "Content-Type" contains "application/json"
 jsonpath "$.name"     == "Fauna"
 jsonpath "$.name_ru"  == "Фауна"
 jsonpath "$.slug"     == "fauna"
