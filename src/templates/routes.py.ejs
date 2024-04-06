@@ -168,9 +168,9 @@ endpoints.forEach(function(endpoint) {
 
         // LATER: add support for aggregated_queries (#17)
         const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
-        const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
         if (hasGetOne || hasGetMany) {
+            const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
             const queriesWithNames = []
             if (method.query) {
