@@ -253,7 +253,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 %>
 
 @router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
-<%# LATER: deal with methodArgs %>
+<%# LATER: deal with methodArgs -%>
 def <%- pythonMethodName %>(payload: <%- model %>, conn=Depends(db_connection)):
     try:
         with conn:

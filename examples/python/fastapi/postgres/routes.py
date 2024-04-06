@@ -91,7 +91,6 @@ def get_list_v1_categories(conn=Depends(db_connection)):
 
 
 @router.post('/v1/categories', status_code = status.HTTP_204_NO_CONTENT)
-
 def post_v1_categories(payload: CreateCategoryDto, conn=Depends(db_connection)):
     try:
         with conn:
