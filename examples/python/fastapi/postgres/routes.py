@@ -116,7 +116,7 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                         , NOW()
                         , %(user_id)s
                         )
-                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id, "user_id": body.user_id})
+                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id})
     finally:
         conn.close()
 
