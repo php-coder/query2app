@@ -272,6 +272,14 @@ const createEndpoints = async (destDir, { lang }, config) => {
                     ).join('\n\t\t\t')
             },
 
+            // [ "p.categoryId" ] => ', {"categoryId": body.categoryId}'
+            // (used only with Python)
+            "formatParamsAsPythonDict": (params) => {
+                return params.length > 0
+                ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": body.${param}`).join(', ') + '}'
+                : ''
+            },
+
             "placeholdersMap": placeholdersMap,
             "removeComments": removeComments,
         }

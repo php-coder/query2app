@@ -245,10 +245,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
             const params = extractParamsFromQuery(method.query);
-            const formattedParams = params.length > 0
-                // [ "p.categoryId" ] => [ '"categoryId": body.categoryId' ]
-                ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": body.${param}`).join(', ') + '}'
-                : ''
+            const formattedParams = formatParamsAsPythonDict(params)
 
 %>
 
