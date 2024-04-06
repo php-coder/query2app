@@ -223,8 +223,8 @@ endpoints.forEach(function(endpoint) {
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var dto <%- dataType %>
-		json.NewDecoder(r.Body).Decode(&dto)
+		var body <%- dataType %>
+		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
 			<%- formatParamsAsGolangMap(params) %>
@@ -250,8 +250,8 @@ endpoints.forEach(function(endpoint) {
 			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var dto <%- dataType %>
-		json.NewDecoder(r.Body).Decode(&dto)
+		var body <%- dataType %>
+		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
 			<%- formatParamsAsGolangMap(params) %>

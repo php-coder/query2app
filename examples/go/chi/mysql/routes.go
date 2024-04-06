@@ -92,14 +92,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Post("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		var dto CreateCategoryDto
-		json.NewDecoder(r.Body).Decode(&dto)
+		var body CreateCategoryDto
+		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
-			"name":    dto.Name,
-			"name_ru": dto.NameRu,
-			"slug":    dto.Slug,
-			"user_id": dto.UserId,
+			"name":    body.Name,
+			"name_ru": body.NameRu,
+			"slug":    body.Slug,
+			"user_id": body.UserId,
 		}
 		_, err := db.NamedExec(
 			"INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , NOW() , :user_id , NOW() , :user_id )",
@@ -140,14 +140,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Put("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-		var dto CreateCategoryDto
-		json.NewDecoder(r.Body).Decode(&dto)
+		var body CreateCategoryDto
+		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
-			"name":       dto.Name,
-			"name_ru":    dto.NameRu,
-			"slug":       dto.Slug,
-			"user_id":    dto.UserId,
+			"name":       body.Name,
+			"name_ru":    body.NameRu,
+			"slug":       body.Slug,
+			"user_id":    body.UserId,
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
 		_, err := db.NamedExec(

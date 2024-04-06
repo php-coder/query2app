@@ -192,7 +192,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 return `chi.URLParam(r, "${param}")`
             },
             'b': function(param) {
-                return 'dto.' + capitalize(snake2camelCase(param))
+                return 'body.' + capitalize(snake2camelCase(param))
             },
             'q': function(param) {
                 return `r.URL.Query().Get("${param}")`
