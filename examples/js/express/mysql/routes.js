@@ -35,8 +35,7 @@ const register = (app, pool) => {
 
     app.get('/v1/categories', (req, res, next) => {
         pool.query(
-            'SELECT id , name , name_ru , slug FROM categories LIMIT :limit',
-            { "limit": req.query.limit },
+            'SELECT id , name , name_ru , slug FROM categories',
             (err, rows, fields) => {
                 if (err) {
                     return next(err)

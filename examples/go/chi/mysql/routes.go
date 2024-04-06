@@ -77,18 +77,8 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
-		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories LIMIT :limit")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
-			internalServerError(w)
-			return
-		}
-
 		result := []CategoryDto{}
-		args := map[string]interface{}{
-			"limit": r.URL.Query().Get("limit"),
-		}
-		err = stmt.Select(&result, args)
+		err := db.Select(&result, "SELECT id , name , name_ru , slug FROM categories")
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
