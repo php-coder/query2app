@@ -144,8 +144,22 @@ def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
 
 
 @router.put('/v1/categories/{categoryId}', status_code = status.HTTP_204_NO_CONTENT)
-def put_v1_categories_category_id():
-    pass
+def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depends(db_connection)):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE categories
+                       SET name = %(name)s
+                         , name_ru = %(name_ru)s
+                         , slug = %(slug)s
+                         , updated_at = NOW()
+                         , updated_by = %(user_id)s
+                     WHERE id = %(categoryId)s
+                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id, "categoryId": categoryId})
+    finally:
+        conn.close()
 
 
 @router.delete('/v1/categories/{categoryId}', status_code = status.HTTP_204_NO_CONTENT)

@@ -44,6 +44,7 @@ function formatQueryForPython(query, indentLevel) {
     return `"${sql}"`
 }
 
+// LATER: reduce duplication with routes.go.ejs
 // {'values':
 //   [
 //     {
@@ -60,9 +61,28 @@ function extractInsertValues(queryAst) {
 }
 
 // LATER: reduce duplication with routes.go.ejs
+// {'set':
+//   [
+//     {
+//       column: 'updated_by',
+//       value: { type: 'param', value: 'user_id' },
+//       table: null
+//     }
+//   ]
+// } => [ 'user_id' ]
+function extractUpdateValues(queryAst) {
+	// LATER: distinguish between b.param and q.param and extract only first
+	return queryAst.set.map(elem => elem.value.type === 'param' ? elem.value.value : null)
+		.filter(value => value) // filter out nulls
+}
+
+// LATER: reduce duplication with routes.go.ejs
 function extractProperties(queryAst) {
 	if (queryAst.type === 'insert') {
 		return extractInsertValues(queryAst);
+	}
+    if (queryAst.type === 'update') {
+		return extractUpdateValues(queryAst);
 	}
 	return [];
 }
@@ -259,11 +279,27 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
 
         }
         if (method.name === 'put') {
+            // TODO: reduce duplication with POST
+            const dto = query2dto(sqlParser, method);
+			// LATER: do we really need signature and cache?
+			const cacheKey = dto ? dto.signature : null;
+			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+
+            const methodArgs = [`body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)']
+
+            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
+            const params = extractParamsFromQuery(method.query);
+            const formattedParams = formatParamsAsPythonDict(params)
 %>
 
 @router.put('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
-def <%- pythonMethodName %>():
-    pass
+def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(<%- sql %><%- formattedParams %>)
+    finally:
+        conn.close()
 <%
 
         }
