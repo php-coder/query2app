@@ -186,10 +186,7 @@ endpoints.forEach(function(endpoint) {
                 for (const [name, query] of Object.entries(queryWithName)) {
                     const sql = convertToPsycopgNamedArguments(formatQueryForPython(query, 20))
                     const params = extractParamsFromQuery(query);
-                    const formattedParams = params.length > 0
-                        // [ "p.categoryId" ] => [ '"categoryId": categoryId' ]
-                        ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": ${param}`).join(', ') + '}'
-                        : ''
+                    const formattedParams = formatParamsAsPythonDict(params)
                     queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
                 }
             })

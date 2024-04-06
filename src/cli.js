@@ -197,7 +197,12 @@ const createEndpoints = async (destDir, { lang }, config) => {
             'q': function(param) {
                 return `r.URL.Query().Get("${param}")`
             },
-        }
+        },
+        'py': {
+            'p': '',
+            'b': 'body.',
+            'q': '',
+        },
     }
 
     const parser = new Parser()
@@ -275,9 +280,18 @@ const createEndpoints = async (destDir, { lang }, config) => {
             // [ "p.categoryId" ] => ', {"categoryId": body.categoryId}'
             // (used only with Python)
             "formatParamsAsPythonDict": (params) => {
-                return params.length > 0
-                ? ', {' + [...new Set(params)].map(param => param.substring(2)).map(param => `"${param}": body.${param}`).join(', ') + '}'
-                : ''
+                if (params.length === 0) {
+                    return params
+                }
+                return ', {' + Array.from(
+                        new Set(params),
+                        p => {
+                            const bindTarget = p.substring(0, 1)
+                            const paramName = p.substring(2)
+                            const prefix = placeholdersMap['py'][bindTarget]
+                            return `"${paramName}": ${prefix}${paramName}`
+                        }
+                    ).join(', ') + '}'
             },
 
             "placeholdersMap": placeholdersMap,
