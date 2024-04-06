@@ -91,7 +91,7 @@ def get_list_v1_categories(conn=Depends(db_connection)):
 
 
 @router.post('/v1/categories', status_code = status.HTTP_204_NO_CONTENT)
-def post_v1_categories(payload: CreateCategoryDto, conn=Depends(db_connection)):
+def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
     try:
         with conn:
             with conn.cursor() as cur:
@@ -116,7 +116,7 @@ def post_v1_categories(payload: CreateCategoryDto, conn=Depends(db_connection)):
                         , NOW()
                         , %(user_id)s
                         )
-                    """, {"name": payload.name, "name_ru": payload.name_ru, "slug": payload.slug, "user_id": payload.user_id, "user_id": payload.user_id})
+                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id, "user_id": body.user_id})
     finally:
         conn.close()
 

@@ -246,15 +246,15 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
             const params = extractParamsFromQuery(method.query);
             const formattedParams = params.length > 0
-                // [ "p.categoryId" ] => [ '"categoryId": payload.categoryId' ]
-                ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": payload.${param}`).join(', ') + '}'
+                // [ "p.categoryId" ] => [ '"categoryId": body.categoryId' ]
+                ? ', {' + params.map(param => param.substring(2)).map(param => `"${param}": body.${param}`).join(', ') + '}'
                 : ''
 
 %>
 
 @router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
 <%# LATER: deal with methodArgs -%>
-def <%- pythonMethodName %>(payload: <%- model %>, conn=Depends(db_connection)):
+def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
     try:
         with conn:
             with conn.cursor() as cur:
