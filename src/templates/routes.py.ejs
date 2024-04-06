@@ -244,7 +244,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%              } else { /* GET with a single result */ -%>
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                 return result
 <%
                 }
@@ -266,7 +266,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 
 %>
 
-@router.post('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
+@router.post('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
 <%# LATER: deal with methodArgs -%>
 def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
     try:
@@ -292,7 +292,7 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
             const formattedParams = formatParamsAsPythonDict(params)
 %>
 
-@router.put('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
+@router.put('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
 def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
     try:
         with conn:
@@ -306,7 +306,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
         if (method.name === 'delete') {
 %>
 
-@router.delete('<%- path %>', status_code = status.HTTP_204_NO_CONTENT)
+@router.delete('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
 def <%- pythonMethodName %>():
     pass
 <%

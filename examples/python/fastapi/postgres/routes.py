@@ -26,7 +26,7 @@ def get_v1_categories_count(conn=Depends(db_connection)):
                 cur.execute("SELECT COUNT(*) AS counter FROM categories")
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
@@ -66,7 +66,7 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn=Depends
                     """, {"collectionId": collectionId})
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
@@ -90,7 +90,7 @@ def get_list_v1_categories(conn=Depends(db_connection)):
         conn.close()
 
 
-@router.post('/v1/categories', status_code = status.HTTP_204_NO_CONTENT)
+@router.post('/v1/categories', status_code=status.HTTP_204_NO_CONTENT)
 def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
     try:
         with conn:
@@ -137,13 +137,13 @@ def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
                     """, {"categoryId": categoryId})
                 result = cur.fetchone()
                 if result is None:
-                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
                 return result
     finally:
         conn.close()
 
 
-@router.put('/v1/categories/{categoryId}', status_code = status.HTTP_204_NO_CONTENT)
+@router.put('/v1/categories/{categoryId}', status_code=status.HTTP_204_NO_CONTENT)
 def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depends(db_connection)):
     try:
         with conn:
@@ -162,6 +162,6 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
         conn.close()
 
 
-@router.delete('/v1/categories/{categoryId}', status_code = status.HTTP_204_NO_CONTENT)
+@router.delete('/v1/categories/{categoryId}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_v1_categories_category_id():
     pass
