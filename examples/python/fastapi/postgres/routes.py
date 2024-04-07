@@ -63,7 +63,9 @@ def get_v1_collections_collection_id_categories_count(collectionId, conn=Depends
                       JOIN series s
                         ON s.id = cs.series_id
                      WHERE cs.collection_id = %(collectionId)s
-                    """, {"collectionId": collectionId})
+                    """, {
+                        "collectionId": collectionId
+                    })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -116,7 +118,12 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                         , NOW()
                         , %(user_id)s
                         )
-                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id})
+                    """, {
+                        "name": body.name,
+                        "name_ru": body.name_ru,
+                        "slug": body.slug,
+                        "user_id": body.user_id
+                    })
     finally:
         conn.close()
 
@@ -134,7 +141,9 @@ def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
                          , slug
                       FROM categories
                      WHERE id = %(categoryId)s
-                    """, {"categoryId": categoryId})
+                    """, {
+                        "categoryId": categoryId
+                    })
                 result = cur.fetchone()
                 if result is None:
                     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -157,7 +166,13 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
                          , updated_at = NOW()
                          , updated_by = %(user_id)s
                      WHERE id = %(categoryId)s
-                    """, {"name": body.name, "name_ru": body.name_ru, "slug": body.slug, "user_id": body.user_id, "categoryId": categoryId})
+                    """, {
+                        "name": body.name,
+                        "name_ru": body.name_ru,
+                        "slug": body.slug,
+                        "user_id": body.user_id,
+                        "categoryId": categoryId
+                    })
     finally:
         conn.close()
 
@@ -172,6 +187,8 @@ def delete_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
                     DELETE
                       FROM categories
                      WHERE id = %(categoryId)s
-                    """, {"categoryId": categoryId})
+                    """, {
+                        "categoryId": categoryId
+                    })
     finally:
         conn.close()

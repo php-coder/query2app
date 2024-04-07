@@ -283,15 +283,18 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 if (params.length === 0) {
                     return params
                 }
-                return ', {' + Array.from(
+                const indentLevel = 24
+                const indent = ' '.repeat(indentLevel)
+                const closingIndent = ' '.repeat(indentLevel - 4)
+                return ', {\n' + Array.from(
                         new Set(params),
                         p => {
                             const bindTarget = p.substring(0, 1)
                             const paramName = p.substring(2)
                             const prefix = placeholdersMap['py'][bindTarget]
-                            return `"${paramName}": ${prefix}${paramName}`
+                            return `${indent}"${paramName}": ${prefix}${paramName}`
                         }
-                    ).join(', ') + '}'
+                    ).join(',\n') + `\n${closingIndent}}`
             },
 
             "placeholdersMap": placeholdersMap,
