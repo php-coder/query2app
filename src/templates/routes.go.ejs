@@ -20,7 +20,7 @@ import "github.com/jmoiron/sqlx"
 // } => [ 'nameRu' ]
 function extractSelectParameters(queryAst) {
 	return queryAst.columns
-		.map(column => column.as !== null ? column.as : column.expr.column);
+		.map(column => column.as !== null ? column.as : column.expr.column)
 }
 
 // {'values':
@@ -34,8 +34,8 @@ function extractSelectParameters(queryAst) {
 function extractInsertValues(queryAst) {
 	const values = queryAst.values.flatMap(elem => elem.value)
 		.map(elem => elem.type === 'param' ? elem.value : null)
-		.filter(elem => elem); // filter out nulls
-	return Array.from(new Set(values));
+		.filter(elem => elem) // filter out nulls
+	return Array.from(new Set(values))
 }
 
 // {'set':
@@ -56,27 +56,27 @@ function extractUpdateValues(queryAst) {
 // LATER: consider taking into account b.params from WHERE clause
 function extractProperties(queryAst) {
 	if (queryAst.type === 'select') {
-		return extractSelectParameters(queryAst);
+		return extractSelectParameters(queryAst)
 	}
 
 	if (queryAst.type === 'insert') {
-		return extractInsertValues(queryAst);
+		return extractInsertValues(queryAst)
 	}
 
 	if (queryAst.type === 'update') {
-		return extractUpdateValues(queryAst);
+		return extractUpdateValues(queryAst)
 	}
 
-	return [];
+	return []
 }
 
 function findOutType(fieldsInfo, fieldName) {
-	const defaultType = '*string';
-	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type');
+	const defaultType = '*string'
+	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
 	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
-		return '*int';
+		return '*int'
 	}
-	return defaultType;
+	return defaultType
 }
 
 function addTypes(props, fieldsInfo) {
@@ -85,23 +85,23 @@ function addTypes(props, fieldsInfo) {
 			"name": prop,
 			"type": findOutType(fieldsInfo, prop),
 		}
-	});
+	})
 }
 
 function query2dto(parser, method) {
-	const query = removePlaceholders(method.query);
-	const queryAst = parser.astify(query);
-	const props = extractProperties(queryAst);
+	const query = removePlaceholders(method.query)
+	const queryAst = parser.astify(query)
+	const props = extractProperties(queryAst)
 	if (props.length === 0) {
-		console.warn('Could not create DTO for query:', formatQuery(query));
-		console.debug('Query AST:');
-		console.debug(queryAst);
-		return null;
+		console.warn('Could not create DTO for query:', formatQuery(query))
+		console.debug('Query AST:')
+		console.debug(queryAst)
+		return null
 	}
-	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {};
-	const propsWithTypes = addTypes(props, fieldsInfo);
-	const hasName = method.dto && method.dto.name && method.dto.name.length > 0;
-	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
+	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {}
+	const propsWithTypes = addTypes(props, fieldsInfo)
+	const hasName = method.dto && method.dto.name && method.dto.name.length > 0
+	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter
 	return {
 		"name": name,
 		"hasUserProvidedName": hasName,
@@ -112,33 +112,33 @@ function query2dto(parser, method) {
 		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
 		// LATER: sort before join
 		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
-	};
+	}
 }
 
 function dto2struct(dto) {
-	let result = `type ${dto.name} struct {\n`;
+	let result = `type ${dto.name} struct {\n`
 	dto.props.forEach(prop => {
-		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength);
+		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength)
 		result += `\t${fieldName} ${prop.type} \`json:"${prop.name}" db:"${prop.name}"\`\n`
-	});
-	result += '}\n';
+	})
+	result += '}\n'
 
-	return result;
+	return result
 }
 
-let globalDtoCounter = 0;
+let globalDtoCounter = 0
 
-const dtoCache = {};
+const dtoCache = {}
 function cacheDto(dto) {
-	dtoCache[dto.signature] = dto.name;
-	return dto;
+	dtoCache[dto.signature] = dto.name
+	return dto
 }
 function dtoInCache(dto) {
 	// always prefer user specified name even when we have a similar DTO in cache
 	if (dto.hasUserProvidedName) {
-		return false;
+		return false
 	}
-	return dtoCache.hasOwnProperty(dto.signature);
+	return dtoCache.hasOwnProperty(dto.signature)
 }
 
 const verbs_with_dto = [ 'get', 'post', 'put' ]
@@ -154,32 +154,32 @@ endpoints.forEach(function(endpoint) {
 -%>
 <%- struct %>
 <%
-	});
-});
+	})
+})
 -%>
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 <%
 endpoints.forEach(function(endpoint) {
-	const path = convertPathPlaceholders(endpoint.path);
+	const path = convertPathPlaceholders(endpoint.path)
 
 	endpoint.methods.forEach(function(method) {
 		if (!method.query) {
 			// filter out aggregated_queries for a while (see #17)
 			return
 		}
-		const params = extractParamsFromQuery(method.query);
-		const hasGetOne = method.name === 'get';
-		const hasGetMany = method.name === 'get_list';
+		const params = extractParamsFromQuery(method.query)
+		const hasGetOne = method.name === 'get'
+		const hasGetMany = method.name === 'get_list'
 		if (hasGetOne || hasGetMany) {
-			const dto = query2dto(sqlParser, method);
+			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null;
-			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const cacheKey = dto ? dto.signature : null
+			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
 			const resultVariableDeclaration = hasGetMany
 				? `result := []${dtoName}\{\}`
-				: `var result ${dtoName}`;
+				: `var result ${dtoName}`
 
-			const queryFunction = hasGetOne ? 'Get' : 'Select';
+			const queryFunction = hasGetOne ? 'Get' : 'Select'
 			// LATER: handle only particular method (get/post/put)
 			// LATER: include method/path into an error message
 %>
@@ -217,10 +217,10 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'post') {
-			const dto = query2dto(sqlParser, method);
+			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null;
-			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const cacheKey = dto ? dto.signature : null
+			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
@@ -244,10 +244,10 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'put') {
-			const dto = query2dto(sqlParser, method);
+			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null;
-			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const cacheKey = dto ? dto.signature : null
+			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
@@ -290,7 +290,7 @@ endpoints.forEach(function(endpoint) {
 	})
 <%
 		}
-	});
+	})
 })
 %>
 }
