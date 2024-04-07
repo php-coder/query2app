@@ -3,6 +3,7 @@ CREATE TABLE categories (
   name varchar(50) NOT NULL,
   name_ru varchar(50) DEFAULT NULL,
   slug varchar(50) NOT NULL,
+  hidden boolean,
   created_at timestamp NOT NULL,
   created_by bigint NOT NULL,
   updated_at timestamp NOT NULL,

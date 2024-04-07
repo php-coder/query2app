@@ -13,6 +13,7 @@ POST {{ SERVER_URL }}/v1/categories
 {
     "name":    "Sport",
     "slug":    "sport",
+    "hidden":  true,
     "user_id": 1
 }
 HTTP 204
@@ -33,6 +34,7 @@ jsonpath "$.id"      == 1
 jsonpath "$.name"    == "Sport"
 jsonpath "$.name_ru" == null
 jsonpath "$.slug"    == "sport"
+jsonpath "$.hidden"  == true
 
 
 # GET should return a list of values
@@ -45,6 +47,7 @@ jsonpath "$[0].id"      == 1
 jsonpath "$[0].name"    == "Sport"
 jsonpath "$[0].name_ru" == null
 jsonpath "$[0].slug"    == "sport"
+jsonpath "$[0].hidden"  == true
 
 
 # PUT should update an object
@@ -53,6 +56,7 @@ PUT {{ SERVER_URL }}/v1/categories/1
     "name":    "Fauna",
     "name_ru": "Фауна",
     "slug":    "fauna",
+    "hidden":  false,
     "user_id": 1
 }
 HTTP 204
@@ -65,6 +69,7 @@ header "Content-Type" contains "application/json"
 jsonpath "$.name"     == "Fauna"
 jsonpath "$.name_ru"  == "Фауна"
 jsonpath "$.slug"     == "fauna"
+jsonpath "$.hidden"   == false
 
 
 # DELETE should remove an object

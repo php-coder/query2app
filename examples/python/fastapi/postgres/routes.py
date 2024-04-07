@@ -15,6 +15,7 @@ class CreateCategoryDto(BaseModel):
     name: Optional[str] = None
     name_ru: Optional[str] = None
     slug: Optional[str] = None
+    hidden: Optional[bool] = None
     user_id: Optional[int] = None
 
 
@@ -85,6 +86,7 @@ def get_list_v1_categories(conn=Depends(db_connection)):
                          , name
                          , name_ru
                          , slug
+                         , hidden
                      FROM categories
                     """)
                 return cur.fetchall()
@@ -104,6 +106,7 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                          ( name
                          , name_ru
                          , slug
+                         , hidden
                          , created_at
                          , created_by
                          , updated_at
@@ -113,6 +116,7 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                         ( %(name)s
                         , %(name_ru)s
                         , %(slug)s
+                        , %(hidden)s
                         , NOW()
                         , %(user_id)s
                         , NOW()
@@ -122,6 +126,7 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                         "name": body.name,
                         "name_ru": body.name_ru,
                         "slug": body.slug,
+                        "hidden": body.hidden,
                         "user_id": body.user_id
                     })
     finally:
@@ -139,6 +144,7 @@ def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
                          , name
                          , name_ru
                          , slug
+                         , hidden
                       FROM categories
                      WHERE id = %(categoryId)s
                     """, {
@@ -163,6 +169,7 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
                        SET name = %(name)s
                          , name_ru = %(name_ru)s
                          , slug = %(slug)s
+                         , hidden = %(hidden)s
                          , updated_at = NOW()
                          , updated_by = %(user_id)s
                      WHERE id = %(categoryId)s
@@ -170,6 +177,7 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
                         "name": body.name,
                         "name_ru": body.name_ru,
                         "slug": body.slug,
+                        "hidden": body.hidden,
                         "user_id": body.user_id,
                         "categoryId": categoryId
                     })

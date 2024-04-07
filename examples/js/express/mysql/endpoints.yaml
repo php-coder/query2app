@@ -37,6 +37,7 @@
            , name
            , name_ru
            , slug
+           , hidden
        FROM categories
     dto:
       name: CategoryDto
@@ -50,6 +51,7 @@
            ( name
            , name_ru
            , slug
+           , hidden
            , created_at
            , created_by
            , updated_at
@@ -59,6 +61,7 @@
           ( :b.name
           , :b.name_ru
           , :b.slug
+          , :b.hidden
           , NOW()
           , :b.user_id
           , NOW()
@@ -69,6 +72,8 @@
       fields:
         user_id:
           type: integer
+        hidden:
+          type: boolean
 
 - path: /v1/categories/:categoryId
   get:
@@ -77,6 +82,7 @@
            , name
            , name_ru
            , slug
+           , hidden
         FROM categories
        WHERE id = :p.categoryId
     dto:
@@ -90,6 +96,7 @@
          SET name = :b.name
            , name_ru = :b.name_ru
            , slug = :b.slug
+           , hidden = :b.hidden
            , updated_at = NOW()
            , updated_by = :b.user_id
        WHERE id = :p.categoryId
@@ -97,6 +104,8 @@
       fields:
         user_id:
           type: integer
+        hidden:
+          type: boolean
   delete:
     query: >-
       DELETE
