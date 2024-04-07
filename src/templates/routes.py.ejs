@@ -285,7 +285,7 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
 			const cacheKey = dto ? dto.signature : null;
 			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
 
-            const methodArgs = [`body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)']
+            const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
             const params = extractParamsFromQuery(method.query);
