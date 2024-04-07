@@ -110,4 +110,4 @@ const register = (app: Express, pool: Pool) => {
     })
 }
 
-exports.register = register;
+exports.register = register
