@@ -1,17 +1,17 @@
 const register = (app, pool) => {
 <%
 endpoints.forEach(function(endpoint) {
-    const path = endpoint.path;
+    const path = endpoint.path
 
     endpoint.methods.forEach(function(method) {
         if (!method.query) {
             // filter out aggregated_queries for a while (see #17)
             return
         }
-        const hasGetOne = method.name === 'get';
-        const hasGetMany = method.name === 'get_list';
-        const sql = formatQuery(method.query);
-        const params = extractParamsFromQuery(method.query);
+        const hasGetOne = method.name === 'get'
+        const hasGetMany = method.name === 'get_list'
+        const sql = formatQuery(method.query)
+        const params = extractParamsFromQuery(method.query)
         const formattedParams = params.length > 0
             ? '\n            { ' + formatParamsAsJavaScriptObject(params) + ' },'
             : ''
@@ -84,8 +84,8 @@ endpoints.forEach(function(endpoint) {
     })
 <%
         }
-    });
-});
+    })
+})
 %>
     app.use((error, req, res, next) => {
         console.error(error)
@@ -93,4 +93,4 @@ endpoints.forEach(function(endpoint) {
     })
 }
 
-exports.register = register;
+exports.register = register
