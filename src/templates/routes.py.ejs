@@ -16,7 +16,7 @@ router = APIRouter()
 <%
 // { "get", "/v1/categories/:categoryId" } => "get_v1_categories_category_id"
 function generate_method_name(method, path) {
-    const name = camel2snakeCase(path).replace(/\//g, '_').replace(/[^_a-z0-9]/g, '');
+    const name = camel2snakeCase(path).replace(/\//g, '_').replace(/[^_a-z0-9]/g, '')
     return `${method}${name}`
 }
 
@@ -39,7 +39,7 @@ function formatQueryForPython(query, indentLevel) {
     if (isMultilineSql) {
         const indent = ' '.repeat(indentLevel)
         const indentedSql = sql.replace(/\n/g, '\n' + indent)
-        return `\n${indent}"""\n${indent}${indentedSql}\n${indent}"""`;
+        return `\n${indent}"""\n${indent}${indentedSql}\n${indent}"""`
     }
     return `"${sql}"`
 }
@@ -56,8 +56,8 @@ function formatQueryForPython(query, indentLevel) {
 function extractInsertValues(queryAst) {
 	const values = queryAst.values.flatMap(elem => elem.value)
 		.map(elem => elem.type === 'param' ? elem.value : null)
-		.filter(elem => elem); // filter out nulls
-	return Array.from(new Set(values));
+		.filter(elem => elem) // filter out nulls
+	return Array.from(new Set(values))
 }
 
 // LATER: reduce duplication with routes.go.ejs
@@ -79,22 +79,22 @@ function extractUpdateValues(queryAst) {
 // LATER: reduce duplication with routes.go.ejs
 function extractProperties(queryAst) {
 	if (queryAst.type === 'insert') {
-		return extractInsertValues(queryAst);
+		return extractInsertValues(queryAst)
 	}
     if (queryAst.type === 'update') {
-		return extractUpdateValues(queryAst);
+		return extractUpdateValues(queryAst)
 	}
-	return [];
+	return []
 }
 
 // LATER: try to reduce duplication with routes.go.ejs
 function findOutType(fieldsInfo, fieldName) {
-	const defaultType = 'str';
-	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type');
+	const defaultType = 'str'
+	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
 	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
-		return 'int';
+		return 'int'
 	}
-	return defaultType;
+	return defaultType
 }
 
 // LATER: reduce duplication with routes.go.ejs
@@ -104,24 +104,24 @@ function addTypes(props, fieldsInfo) {
 			"name": prop,
 			"type": findOutType(fieldsInfo, prop),
 		}
-	});
+	})
 }
 
 // LATER: reduce duplication with routes.go.ejs
 function query2dto(parser, method) {
-	const query = removePlaceholders(method.query);
-	const queryAst = parser.astify(query);
-	const props = extractProperties(queryAst);
+	const query = removePlaceholders(method.query)
+	const queryAst = parser.astify(query)
+	const props = extractProperties(queryAst)
 	if (props.length === 0) {
-		console.warn('Could not create DTO for query:', formatQuery(query));
-		console.debug('Query AST:');
-		console.debug(queryAst);
-		return null;
+		console.warn('Could not create DTO for query:', formatQuery(query))
+		console.debug('Query AST:')
+		console.debug(queryAst)
+		return null
 	}
-	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {};
-	const propsWithTypes = addTypes(props, fieldsInfo);
-	const hasName = method.dto && method.dto.name && method.dto.name.length > 0;
-	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter;
+	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {}
+	const propsWithTypes = addTypes(props, fieldsInfo)
+	const hasName = method.dto && method.dto.name && method.dto.name.length > 0
+	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter
 	return {
 		"name": name,
 		"hasUserProvidedName": hasName,
@@ -130,34 +130,34 @@ function query2dto(parser, method) {
 		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
 		// LATER: sort before join
 		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
-	};
+	}
 }
 
 // https://fastapi.tiangolo.com/tutorial/body/
 function dto2model(dto) {
-	let result = `class ${dto.name}(BaseModel):\n`;
+	let result = `class ${dto.name}(BaseModel):\n`
 	dto.props.forEach(prop => {
 		result += `    ${prop.name}: Optional[${prop.type}] = None\n`
-	});
-	return result;
+	})
+	return result
 }
 
-let globalDtoCounter = 0;
-const dtoCache = {};
+let globalDtoCounter = 0
+const dtoCache = {}
 
 // LATER: reduce duplication with routes.go.ejs
 function cacheDto(dto) {
-	dtoCache[dto.signature] = dto.name;
-	return dto;
+	dtoCache[dto.signature] = dto.name
+	return dto
 }
 
 // LATER: reduce duplication with routes.go.ejs
 function dtoInCache(dto) {
 	// always prefer user specified name even when we have a similar DTO in cache
 	if (dto.hasUserProvidedName) {
-		return false;
+		return false
 	}
-	return dtoCache.hasOwnProperty(dto.signature);
+	return dtoCache.hasOwnProperty(dto.signature)
 }
 
 // Generate models
@@ -173,8 +173,8 @@ endpoints.forEach(function(endpoint) {
 %>
 <%- model -%>
 <%
-	});
-});
+	})
+})
 
 // Generate endpoints
 endpoints.forEach(function(endpoint) {
@@ -205,7 +205,7 @@ endpoints.forEach(function(endpoint) {
             queriesWithNames.forEach(queryWithName => {
                 for (const [name, query] of Object.entries(queryWithName)) {
                     const sql = convertToPsycopgNamedArguments(formatQueryForPython(query, 20))
-                    const params = extractParamsFromQuery(query);
+                    const params = extractParamsFromQuery(query)
                     const formattedParams = formatParamsAsPythonDict(params)
                     queries.push({ [name]: { sql : sql, formattedParams: formattedParams }})
                 }
@@ -255,13 +255,13 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%
         }
         if (method.name === 'post') {
-            const dto = query2dto(sqlParser, method);
+            const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null;
-			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const cacheKey = dto ? dto.signature : null
+			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
 
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
-            const params = extractParamsFromQuery(method.query);
+            const params = extractParamsFromQuery(method.query)
             const formattedParams = formatParamsAsPythonDict(params)
 
 %>
@@ -280,15 +280,15 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
         }
         if (method.name === 'put') {
             // TODO: reduce duplication with POST
-            const dto = query2dto(sqlParser, method);
+            const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null;
-			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name;
+			const cacheKey = dto ? dto.signature : null
+			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
 
             const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
-            const params = extractParamsFromQuery(method.query);
+            const params = extractParamsFromQuery(method.query)
             const formattedParams = formatParamsAsPythonDict(params)
 %>
 
