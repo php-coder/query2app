@@ -163,5 +163,15 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
 
 
 @router.delete('/v1/categories/{categoryId}', status_code=status.HTTP_204_NO_CONTENT)
-def delete_v1_categories_category_id():
-    pass
+def delete_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    DELETE
+                      FROM categories
+                     WHERE id = %(categoryId)s
+                    """, {"categoryId": categoryId})
+    finally:
+        conn.close()

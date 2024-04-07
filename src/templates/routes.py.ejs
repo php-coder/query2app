@@ -304,11 +304,21 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 
         }
         if (method.name === 'delete') {
+            const methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
+
+            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
+            const params = extractParamsFromQuery(method.query)
+            const formattedParams = formatParamsAsPythonDict(params)
 %>
 
 @router.delete('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
-def <%- pythonMethodName %>():
-    pass
+def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
+    try:
+        with conn:
+            with conn.cursor() as cur:
+                cur.execute(<%- sql %><%- formattedParams %>)
+    finally:
+        conn.close()
 <%
 
         }
