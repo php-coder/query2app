@@ -18,12 +18,14 @@ type CategoryDto struct {
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
+	Hidden *bool `json:"hidden" db:"hidden"`
 }
 
 type CreateCategoryDto struct {
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
+	Hidden *bool `json:"hidden" db:"hidden"`
 	UserId *int `json:"user_id" db:"user_id"`
 }
 
@@ -32,6 +34,7 @@ type CategoryInfoDto struct {
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
+	Hidden *bool `json:"hidden" db:"hidden"`
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
@@ -78,7 +81,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 
 	r.Get("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
 		result := []CategoryDto{}
-		err := db.Select(&result, "SELECT id , name , name_ru , slug FROM categories")
+		err := db.Select(&result, "SELECT id , name , name_ru , slug , hidden FROM categories")
 		switch err {
 		case sql.ErrNoRows:
 			w.WriteHeader(http.StatusNotFound)
@@ -99,10 +102,11 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			"name":    body.Name,
 			"name_ru": body.NameRu,
 			"slug":    body.Slug,
+			"hidden":  body.Hidden,
 			"user_id": body.UserId,
 		}
 		_, err := db.NamedExec(
-			"INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , NOW() , :user_id , NOW() , :user_id )",
+			"INSERT INTO categories ( name , name_ru , slug , hidden , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , :hidden , NOW() , :user_id , NOW() , :user_id )",
 			args,
 		)
 		if err != nil {
@@ -115,7 +119,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 	})
 
 	r.Get("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId")
+		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			internalServerError(w)
@@ -147,11 +151,12 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			"name":       body.Name,
 			"name_ru":    body.NameRu,
 			"slug":       body.Slug,
+			"hidden":     body.Hidden,
 			"user_id":    body.UserId,
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
 		_, err := db.NamedExec(
-			"UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId",
+			"UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , hidden = :hidden , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId",
 			args,
 		)
 		if err != nil {

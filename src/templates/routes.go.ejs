@@ -73,8 +73,14 @@ function extractProperties(queryAst) {
 function findOutType(fieldsInfo, fieldName) {
 	const defaultType = '*string'
 	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
+	if (!hasTypeInfo) {
+		return defaultType
+	}
 	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
 		return '*int'
+	}
+	if (hasTypeInfo && fieldsInfo[fieldName].type === 'boolean') {
+		return '*bool'
 	}
 	return defaultType
 }

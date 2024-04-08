@@ -3,6 +3,7 @@ CREATE TABLE `categories` (
   `name` varchar(50) NOT NULL,
   `name_ru` varchar(50) DEFAULT NULL,
   `slug` varchar(50) NOT NULL,
+  `hidden` boolean,
   `created_at` datetime NOT NULL,
   `created_by` int(11) NOT NULL,
   `updated_at` datetime NOT NULL,

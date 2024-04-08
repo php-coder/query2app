@@ -44,6 +44,8 @@
       fields:
         id:
           type: integer
+        hidden:
+          type: boolean
   post:
     query: >-
       INSERT
@@ -90,6 +92,8 @@
       fields:
         id:
           type: integer
+        hidden:
+          type: boolean
   put:
     query: >-
       UPDATE categories
