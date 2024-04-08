@@ -22,6 +22,13 @@ const pool = mysql.createPool({
             }
             return matchedSubstring
         }.bind(this))
+    },
+    // Support for conversion from TINYINT(1) to boolean (https://github.com/mysqljs/mysql#custom-type-casting)
+    typeCast: function(field, next) {
+        if (field.type === 'TINY' && field.length === 1) {
+            return field.string() === '1'
+        }
+        return next()
     }
 })
 

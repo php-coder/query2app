@@ -35,7 +35,7 @@ const register = (app, pool) => {
 
     app.get('/v1/categories', (req, res, next) => {
         pool.query(
-            'SELECT id , name , name_ru , slug FROM categories',
+            'SELECT id , name , name_ru , slug , hidden FROM categories',
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -47,8 +47,8 @@ const register = (app, pool) => {
 
     app.post('/v1/categories', (req, res, next) => {
         pool.query(
-            'INSERT INTO categories ( name , name_ru , slug , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , NOW() , :user_id , NOW() , :user_id )',
-            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "user_id": req.body.user_id },
+            'INSERT INTO categories ( name , name_ru , slug , hidden , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , :hidden , NOW() , :user_id , NOW() , :user_id )',
+            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -60,7 +60,7 @@ const register = (app, pool) => {
 
     app.get('/v1/categories/:categoryId', (req, res, next) => {
         pool.query(
-            'SELECT id , name , name_ru , slug FROM categories WHERE id = :categoryId',
+            'SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId',
             { "categoryId": req.params.categoryId },
             (err, rows, fields) => {
                 if (err) {
@@ -77,8 +77,8 @@ const register = (app, pool) => {
 
     app.put('/v1/categories/:categoryId', (req, res, next) => {
         pool.query(
-            'UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId',
-            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "user_id": req.body.user_id, "categoryId": req.params.categoryId },
+            'UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , hidden = :hidden , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId',
+            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id, "categoryId": req.params.categoryId },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
