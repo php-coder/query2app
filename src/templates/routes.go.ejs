@@ -149,11 +149,13 @@ function cacheDto(dto) {
 }
 
 function dtoInCache(dto) {
+	const existsNamed = namedDtoCache.hasOwnProperty(dto.signature)
 	// always prefer user specified name even when we have a similar DTO in cache for generated names
 	if (dto.hasUserProvidedName) {
-		return namedDtoCache.hasOwnProperty(dto.signature)
+		return existsNamed
 	}
-	return dtoCache.hasOwnProperty(dto.signature)
+	// prefer to re-use named DTO
+	return existsNamed || dtoCache.hasOwnProperty(dto.signature)
 }
 
 function obtainDtoName(dto) {
