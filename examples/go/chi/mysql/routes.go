@@ -14,19 +14,19 @@ type CounterDto struct {
 }
 
 type CategoryDto struct {
-	Id     *int `json:"id" db:"id"`
+	Id     *int    `json:"id" db:"id"`
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
-	Hidden *bool `json:"hidden" db:"hidden"`
+	Hidden *bool   `json:"hidden" db:"hidden"`
 }
 
 type CreateCategoryDto struct {
 	Name   *string `json:"name" db:"name"`
 	NameRu *string `json:"name_ru" db:"name_ru"`
 	Slug   *string `json:"slug" db:"slug"`
-	Hidden *bool `json:"hidden" db:"hidden"`
-	UserId *int `json:"user_id" db:"user_id"`
+	Hidden *bool   `json:"hidden" db:"hidden"`
+	UserId *int    `json:"user_id" db:"user_id"`
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {

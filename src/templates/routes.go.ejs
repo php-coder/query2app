@@ -112,8 +112,9 @@ function query2dto(parser, method) {
 		"name": name,
 		"hasUserProvidedName": hasName,
 		"props": propsWithTypes,
-		// max length is needed for proper formatting
+		// max lengths are needed for proper formatting
 		"maxFieldNameLength": lengthOfLongestString(props.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))),
+		"maxFieldTypeLength": lengthOfLongestString(propsWithTypes.map(el => el.type)),
 		// required for de-duplication
 		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
 		// LATER: sort before join
@@ -125,7 +126,8 @@ function dto2struct(dto) {
 	let result = `type ${dto.name} struct {\n`
 	dto.props.forEach(prop => {
 		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength)
-		result += `\t${fieldName} ${prop.type} \`json:"${prop.name}" db:"${prop.name}"\`\n`
+		const fieldType = prop.type.padEnd(dto.maxFieldTypeLength)
+		result += `\t${fieldName} ${fieldType} \`json:"${prop.name}" db:"${prop.name}"\`\n`
 	})
 	result += '}\n'
 
