@@ -88,7 +88,6 @@
         FROM categories
        WHERE id = :p.categoryId
     dto:
-      name: CategoryInfoDto
       fields:
         id:
           type: integer

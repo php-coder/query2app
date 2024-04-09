@@ -29,14 +29,6 @@ type CreateCategoryDto struct {
 	UserId *int `json:"user_id" db:"user_id"`
 }
 
-type CategoryInfoDto struct {
-	Id     *int `json:"id" db:"id"`
-	Name   *string `json:"name" db:"name"`
-	NameRu *string `json:"name_ru" db:"name_ru"`
-	Slug   *string `json:"slug" db:"slug"`
-	Hidden *bool `json:"hidden" db:"hidden"`
-}
-
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 
 	r.Get("/v1/categories/count", func(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +118,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			return
 		}
 
-		var result CategoryInfoDto
+		var result CategoryDto
 		args := map[string]interface{}{
 			"categoryId": chi.URLParam(r, "categoryId"),
 		}
