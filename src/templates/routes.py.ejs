@@ -166,6 +166,11 @@ function dtoInCache(dto) {
 	return dtoCache.hasOwnProperty(dto.signature)
 }
 
+function obtainDtoName(dto) {
+    const cacheKey = dto ? dto.signature : null
+	return dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+}
+
 // Generate models
 const verbs_with_dto = [ 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
@@ -263,8 +268,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
         if (method.name === 'post') {
             const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null
-			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+			const model = obtainDtoName(dto)
 
             const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
             const params = extractParamsFromQuery(method.query)
@@ -288,8 +292,7 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
             // TODO: reduce duplication with POST
             const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null
-			const model = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+			const model = obtainDtoName(dto)
 
             const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 
