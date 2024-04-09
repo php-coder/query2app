@@ -150,25 +150,30 @@ function dto2model(dto) {
 
 let globalDtoCounter = 0
 const dtoCache = {}
+const namedDtoCache = {}
 
 // LATER: reduce duplication with routes.go.ejs
 function cacheDto(dto) {
-	dtoCache[dto.signature] = dto.name
+	if (dto.hasUserProvidedName) {
+		namedDtoCache[dto.signature] = dto.name
+	} else {
+		dtoCache[dto.signature] = dto.name
+	}
 	return dto
 }
 
 // LATER: reduce duplication with routes.go.ejs
 function dtoInCache(dto) {
-	// always prefer user specified name even when we have a similar DTO in cache
+	// always prefer user specified name even when we have a similar DTO in cache for generated names
 	if (dto.hasUserProvidedName) {
-		return false
+		return namedDtoCache.hasOwnProperty(dto.signature)
 	}
 	return dtoCache.hasOwnProperty(dto.signature)
 }
 
 function obtainDtoName(dto) {
-    const cacheKey = dto ? dto.signature : null
-	return dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+    const cacheKey = dto.signature
+	return namedDtoCache.hasOwnProperty(cacheKey) ? namedDtoCache[cacheKey] : dto.name
 }
 
 // Generate models
