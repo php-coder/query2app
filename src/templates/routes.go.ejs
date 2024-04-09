@@ -195,8 +195,8 @@ endpoints.forEach(function(endpoint) {
 			// LATER: do we really need signature and cache?
 			const dataType = obtainDtoName(dto)
 			const resultVariableDeclaration = hasGetMany
-				? `result := []${dtoName}\{\}`
-				: `var result ${dtoName}`
+				? `result := []${dataType}\{\}`
+				: `var result ${dataType}`
 
 			const queryFunction = hasGetOne ? 'Get' : 'Select'
 			// LATER: handle only particular method (get/post/put)
