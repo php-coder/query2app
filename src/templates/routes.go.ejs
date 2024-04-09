@@ -149,6 +149,11 @@ function dtoInCache(dto) {
 	return dtoCache.hasOwnProperty(dto.signature)
 }
 
+function obtainDtoName(dto) {
+	const cacheKey = dto ? dto.signature : null
+	return dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+}
+
 const verbs_with_dto = [ 'get', 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
 	const dtos = endpoint.methods
@@ -181,8 +186,7 @@ endpoints.forEach(function(endpoint) {
 		if (hasGetOne || hasGetMany) {
 			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null
-			const dtoName = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+			const dataType = obtainDtoName(dto)
 			const resultVariableDeclaration = hasGetMany
 				? `result := []${dtoName}\{\}`
 				: `var result ${dtoName}`
@@ -227,8 +231,7 @@ endpoints.forEach(function(endpoint) {
 		if (method.name === 'post') {
 			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null
-			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+			const dataType = obtainDtoName(dto)
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
@@ -254,8 +257,7 @@ endpoints.forEach(function(endpoint) {
 		if (method.name === 'put') {
 			const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
-			const cacheKey = dto ? dto.signature : null
-			const dataType = dtoInCache(dto) ? dtoCache[cacheKey] : dto.name
+			const dataType = obtainDtoName(dto)
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
