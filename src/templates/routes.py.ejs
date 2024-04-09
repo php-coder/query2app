@@ -167,7 +167,7 @@ function dtoInCache(dto) {
 }
 
 // Generate models
-const verbs_with_dto = [ 'post' ]
+const verbs_with_dto = [ 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
 	const dtos = endpoint.methods
 		.filter(method => verbs_with_dto.includes(method.verb))
