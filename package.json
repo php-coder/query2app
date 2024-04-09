@@ -26,8 +26,6 @@
     "src/**"
   ],
   "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "gen-js-example": "cd examples/js/express/mysql; ../../../../src/cli.js --lang js",
     "gen-ts-example": "cd examples/ts/express/mysql; ../../../../src/cli.js --lang ts",
     "gen-go-example": "cd examples/go/chi/mysql; ../../../../src/cli.js --lang go",
