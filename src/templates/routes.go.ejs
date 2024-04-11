@@ -189,13 +189,19 @@ endpoints.forEach(function(endpoint) {
 			// filter out aggregated_queries for a while (see #17)
 			return
 		}
+
+		// define before "if", to make it available later
+		let dataType
+		if (method.name !== 'delete') {
+			const dto = query2dto(sqlParser, method)
+			// LATER: do we really need signature and cache?
+			dataType = obtainDtoName(dto)
+		}
+
 		const params = extractParamsFromQuery(method.query)
 		const hasGetOne = method.name === 'get'
 		const hasGetMany = method.name === 'get_list'
 		if (hasGetOne || hasGetMany) {
-			const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			const dataType = obtainDtoName(dto)
 			const resultVariableDeclaration = hasGetMany
 				? `result := []${dataType}\{\}`
 				: `var result ${dataType}`
@@ -238,9 +244,6 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'post') {
-			const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			const dataType = obtainDtoName(dto)
 %>
 	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
@@ -264,9 +267,6 @@ endpoints.forEach(function(endpoint) {
 <%
 		}
 		if (method.name === 'put') {
-			const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			const dataType = obtainDtoName(dto)
 %>
 	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		var body <%- dataType %>
