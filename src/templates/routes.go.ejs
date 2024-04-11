@@ -217,7 +217,7 @@ endpoints.forEach(function(endpoint) {
 
 		<%- resultVariableDeclaration %>
 		args := map[string]interface{}{
-			<%- /* LATER: extract */ params.map(p => `"${p.substring(2)}": ${placeholdersMap['go'][p.substring(0, 1)](p.substring(2))},`).join('\n\t\t\t') %>
+			<%- formatParamsAsGolangMap(params) %>
 		}
 		err = stmt.<%- queryFunction %>(&result, args)
 <%			} else { -%>
