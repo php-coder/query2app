@@ -216,6 +216,13 @@ endpoints.forEach(function(endpoint) {
             formattedParams = formatParamsAsPythonDict(params)
         }
 
+        let model
+        if (method.name === 'post' || method.name === 'put') {
+            const dto = query2dto(sqlParser, method)
+			// LATER: do we really need signature and cache?
+			model = obtainDtoName(dto)
+        }
+
         if (hasGetOne || hasGetMany) {
             const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
@@ -282,9 +289,6 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 <%
         }
         if (method.name === 'post') {
-            const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			const model = obtainDtoName(dto)
 %>
 
 @router.post('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
@@ -300,11 +304,6 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
 
         }
         if (method.name === 'put') {
-            // TODO: reduce duplication with POST
-            const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			const model = obtainDtoName(dto)
-
             const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 %>
 
