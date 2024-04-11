@@ -211,22 +211,21 @@ endpoints.forEach(function(endpoint) {
         let methodArgs
         let sql
         let formattedParams
+        let model
         if (method.name === 'post' || method.name === 'put' || method.name === 'delete') {
             sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
             const params = extractParamsFromQuery(method.query)
             formattedParams = formatParamsAsPythonDict(params)
-        }
 
-        let model
-        if (method.name === 'post' || method.name === 'put') {
-            const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			model = obtainDtoName(dto)
-            methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
-        }
+            if (method.name === 'post' || method.name === 'put') {
+                const dto = query2dto(sqlParser, method)
+                // LATER: do we really need signature and cache?
+                model = obtainDtoName(dto)
+                methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 
-        if (method.name === 'delete') {
-            methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
+            } else if (method.name === 'delete') {
+                methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
+            }
         }
 
         if (hasGetOne || hasGetMany) {
