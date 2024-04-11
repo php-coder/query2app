@@ -208,6 +208,7 @@ endpoints.forEach(function(endpoint) {
         const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
 
         // define before "if", to make them available later
+        let methodArgs
         let sql
         let formattedParams
         if (method.name === 'post' || method.name === 'put' || method.name === 'delete') {
@@ -221,10 +222,15 @@ endpoints.forEach(function(endpoint) {
             const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
 			model = obtainDtoName(dto)
+            methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
+        }
+
+        if (method.name === 'delete') {
+            methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
         }
 
         if (hasGetOne || hasGetMany) {
-            const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
+            methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
             const queriesWithNames = []
             if (method.query) {
@@ -292,8 +298,7 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 %>
 
 @router.post('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
-<%# LATER: deal with methodArgs -%>
-def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
+def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
     try:
         with conn:
             with conn.cursor() as cur:
@@ -304,7 +309,6 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
 
         }
         if (method.name === 'put') {
-            const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
 %>
 
 @router.put('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
@@ -319,7 +323,6 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
 
         }
         if (method.name === 'delete') {
-            const methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
 %>
 
 @router.delete('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
