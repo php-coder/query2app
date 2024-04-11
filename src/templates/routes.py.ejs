@@ -207,6 +207,15 @@ endpoints.forEach(function(endpoint) {
         // LATER: add support for aggregated_queries (#17)
         const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
 
+        // define before "if", to make them available later
+        let sql
+        let formattedParams
+        if (method.name === 'post' || method.name === 'put' || method.name === 'delete') {
+            sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
+            const params = extractParamsFromQuery(method.query)
+            formattedParams = formatParamsAsPythonDict(params)
+        }
+
         if (hasGetOne || hasGetMany) {
             const methodArgs = Array.from(new Set([...argsFromPath, ...argsFromQuery, 'conn=Depends(db_connection)']))
 
@@ -276,11 +285,6 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
             const dto = query2dto(sqlParser, method)
 			// LATER: do we really need signature and cache?
 			const model = obtainDtoName(dto)
-
-            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
-            const params = extractParamsFromQuery(method.query)
-            const formattedParams = formatParamsAsPythonDict(params)
-
 %>
 
 @router.post('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
@@ -302,10 +306,6 @@ def <%- pythonMethodName %>(body: <%- model %>, conn=Depends(db_connection)):
 			const model = obtainDtoName(dto)
 
             const methodArgs = [ `body: ${model}`, ...argsFromPath, 'conn=Depends(db_connection)' ]
-
-            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
-            const params = extractParamsFromQuery(method.query)
-            const formattedParams = formatParamsAsPythonDict(params)
 %>
 
 @router.put('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
@@ -321,10 +321,6 @@ def <%- pythonMethodName %>(<%- methodArgs.join(', ') %>):
         }
         if (method.name === 'delete') {
             const methodArgs = [ ...argsFromPath, 'conn=Depends(db_connection)' ]
-
-            const sql = convertToPsycopgNamedArguments(formatQueryForPython(method.query, 20))
-            const params = extractParamsFromQuery(method.query)
-            const formattedParams = formatParamsAsPythonDict(params)
 %>
 
 @router.delete('<%- path %>', status_code=status.HTTP_204_NO_CONTENT)
