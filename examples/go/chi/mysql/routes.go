@@ -110,6 +110,31 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
+	r.Get("/v1/categories/search", func(w http.ResponseWriter, r *http.Request) {
+		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug , hidden FROM categories WHERE hidden = :hidden")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
+			internalServerError(w)
+			return
+		}
+
+		result := []CategoryDto{}
+		args := map[string]interface{}{
+			"hidden": r.URL.Query().Get("hidden"),
+		}
+		err = stmt.Select(&result, args)
+		switch err {
+		case sql.ErrNoRows:
+			w.WriteHeader(http.StatusNotFound)
+		case nil:
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(&result)
+		default:
+			fmt.Fprintf(os.Stderr, "Select failed: %v\n", err)
+			internalServerError(w)
+		}
+	})
+
 	r.Get("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
 		stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId")
 		if err != nil {

@@ -49,6 +49,13 @@ jsonpath "$[0].name_ru" == null
 jsonpath "$[0].slug"    == "sport"
 jsonpath "$[0].hidden"  == true
 
+GET {{ SERVER_URL }} /v1/categories/search?hidden=true
+HTTP 200
+[Asserts]
+jsonpath "$" count     == 1
+jsonpath "$[0].name"   == "Sport"
+jsonpath "$[0].hidden" == true
+
 
 # PUT should update an object
 PUT {{ SERVER_URL }}/v1/categories/1
@@ -70,6 +77,13 @@ jsonpath "$.name"     == "Fauna"
 jsonpath "$.name_ru"  == "Фауна"
 jsonpath "$.slug"     == "fauna"
 jsonpath "$.hidden"   == false
+
+GET {{ SERVER_URL }} /v1/categories/search?hidden=false
+HTTP 200
+[Asserts]
+jsonpath "$" count     == 1
+jsonpath "$[0].name"   == "Fauna"
+jsonpath "$[0].hidden" == false
 
 
 # DELETE should remove an object

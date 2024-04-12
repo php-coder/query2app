@@ -133,6 +133,28 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
         conn.close()
 
 
+@router.get('/v1/categories/search')
+def get_list_v1_categories_search(hidden, conn=Depends(db_connection)):
+    try:
+        with conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(
+                    """
+                    SELECT id
+                         , name
+                         , name_ru
+                         , slug
+                         , hidden
+                     FROM categories
+                    WHERE hidden = %(hidden)s
+                    """, {
+                        "hidden": hidden
+                    })
+                return cur.fetchall()
+    finally:
+        conn.close()
+
+
 @router.get('/v1/categories/{categoryId}')
 def get_v1_categories_category_id(categoryId, conn=Depends(db_connection)):
     try:

@@ -61,6 +61,19 @@ const register = (app: Express, pool: Pool) => {
         )
     })
 
+    app.get('/v1/categories/search', (req: Request, res: Response, next: NextFunction) => {
+        pool.query(
+            'SELECT id , name , name_ru , slug , hidden FROM categories WHERE hidden = :hidden',
+            { "hidden": req.query.hidden },
+            (err, rows, fields) => {
+                if (err) {
+                    return next(err)
+                }
+                res.json(rows)
+            }
+        )
+    })
+
     app.get('/v1/categories/:categoryId', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             'SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId',

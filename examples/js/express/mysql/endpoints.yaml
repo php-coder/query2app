@@ -77,6 +77,24 @@
         hidden:
           type: boolean
 
+- path: /v1/categories/search
+  get_list:
+    query: >-
+      SELECT id
+           , name
+           , name_ru
+           , slug
+           , hidden
+       FROM categories
+      WHERE hidden = :q.hidden
+    dto:
+      name: CategoryDto
+      fields:
+        id:
+          type: integer
+        hidden:
+          type: boolean
+
 - path: /v1/categories/:categoryId
   get:
     query: >-
