@@ -87,20 +87,15 @@ function extractProperties(queryAst) {
 	return []
 }
 
-// LATER: try to reduce duplication with routes.go.ejs
 function findOutType(fieldsInfo, fieldName) {
-	const defaultType = 'str'
-	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
-	if (!hasTypeInfo) {
-		return defaultType
-	}
-	if (fieldsInfo[fieldName].type === 'integer') {
+	const fieldType = retrieveType(fieldsInfo, fieldName)
+	if (fieldType === 'integer') {
 		return 'int'
 	}
-	if (fieldsInfo[fieldName].type === 'boolean') {
+	if (fieldType === 'boolean') {
 		return 'bool'
 	}
-	return defaultType
+	return 'str'
 }
 
 // LATER: reduce duplication with routes.go.ejs

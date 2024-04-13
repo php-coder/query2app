@@ -157,6 +157,16 @@ const lengthOfLongestString = (arr) => arr
 			0 /* initial value */
 		)
 
+// returns user-defined variable's type or null
+// Accepts method.dto.fields fieldsInfo
+const retrieveType = (fieldsInfo, fieldName) => {
+	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
+	if (hasTypeInfo) {
+		return fieldsInfo[fieldName].type
+	}
+    return null
+}
+
 const createEndpoints = async (destDir, { lang }, config) => {
     const ext = lang2extension(lang)
     const fileName = `routes.${ext}`
@@ -299,6 +309,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
 
             "placeholdersMap": placeholdersMap,
             "removeComments": removeComments,
+            "retrieveType": retrieveType,
         }
     )
 

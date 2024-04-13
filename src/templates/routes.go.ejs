@@ -71,18 +71,14 @@ function extractProperties(queryAst) {
 }
 
 function findOutType(fieldsInfo, fieldName) {
-	const defaultType = '*string'
-	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
-	if (!hasTypeInfo) {
-		return defaultType
-	}
-	if (hasTypeInfo && fieldsInfo[fieldName].type === 'integer') {
+	const fieldType = retrieveType(fieldsInfo, fieldName)
+	if (fieldType === 'integer') {
 		return '*int'
 	}
-	if (hasTypeInfo && fieldsInfo[fieldName].type === 'boolean') {
+	if (fieldType === 'boolean') {
 		return '*bool'
 	}
-	return defaultType
+	return '*string'
 }
 
 function addTypes(props, fieldsInfo) {
