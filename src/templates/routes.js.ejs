@@ -1,3 +1,8 @@
+<%# LATER: add it only when there is at least one parameter of boolean type -%>
+const parseBoolean = (value) => {
+    return value === 'true'
+}
+
 const register = (app, pool) => {
 <%
 endpoints.forEach(function(endpoint) {
@@ -13,7 +18,7 @@ endpoints.forEach(function(endpoint) {
         const sql = formatQuery(method.query)
         const params = extractParamsFromQuery(method.query)
         const formattedParams = params.length > 0
-            ? '\n            { ' + formatParamsAsJavaScriptObject(params) + ' },'
+            ? '\n            { ' + formatParamsAsJavaScriptObject(params, method) + ' },'
             : ''
 
         if (hasGetOne || hasGetMany) {

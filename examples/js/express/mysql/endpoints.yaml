@@ -94,6 +94,10 @@
           type: integer
         hidden:
           type: boolean
+    params:
+      query:
+        hidden:
+          type: boolean
 
 - path: /v1/categories/:categoryId
   get:

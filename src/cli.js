@@ -158,7 +158,7 @@ const lengthOfLongestString = (arr) => arr
 		)
 
 // returns user-defined variable's type or null
-// Accepts method.dto.fields fieldsInfo
+// Accepts method.dto.fields or method.params as fieldsInfo
 const retrieveType = (fieldsInfo, fieldName) => {
 	const hasTypeInfo = fieldsInfo.hasOwnProperty(fieldName) && fieldsInfo[fieldName].hasOwnProperty('type')
 	if (hasTypeInfo) {
@@ -235,7 +235,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
             
             // [ "p.page", "b.num" ] => '"page": req.params.page, "num": req.body.num'
             // (used only with Express)
-            "formatParamsAsJavaScriptObject": (params) => {
+            "formatParamsAsJavaScriptObject": (params, method) => {
                 if (params.length === 0) {
                     return params
                 }
@@ -245,6 +245,10 @@ const createEndpoints = async (destDir, { lang }, config) => {
                             const bindTarget = p.substring(0, 1)
                             const paramName = p.substring(2)
                             const prefix = placeholdersMap['js'][bindTarget]
+                            // LATER: add support for path (method.params.path) and body (method.dto.fields) parameters
+                            if (method && bindTarget === 'q' && retrieveType(method.params.query, paramName) === 'boolean') {
+                                return `"${paramName}": parseBoolean(${prefix}.${paramName})`
+                            }
                             return `"${paramName}": ${prefix}.${paramName}`
                         }
                     ).join(', ')
