@@ -1,6 +1,11 @@
 import { Express, NextFunction, Request, Response } from 'express'
 import { Pool } from 'mysql'
 
+<%# LATER: add it only when there is at least one parameter of boolean type -%>
+const parseBoolean = (value: any) => {
+    return typeof value === 'string' && value === 'true'
+}
+
 const register = (app: Express, pool: Pool) => {
 <%
 endpoints.forEach(function(endpoint) {
@@ -16,7 +21,7 @@ endpoints.forEach(function(endpoint) {
         const sql = formatQuery(method.query)
         const params = extractParamsFromQuery(method.query)
         const formattedParams = params.length > 0
-            ? '\n            { ' + formatParamsAsJavaScriptObject(params) + ' },'
+            ? '\n            { ' + formatParamsAsJavaScriptObject(params, method) + ' },'
             : ''
 
         if (hasGetOne || hasGetMany) {

@@ -1,6 +1,10 @@
 import { Express, NextFunction, Request, Response } from 'express'
 import { Pool } from 'mysql'
 
+const parseBoolean = (value: any) => {
+    return typeof value === 'string' && value === 'true'
+}
+
 const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/categories/count', (req: Request, res: Response, next: NextFunction) => {
@@ -64,7 +68,7 @@ const register = (app: Express, pool: Pool) => {
     app.get('/v1/categories/search', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
             'SELECT id , name , name_ru , slug , hidden FROM categories WHERE hidden = :hidden',
-            { "hidden": req.query.hidden },
+            { "hidden": parseBoolean(req.query.hidden) },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)

@@ -246,7 +246,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
                             const paramName = p.substring(2)
                             const prefix = placeholdersMap['js'][bindTarget]
                             // LATER: add support for path (method.params.path) and body (method.dto.fields) parameters
-                            if (method && bindTarget === 'q' && retrieveType(method.params.query, paramName) === 'boolean') {
+                            if (bindTarget === 'q' && retrieveType(method.params.query, paramName) === 'boolean') {
                                 return `"${paramName}": parseBoolean(${prefix}.${paramName})`
                             }
                             return `"${paramName}": ${prefix}.${paramName}`
