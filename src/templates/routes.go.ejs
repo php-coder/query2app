@@ -6,6 +6,8 @@ import "fmt"
 import "io"
 import "net/http"
 import "os"
+<%# LATER: add it only when there is at least one parameter of boolean type -%>
+import "strconv"
 import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
@@ -175,6 +177,15 @@ endpoints.forEach(function(endpoint) {
 	})
 })
 -%>
+<%# LATER: add it only when there is at least one parameter of boolean type -%>
+func parseBoolean(value string) bool {
+	boolValue, err := strconv.ParseBool(value)
+	if err != nil {
+		boolValue = false
+	}
+	return boolValue
+}
+
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 <%
 endpoints.forEach(function(endpoint) {
@@ -219,7 +230,7 @@ endpoints.forEach(function(endpoint) {
 
 		<%- resultVariableDeclaration %>
 		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params) %>
+			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		err = stmt.<%- queryFunction %>(&result, args)
 <%			} else { -%>
@@ -246,7 +257,7 @@ endpoints.forEach(function(endpoint) {
 		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params) %>
+			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
 			"<%- formatQuery(method.query) %>",
@@ -269,7 +280,7 @@ endpoints.forEach(function(endpoint) {
 		json.NewDecoder(r.Body).Decode(&body)
 
 		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params) %>
+			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
 			"<%- formatQuery(method.query) %>",
@@ -289,7 +300,7 @@ endpoints.forEach(function(endpoint) {
 %>
 	r.Delete("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params) %>
+			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
 			"<%- formatQuery(method.query) %>",

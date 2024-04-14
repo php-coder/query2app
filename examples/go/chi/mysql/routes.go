@@ -6,6 +6,7 @@ import "fmt"
 import "io"
 import "net/http"
 import "os"
+import "strconv"
 import "github.com/go-chi/chi"
 import "github.com/jmoiron/sqlx"
 
@@ -27,6 +28,14 @@ type CreateCategoryDto struct {
 	Slug   *string `json:"slug" db:"slug"`
 	Hidden *bool   `json:"hidden" db:"hidden"`
 	UserId *int    `json:"user_id" db:"user_id"`
+}
+
+func parseBoolean(value string) bool {
+	boolValue, err := strconv.ParseBool(value)
+	if err != nil {
+		boolValue = false
+	}
+	return boolValue
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
@@ -120,7 +129,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 
 		result := []CategoryDto{}
 		args := map[string]interface{}{
-			"hidden": r.URL.Query().Get("hidden"),
+			"hidden": parseBoolean(r.URL.Query().Get("hidden")),
 		}
 		err = stmt.Select(&result, args)
 		switch err {

@@ -272,7 +272,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
 
             // [ "p.page", "b.num" ] => '"page": chi.URLParam(r, "page"),\n\t\t\t"num": dto.Num),'
             // (used only with Golang's go-chi)
-            "formatParamsAsGolangMap": (params) => {
+            "formatParamsAsGolangMap": (params, method) => {
                 if (params.length === 0) {
                     return params
                 }
@@ -284,9 +284,14 @@ const createEndpoints = async (destDir, { lang }, config) => {
                             const paramName = p.substring(2)
                             const formatFunc = placeholdersMap['go'][bindTarget]
                             const quotedParam = '"' + paramName + '":'
+                            let extractParamExpr = formatFunc(paramName)
+                            // LATER: add support for path (method.params.path) and body (method.dto.fields) parameters
+                            if (bindTarget === 'q' && retrieveType(method.params.query, paramName) === 'boolean') {
+                                extractParamExpr = `parseBoolean(${extractParamExpr})`
+                            }
                             // We don't count quotes and colon because they are compensated by "p." prefix.
                             // We do +1 because the longest parameter will also have an extra space as a delimiter.
-                            return `${quotedParam.padEnd(maxParamNameLength+1)} ${formatFunc(paramName)},`
+                            return `${quotedParam.padEnd(maxParamNameLength+1)} ${extractParamExpr},`
                         }
                     ).join('\n\t\t\t')
             },
