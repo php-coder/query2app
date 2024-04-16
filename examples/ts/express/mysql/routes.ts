@@ -30,7 +30,9 @@ const register = (app: Express, pool: Pool) => {
               JOIN series s
                 ON s.id = cs.series_id
              WHERE cs.collection_id = :collectionId`,
-            { "collectionId": req.params.collectionId },
+            {
+                "collectionId": req.params.collectionId
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -84,7 +86,13 @@ const register = (app: Express, pool: Pool) => {
                 , NOW()
                 , :user_id
                 )`,
-            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id },
+            {
+                "name": req.body.name,
+                "name_ru": req.body.name_ru,
+                "slug": req.body.slug,
+                "hidden": req.body.hidden,
+                "user_id": req.body.user_id
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -103,7 +111,9 @@ const register = (app: Express, pool: Pool) => {
                  , hidden
              FROM categories
             WHERE hidden = :hidden`,
-            { "hidden": parseBoolean(req.query.hidden) },
+            {
+                "hidden": parseBoolean(req.query.hidden)
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -122,7 +132,9 @@ const register = (app: Express, pool: Pool) => {
                  , hidden
               FROM categories
              WHERE id = :categoryId`,
-            { "categoryId": req.params.categoryId },
+            {
+                "categoryId": req.params.categoryId
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -146,7 +158,14 @@ const register = (app: Express, pool: Pool) => {
                  , updated_at = NOW()
                  , updated_by = :user_id
              WHERE id = :categoryId`,
-            { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id, "categoryId": req.params.categoryId },
+            {
+                "name": req.body.name,
+                "name_ru": req.body.name_ru,
+                "slug": req.body.slug,
+                "hidden": req.body.hidden,
+                "user_id": req.body.user_id,
+                "categoryId": req.params.categoryId
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -161,7 +180,9 @@ const register = (app: Express, pool: Pool) => {
             `DELETE
               FROM categories
              WHERE id = :categoryId`,
-            { "categoryId": req.params.categoryId },
+            {
+                "categoryId": req.params.categoryId
+            },
             (err, rows, fields) => {
                 if (err) {
                     return next(err)

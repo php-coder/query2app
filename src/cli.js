@@ -239,9 +239,11 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 if (params.length === 0) {
                     return params
                 }
-                const indentLevel = 12
-                const indent = ' '.repeat(indentLevel)
-                return `\n${indent}{ ` + Array.from(
+                const initialIndentLevel = 12
+                const codeIndentLevel = initialIndentLevel + 4
+                const initialIndent = ' '.repeat(initialIndentLevel)
+                const indent = ' '.repeat(codeIndentLevel)
+                return `\n${initialIndent}{\n` + Array.from(
                         new Set(params),
                         p => {
                             const bindTarget = p.substring(0, 1)
@@ -249,11 +251,11 @@ const createEndpoints = async (destDir, { lang }, config) => {
                             const prefix = placeholdersMap['js'][bindTarget]
                             // LATER: add support for path (method.params.path) and body (method.dto.fields) parameters
                             if (bindTarget === 'q' && retrieveType(method.params.query, paramName) === 'boolean') {
-                                return `"${paramName}": parseBoolean(${prefix}.${paramName})`
+                                return `${indent}"${paramName}": parseBoolean(${prefix}.${paramName})`
                             }
-                            return `"${paramName}": ${prefix}.${paramName}`
+                            return `${indent}"${paramName}": ${prefix}.${paramName}`
                         }
-                    ).join(', ') + ' },'
+                    ).join(',\n') + `\n${initialIndent}},`
             },
 
             // "SELECT *\n   FROM foo WHERE id = :p.id" => "SELECT * FROM foo WHERE id = :id"
