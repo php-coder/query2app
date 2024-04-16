@@ -197,7 +197,7 @@ endpoints.forEach(function(endpoint) {
             return
         }
 
-        const sql = formatQuery(method.query)
+        const sql = formatQueryForJs(method.query, 12)
 
         // define before "if", to make it available later
         let dataType
@@ -223,7 +223,7 @@ endpoints.forEach(function(endpoint) {
 <%
             if (params.length > 0) {
 -%>
-        stmt, err := db.PrepareNamed("<%- sql %>")
+        stmt, err := db.PrepareNamed(<%- sql %>)
         if err != nil {
             fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
             internalServerError(w)
@@ -237,7 +237,8 @@ endpoints.forEach(function(endpoint) {
         err = stmt.<%- queryFunction %>(&result, args)
 <%            } else { -%>
         <%- resultVariableDeclaration %>
-        err := db.<%- queryFunction %>(&result, "<%- sql %>")
+        err := db.<%- queryFunction %>(
+            &result,<%- sql %>)
 <%            } -%>
         switch err {
         case sql.ErrNoRows:
@@ -261,8 +262,7 @@ endpoints.forEach(function(endpoint) {
         args := map[string]interface{}{
             <%- formatParamsAsGolangMap(params, method) %>
         }
-        _, err := db.NamedExec(
-            "<%- sql %>",
+        _, err := db.NamedExec(<%- sql %>,
             args,
         )
         if err != nil {
@@ -284,8 +284,7 @@ endpoints.forEach(function(endpoint) {
         args := map[string]interface{}{
             <%- formatParamsAsGolangMap(params, method) %>
         }
-        _, err := db.NamedExec(
-            "<%- sql %>",
+        _, err := db.NamedExec(<%- sql %>,
             args,
         )
         if err != nil {
@@ -304,8 +303,7 @@ endpoints.forEach(function(endpoint) {
         args := map[string]interface{}{
             <%- formatParamsAsGolangMap(params, method) %>
         }
-        _, err := db.NamedExec(
-            "<%- sql %>",
+        _, err := db.NamedExec(<%- sql %>,
             args,
         )
         if err != nil {

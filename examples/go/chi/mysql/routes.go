@@ -42,7 +42,9 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 
     r.Get("/v1/categories/count", func(w http.ResponseWriter, r *http.Request) {
         var result CounterDto
-        err := db.Get(&result, "SELECT COUNT(*) AS counter FROM categories")
+        err := db.Get(
+            &result,
+            "SELECT COUNT(*) AS counter FROM categories")
         switch err {
         case sql.ErrNoRows:
             w.WriteHeader(http.StatusNotFound)
@@ -56,7 +58,12 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
     })
 
     r.Get("/v1/collections/{collectionId}/categories/count", func(w http.ResponseWriter, r *http.Request) {
-        stmt, err := db.PrepareNamed("SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId")
+        stmt, err := db.PrepareNamed(
+            `SELECT COUNT(DISTINCT s.category_id) AS counter
+              FROM collections_series cs
+              JOIN series s
+                ON s.id = cs.series_id
+             WHERE cs.collection_id = :collectionId`)
         if err != nil {
             fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
             internalServerError(w)
@@ -82,7 +89,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 
     r.Get("/v1/categories", func(w http.ResponseWriter, r *http.Request) {
         result := []CategoryDto{}
-        err := db.Select(&result, "SELECT id , name , name_ru , slug , hidden FROM categories")
+        err := db.Select(
+            &result,
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+             FROM categories`)
         switch err {
         case sql.ErrNoRows:
             w.WriteHeader(http.StatusNotFound)
@@ -107,7 +121,27 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			"user_id": body.UserId,
         }
         _, err := db.NamedExec(
-            "INSERT INTO categories ( name , name_ru , slug , hidden , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , :hidden , NOW() , :user_id , NOW() , :user_id )",
+            `INSERT
+              INTO categories
+                 ( name
+                 , name_ru
+                 , slug
+                 , hidden
+                 , created_at
+                 , created_by
+                 , updated_at
+                 , updated_by
+                 )
+            VALUES
+                ( :name
+                , :name_ru
+                , :slug
+                , :hidden
+                , NOW()
+                , :user_id
+                , NOW()
+                , :user_id
+                )`,
             args,
         )
         if err != nil {
@@ -120,7 +154,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
     })
 
     r.Get("/v1/categories/search", func(w http.ResponseWriter, r *http.Request) {
-        stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug , hidden FROM categories WHERE hidden = :hidden")
+        stmt, err := db.PrepareNamed(
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+             FROM categories
+            WHERE hidden = :hidden`)
         if err != nil {
             fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
             internalServerError(w)
@@ -145,7 +186,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
     })
 
     r.Get("/v1/categories/{categoryId}", func(w http.ResponseWriter, r *http.Request) {
-        stmt, err := db.PrepareNamed("SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId")
+        stmt, err := db.PrepareNamed(
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+              FROM categories
+             WHERE id = :categoryId`)
         if err != nil {
             fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
             internalServerError(w)
@@ -182,7 +230,14 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
 			"categoryId": chi.URLParam(r, "categoryId"),
         }
         _, err := db.NamedExec(
-            "UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , hidden = :hidden , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId",
+            `UPDATE categories
+               SET name = :name
+                 , name_ru = :name_ru
+                 , slug = :slug
+                 , hidden = :hidden
+                 , updated_at = NOW()
+                 , updated_by = :user_id
+             WHERE id = :categoryId`,
             args,
         )
         if err != nil {
@@ -199,7 +254,9 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
             "categoryId": chi.URLParam(r, "categoryId"),
         }
         _, err := db.NamedExec(
-            "DELETE FROM categories WHERE id = :categoryId",
+            `DELETE
+              FROM categories
+             WHERE id = :categoryId`,
             args,
         )
         if err != nil {
