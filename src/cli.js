@@ -255,12 +255,11 @@ const createEndpoints = async (destDir, { lang }, config) => {
             },
 
             // "SELECT *\n   FROM foo WHERE id = :p.id" => "SELECT * FROM foo WHERE id = :id"
-            "formatQuery": (query) => {
+            "formatQueryAsSingleLine": (query) => {
                 return removePlaceholders(flattenQuery(removeComments(query)))
             },
 
-            // Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
-            // and also use backticks for multiline strings
+            // Uses backticks for multiline strings.
             // (used only with JS, TS, Golang)
             "formatQueryForJs": (query, indentLevel) => {
                 const sql = removePlaceholders(removeComments(query))
@@ -273,8 +272,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 return `\n${indent}"${sql}"`
             },
 
-            // Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
-            // and also use """ for multiline strings
+            // Uses """ for multiline strings.
             // (used only with Python)
             "formatQueryForPython": (query, indentLevel) => {
                 const sql = removePlaceholders(removeComments(query))

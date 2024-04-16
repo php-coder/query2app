@@ -101,7 +101,7 @@ function query2dto(parser, method) {
 	const queryAst = parser.astify(query)
 	const props = extractProperties(queryAst)
 	if (props.length === 0) {
-		console.warn('Could not create DTO for query:', formatQuery(query))
+		console.warn('Could not create DTO for query:', formatQueryAsSingleLine(query))
 		console.debug('Query AST:')
 		console.debug(queryAst)
 		return null
