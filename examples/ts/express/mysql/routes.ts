@@ -9,7 +9,7 @@ const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/categories/count', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'SELECT COUNT(*) AS counter FROM categories',
+            "SELECT COUNT(*) AS counter FROM categories",
             (err, rows, fields) => {
                 if (err) {
                     return next(err)

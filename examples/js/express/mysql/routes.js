@@ -6,7 +6,7 @@ const register = (app, pool) => {
 
     app.get('/v1/categories/count', (req, res, next) => {
         pool.query(
-            'SELECT COUNT(*) AS counter FROM categories',
+            "SELECT COUNT(*) AS counter FROM categories",
             (err, rows, fields) => {
                 if (err) {
                     return next(err)

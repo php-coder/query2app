@@ -270,7 +270,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
                     const indentedSql = sql.replace(/\n/g, '\n' + indent)
                     return "\n" + indent + '`' + indentedSql + '`'
                 }
-                return `\n${indent}'${sql}'`
+                return `\n${indent}"${sql}"`
             },
 
             // Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
