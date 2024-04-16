@@ -25,7 +25,11 @@ const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/collections/:collectionId/categories/count', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'SELECT COUNT(DISTINCT s.category_id) AS counter FROM collections_series cs JOIN series s ON s.id = cs.series_id WHERE cs.collection_id = :collectionId',
+            `SELECT COUNT(DISTINCT s.category_id) AS counter
+              FROM collections_series cs
+              JOIN series s
+                ON s.id = cs.series_id
+             WHERE cs.collection_id = :collectionId`,
             { "collectionId": req.params.collectionId },
             (err, rows, fields) => {
                 if (err) {
@@ -42,7 +46,12 @@ const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/categories', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'SELECT id , name , name_ru , slug , hidden FROM categories',
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+             FROM categories`,
             (err, rows, fields) => {
                 if (err) {
                     return next(err)
@@ -54,7 +63,27 @@ const register = (app: Express, pool: Pool) => {
 
     app.post('/v1/categories', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'INSERT INTO categories ( name , name_ru , slug , hidden , created_at , created_by , updated_at , updated_by ) VALUES ( :name , :name_ru , :slug , :hidden , NOW() , :user_id , NOW() , :user_id )',
+            `INSERT
+              INTO categories
+                 ( name
+                 , name_ru
+                 , slug
+                 , hidden
+                 , created_at
+                 , created_by
+                 , updated_at
+                 , updated_by
+                 )
+            VALUES
+                ( :name
+                , :name_ru
+                , :slug
+                , :hidden
+                , NOW()
+                , :user_id
+                , NOW()
+                , :user_id
+                )`,
             { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id },
             (err, rows, fields) => {
                 if (err) {
@@ -67,7 +96,13 @@ const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/categories/search', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'SELECT id , name , name_ru , slug , hidden FROM categories WHERE hidden = :hidden',
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+             FROM categories
+            WHERE hidden = :hidden`,
             { "hidden": parseBoolean(req.query.hidden) },
             (err, rows, fields) => {
                 if (err) {
@@ -80,7 +115,13 @@ const register = (app: Express, pool: Pool) => {
 
     app.get('/v1/categories/:categoryId', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'SELECT id , name , name_ru , slug , hidden FROM categories WHERE id = :categoryId',
+            `SELECT id
+                 , name
+                 , name_ru
+                 , slug
+                 , hidden
+              FROM categories
+             WHERE id = :categoryId`,
             { "categoryId": req.params.categoryId },
             (err, rows, fields) => {
                 if (err) {
@@ -97,7 +138,14 @@ const register = (app: Express, pool: Pool) => {
 
     app.put('/v1/categories/:categoryId', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'UPDATE categories SET name = :name , name_ru = :name_ru , slug = :slug , hidden = :hidden , updated_at = NOW() , updated_by = :user_id WHERE id = :categoryId',
+            `UPDATE categories
+               SET name = :name
+                 , name_ru = :name_ru
+                 , slug = :slug
+                 , hidden = :hidden
+                 , updated_at = NOW()
+                 , updated_by = :user_id
+             WHERE id = :categoryId`,
             { "name": req.body.name, "name_ru": req.body.name_ru, "slug": req.body.slug, "hidden": req.body.hidden, "user_id": req.body.user_id, "categoryId": req.params.categoryId },
             (err, rows, fields) => {
                 if (err) {
@@ -110,7 +158,9 @@ const register = (app: Express, pool: Pool) => {
 
     app.delete('/v1/categories/:categoryId', (req: Request, res: Response, next: NextFunction) => {
         pool.query(
-            'DELETE FROM categories WHERE id = :categoryId',
+            `DELETE
+              FROM categories
+             WHERE id = :categoryId`,
             { "categoryId": req.params.categoryId },
             (err, rows, fields) => {
                 if (err) {

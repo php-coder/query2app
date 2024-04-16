@@ -261,7 +261,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
 
             // Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
             // and also use backticks for multiline strings
-            // (used only with JS)
+            // (used only with JS, TS)
             "formatQueryForJs": (query, indentLevel) => {
                 const sql = removePlaceholders(removeComments(query))
                 const indent = ' '.repeat(indentLevel)
