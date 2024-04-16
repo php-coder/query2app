@@ -21,8 +21,8 @@ import "github.com/jmoiron/sqlx"
 //   ]
 // } => [ 'nameRu' ]
 function extractSelectParameters(queryAst) {
-	return queryAst.columns
-		.map(column => column.as !== null ? column.as : column.expr.column)
+    return queryAst.columns
+        .map(column => column.as !== null ? column.as : column.expr.column)
 }
 
 // {'values':
@@ -34,10 +34,10 @@ function extractSelectParameters(queryAst) {
 //   ]
 // } => [ 'user_id' ]
 function extractInsertValues(queryAst) {
-	const values = queryAst.values.flatMap(elem => elem.value)
-		.map(elem => elem.type === 'param' ? elem.value : null)
-		.filter(elem => elem) // filter out nulls
-	return Array.from(new Set(values))
+    const values = queryAst.values.flatMap(elem => elem.value)
+        .map(elem => elem.type === 'param' ? elem.value : null)
+        .filter(elem => elem) // filter out nulls
+    return Array.from(new Set(values))
 }
 
 // {'set':
@@ -50,86 +50,86 @@ function extractInsertValues(queryAst) {
 //   ]
 // } => [ 'user_id' ]
 function extractUpdateValues(queryAst) {
-	// LATER: distinguish between b.param and q.param and extract only first
-	return queryAst.set.map(elem => elem.value.type === 'param' ? elem.value.value : null)
-		.filter(value => value) // filter out nulls
+    // LATER: distinguish between b.param and q.param and extract only first
+    return queryAst.set.map(elem => elem.value.type === 'param' ? elem.value.value : null)
+        .filter(value => value) // filter out nulls
 }
 
 // LATER: consider taking into account b.params from WHERE clause
 function extractProperties(queryAst) {
-	if (queryAst.type === 'select') {
-		return extractSelectParameters(queryAst)
-	}
+    if (queryAst.type === 'select') {
+        return extractSelectParameters(queryAst)
+    }
 
-	if (queryAst.type === 'insert') {
-		return extractInsertValues(queryAst)
-	}
+    if (queryAst.type === 'insert') {
+        return extractInsertValues(queryAst)
+    }
 
-	if (queryAst.type === 'update') {
-		return extractUpdateValues(queryAst)
-	}
+    if (queryAst.type === 'update') {
+        return extractUpdateValues(queryAst)
+    }
 
-	return []
+    return []
 }
 
 function findOutType(fieldsInfo, fieldName) {
-	const fieldType = retrieveType(fieldsInfo, fieldName)
-	if (fieldType === 'integer') {
-		return '*int'
-	}
-	if (fieldType === 'boolean') {
-		return '*bool'
-	}
-	return '*string'
+    const fieldType = retrieveType(fieldsInfo, fieldName)
+    if (fieldType === 'integer') {
+        return '*int'
+    }
+    if (fieldType === 'boolean') {
+        return '*bool'
+    }
+    return '*string'
 }
 
 function addTypes(props, fieldsInfo) {
-	return props.map(prop => {
-		return {
-			"name": prop,
-			"type": findOutType(fieldsInfo, prop),
-		}
-	})
+    return props.map(prop => {
+        return {
+            "name": prop,
+            "type": findOutType(fieldsInfo, prop),
+        }
+    })
 }
 
 function query2dto(parser, method) {
-	const query = removePlaceholders(method.query)
-	const queryAst = parser.astify(query)
-	const props = extractProperties(queryAst)
-	if (props.length === 0) {
-		console.warn('Could not create DTO for query:', formatQuery(query))
-		console.debug('Query AST:')
-		console.debug(queryAst)
-		return null
-	}
-	const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {}
-	const propsWithTypes = addTypes(props, fieldsInfo)
-	const hasName = method.dto && method.dto.name && method.dto.name.length > 0
-	const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter
-	return {
-		"name": name,
-		"hasUserProvidedName": hasName,
-		"props": propsWithTypes,
-		// max lengths are needed for proper formatting
-		"maxFieldNameLength": lengthOfLongestString(props.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))),
-		"maxFieldTypeLength": lengthOfLongestString(propsWithTypes.map(el => el.type)),
-		// required for de-duplication
-		// [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
-		// LATER: sort before join
-		"signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
-	}
+    const query = removePlaceholders(method.query)
+    const queryAst = parser.astify(query)
+    const props = extractProperties(queryAst)
+    if (props.length === 0) {
+        console.warn('Could not create DTO for query:', formatQuery(query))
+        console.debug('Query AST:')
+        console.debug(queryAst)
+        return null
+    }
+    const fieldsInfo = method.dto && method.dto.fields ? method.dto.fields : {}
+    const propsWithTypes = addTypes(props, fieldsInfo)
+    const hasName = method.dto && method.dto.name && method.dto.name.length > 0
+    const name = hasName ? method.dto.name : "Dto" + ++globalDtoCounter
+    return {
+        "name": name,
+        "hasUserProvidedName": hasName,
+        "props": propsWithTypes,
+        // max lengths are needed for proper formatting
+        "maxFieldNameLength": lengthOfLongestString(props.map(el => el.indexOf('_') < 0 ? el : el.replace(/_/g, ''))),
+        "maxFieldTypeLength": lengthOfLongestString(propsWithTypes.map(el => el.type)),
+        // required for de-duplication
+        // [ {name:foo, type:int}, {name:bar, type:string} ] => "foo=int bar=string"
+        // LATER: sort before join
+        "signature": propsWithTypes.map(field => `${field.name}=${field.type}`).join(' ')
+    }
 }
 
 function dto2struct(dto) {
-	let result = `type ${dto.name} struct {\n`
-	dto.props.forEach(prop => {
-		const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength)
-		const fieldType = prop.type.padEnd(dto.maxFieldTypeLength)
-		result += `\t${fieldName} ${fieldType} \`json:"${prop.name}" db:"${prop.name}"\`\n`
-	})
-	result += '}\n'
+    let result = `type ${dto.name} struct {\n`
+    dto.props.forEach(prop => {
+        const fieldName = capitalize(snake2camelCase(prop.name)).padEnd(dto.maxFieldNameLength)
+        const fieldType = prop.type.padEnd(dto.maxFieldTypeLength)
+        result += `\t${fieldName} ${fieldType} \`json:"${prop.name}" db:"${prop.name}"\`\n`
+    })
+    result += '}\n'
 
-	return result
+    return result
 }
 
 let globalDtoCounter = 0
@@ -138,187 +138,187 @@ const dtoCache = {}
 const namedDtoCache = {}
 
 function cacheDto(dto) {
-	if (dto.hasUserProvidedName) {
-		namedDtoCache[dto.signature] = dto.name
-	} else {
-		dtoCache[dto.signature] = dto.name
-	}
-	return dto
+    if (dto.hasUserProvidedName) {
+        namedDtoCache[dto.signature] = dto.name
+    } else {
+        dtoCache[dto.signature] = dto.name
+    }
+    return dto
 }
 
 function dtoInCache(dto) {
-	const existsNamed = namedDtoCache.hasOwnProperty(dto.signature)
-	// always prefer user specified name even when we have a similar DTO in cache for generated names
-	if (dto.hasUserProvidedName) {
-		return existsNamed
-	}
-	// prefer to re-use named DTO
-	return existsNamed || dtoCache.hasOwnProperty(dto.signature)
+    const existsNamed = namedDtoCache.hasOwnProperty(dto.signature)
+    // always prefer user specified name even when we have a similar DTO in cache for generated names
+    if (dto.hasUserProvidedName) {
+        return existsNamed
+    }
+    // prefer to re-use named DTO
+    return existsNamed || dtoCache.hasOwnProperty(dto.signature)
 }
 
 function obtainDtoName(dto) {
-	const cacheKey = dto.signature
-	return namedDtoCache.hasOwnProperty(cacheKey) ? namedDtoCache[cacheKey] : dto.name
+    const cacheKey = dto.signature
+    return namedDtoCache.hasOwnProperty(cacheKey) ? namedDtoCache[cacheKey] : dto.name
 }
 
 const verbs_with_dto = [ 'get', 'post', 'put' ]
 endpoints.forEach(function(endpoint) {
-	const dtos = endpoint.methods
-		.filter(method => method.query) // filter out aggregated_queries for a while (see #17)
-		.filter(method => verbs_with_dto.includes(method.verb))
-		.map(method => query2dto(sqlParser, method))
-		.filter(elem => elem) // filter out nulls
-		.filter(dto => !dtoInCache(dto))
-		.map(dto => dto2struct(cacheDto(dto)))
-		.forEach(struct => {
+    const dtos = endpoint.methods
+        .filter(method => method.query) // filter out aggregated_queries for a while (see #17)
+        .filter(method => verbs_with_dto.includes(method.verb))
+        .map(method => query2dto(sqlParser, method))
+        .filter(elem => elem) // filter out nulls
+        .filter(dto => !dtoInCache(dto))
+        .map(dto => dto2struct(cacheDto(dto)))
+        .forEach(struct => {
 -%>
 <%- struct %>
 <%
-	})
+    })
 })
 -%>
 <%# LATER: add it only when there is at least one parameter of boolean type -%>
 func parseBoolean(value string) bool {
-	boolValue, err := strconv.ParseBool(value)
-	if err != nil {
-		boolValue = false
-	}
-	return boolValue
+    boolValue, err := strconv.ParseBool(value)
+    if err != nil {
+        boolValue = false
+    }
+    return boolValue
 }
 
 func registerRoutes(r chi.Router, db *sqlx.DB) {
 <%
 endpoints.forEach(function(endpoint) {
-	const path = convertPathPlaceholders(endpoint.path)
+    const path = convertPathPlaceholders(endpoint.path)
 
-	endpoint.methods.forEach(function(method) {
-		if (!method.query) {
-			// filter out aggregated_queries for a while (see #17)
-			return
-		}
+    endpoint.methods.forEach(function(method) {
+        if (!method.query) {
+            // filter out aggregated_queries for a while (see #17)
+            return
+        }
 
-		const sql = formatQuery(method.query)
+        const sql = formatQuery(method.query)
 
-		// define before "if", to make it available later
-		let dataType
-		if (method.name !== 'delete') {
-			const dto = query2dto(sqlParser, method)
-			// LATER: do we really need signature and cache?
-			dataType = obtainDtoName(dto)
-		}
+        // define before "if", to make it available later
+        let dataType
+        if (method.name !== 'delete') {
+            const dto = query2dto(sqlParser, method)
+            // LATER: do we really need signature and cache?
+            dataType = obtainDtoName(dto)
+        }
 
-		const params = extractParamsFromQuery(method.query)
-		const hasGetOne = method.name === 'get'
-		const hasGetMany = method.name === 'get_list'
-		if (hasGetOne || hasGetMany) {
-			const resultVariableDeclaration = hasGetMany
-				? `result := []${dataType}\{\}`
-				: `var result ${dataType}`
+        const params = extractParamsFromQuery(method.query)
+        const hasGetOne = method.name === 'get'
+        const hasGetMany = method.name === 'get_list'
+        if (hasGetOne || hasGetMany) {
+            const resultVariableDeclaration = hasGetMany
+                ? `result := []${dataType}\{\}`
+                : `var result ${dataType}`
 
-			const queryFunction = hasGetOne ? 'Get' : 'Select'
-			// LATER: handle only particular method (get/post/put)
-			// LATER: include method/path into an error message
+            const queryFunction = hasGetOne ? 'Get' : 'Select'
+            // LATER: handle only particular method (get/post/put)
+            // LATER: include method/path into an error message
 %>
-	r.Get("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
+    r.Get("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
 <%
-			if (params.length > 0) {
+            if (params.length > 0) {
 -%>
-		stmt, err := db.PrepareNamed("<%- sql %>")
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
-			internalServerError(w)
-			return
-		}
+        stmt, err := db.PrepareNamed("<%- sql %>")
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
+            internalServerError(w)
+            return
+        }
 
-		<%- resultVariableDeclaration %>
-		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params, method) %>
-		}
-		err = stmt.<%- queryFunction %>(&result, args)
-<%			} else { -%>
-		<%- resultVariableDeclaration %>
-		err := db.<%- queryFunction %>(&result, "<%- sql %>")
-<%			} -%>
-		switch err {
-		case sql.ErrNoRows:
-			w.WriteHeader(http.StatusNotFound)
-		case nil:
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(&result)
-		default:
-			fmt.Fprintf(os.Stderr, "<%- queryFunction %> failed: %v\n", err)
-			internalServerError(w)
-		}
-	})
+        <%- resultVariableDeclaration %>
+        args := map[string]interface{}{
+            <%- formatParamsAsGolangMap(params, method) %>
+        }
+        err = stmt.<%- queryFunction %>(&result, args)
+<%            } else { -%>
+        <%- resultVariableDeclaration %>
+        err := db.<%- queryFunction %>(&result, "<%- sql %>")
+<%            } -%>
+        switch err {
+        case sql.ErrNoRows:
+            w.WriteHeader(http.StatusNotFound)
+        case nil:
+            w.Header().Set("Content-Type", "application/json")
+            json.NewEncoder(w).Encode(&result)
+        default:
+            fmt.Fprintf(os.Stderr, "<%- queryFunction %> failed: %v\n", err)
+            internalServerError(w)
+        }
+    })
 <%
-		}
-		if (method.name === 'post') {
+        }
+        if (method.name === 'post') {
 %>
-	r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var body <%- dataType %>
-		json.NewDecoder(r.Body).Decode(&body)
+    r.Post("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
+        var body <%- dataType %>
+        json.NewDecoder(r.Body).Decode(&body)
 
-		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params, method) %>
-		}
-		_, err := db.NamedExec(
-			"<%- sql %>",
-			args,
-		)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			internalServerError(w)
-			return
-		}
+        args := map[string]interface{}{
+            <%- formatParamsAsGolangMap(params, method) %>
+        }
+        _, err := db.NamedExec(
+            "<%- sql %>",
+            args,
+        )
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+            internalServerError(w)
+            return
+        }
 
-		w.WriteHeader(http.StatusNoContent)
-	})
+        w.WriteHeader(http.StatusNoContent)
+    })
 <%
-		}
-		if (method.name === 'put') {
+        }
+        if (method.name === 'put') {
 %>
-	r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		var body <%- dataType %>
-		json.NewDecoder(r.Body).Decode(&body)
+    r.Put("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
+        var body <%- dataType %>
+        json.NewDecoder(r.Body).Decode(&body)
 
-		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params, method) %>
-		}
-		_, err := db.NamedExec(
-			"<%- sql %>",
-			args,
-		)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			internalServerError(w)
-			return
-		}
+        args := map[string]interface{}{
+            <%- formatParamsAsGolangMap(params, method) %>
+        }
+        _, err := db.NamedExec(
+            "<%- sql %>",
+            args,
+        )
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+            internalServerError(w)
+            return
+        }
 
-		w.WriteHeader(http.StatusNoContent)
-	})
+        w.WriteHeader(http.StatusNoContent)
+    })
 <%
-		}
-		if (method.name === 'delete') {
+        }
+        if (method.name === 'delete') {
 %>
-	r.Delete("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
-		args := map[string]interface{}{
-			<%- formatParamsAsGolangMap(params, method) %>
-		}
-		_, err := db.NamedExec(
-			"<%- sql %>",
-			args,
-		)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
-			internalServerError(w)
-			return
-		}
+    r.Delete("<%- path %>", func(w http.ResponseWriter, r *http.Request) {
+        args := map[string]interface{}{
+            <%- formatParamsAsGolangMap(params, method) %>
+        }
+        _, err := db.NamedExec(
+            "<%- sql %>",
+            args,
+        )
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "NamedExec failed: %v\n", err)
+            internalServerError(w)
+            return
+        }
 
-		w.WriteHeader(http.StatusNoContent)
-	})
+        w.WriteHeader(http.StatusNoContent)
+    })
 <%
-		}
-	})
+        }
+    })
 })
 %>
 }
@@ -326,7 +326,7 @@ endpoints.forEach(function(endpoint) {
 <%# IMPORTANT: WriteHeader() must be called after w.Header() -%>
 <%# w.Write() vs io.WriteString(): https://stackoverflow.com/questions/37863374/whats-the-difference-between-responsewriter-write-and-io-writestring -%>
 func internalServerError(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusInternalServerError)
-	io.WriteString(w, `{"error":"Internal Server Error"}`)
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusInternalServerError)
+    io.WriteString(w, `{"error":"Internal Server Error"}`)
 }
