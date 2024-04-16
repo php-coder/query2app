@@ -197,6 +197,8 @@ endpoints.forEach(function(endpoint) {
 			return
 		}
 
+		const sql = formatQuery(method.query)
+
 		// define before "if", to make it available later
 		let dataType
 		if (method.name !== 'delete') {
@@ -221,7 +223,7 @@ endpoints.forEach(function(endpoint) {
 <%
 			if (params.length > 0) {
 -%>
-		stmt, err := db.PrepareNamed("<%- formatQuery(method.query) %>")
+		stmt, err := db.PrepareNamed("<%- sql %>")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "PrepareNamed failed: %v\n", err)
 			internalServerError(w)
@@ -235,7 +237,7 @@ endpoints.forEach(function(endpoint) {
 		err = stmt.<%- queryFunction %>(&result, args)
 <%			} else { -%>
 		<%- resultVariableDeclaration %>
-		err := db.<%- queryFunction %>(&result, "<%- formatQuery(method.query) %>")
+		err := db.<%- queryFunction %>(&result, "<%- sql %>")
 <%			} -%>
 		switch err {
 		case sql.ErrNoRows:
@@ -260,7 +262,7 @@ endpoints.forEach(function(endpoint) {
 			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
-			"<%- formatQuery(method.query) %>",
+			"<%- sql %>",
 			args,
 		)
 		if err != nil {
@@ -283,7 +285,7 @@ endpoints.forEach(function(endpoint) {
 			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
-			"<%- formatQuery(method.query) %>",
+			"<%- sql %>",
 			args,
 		)
 		if err != nil {
@@ -303,7 +305,7 @@ endpoints.forEach(function(endpoint) {
 			<%- formatParamsAsGolangMap(params, method) %>
 		}
 		_, err := db.NamedExec(
-			"<%- formatQuery(method.query) %>",
+			"<%- sql %>",
 			args,
 		)
 		if err != nil {
