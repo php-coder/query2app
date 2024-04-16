@@ -259,6 +259,20 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 return removePlaceholders(flattenQuery(removeComments(query)))
             },
 
+            // Differs from formatQuery() as it doesn't flatten query (preserve original formatting)
+            // and also use backticks for multiline strings
+            // (used only with JS)
+            "formatQueryForJs": (query, indentLevel) => {
+                const sql = removePlaceholders(removeComments(query))
+                const indent = ' '.repeat(indentLevel)
+                const isMultilineSql = sql.indexOf('\n') >= 0
+                if (isMultilineSql) {
+                    const indentedSql = sql.replace(/\n/g, '\n' + indent)
+                    return "\n" + indent + '`' + indentedSql + '`'
+                }
+                return `\n${indent}'${sql}'`
+            },
+
             // (used only with Golang)
             "convertPathPlaceholders": convertPathPlaceholders,
             "sqlParser": parser,
