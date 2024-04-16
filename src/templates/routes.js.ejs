@@ -17,9 +17,7 @@ endpoints.forEach(function(endpoint) {
         const hasGetMany = method.name === 'get_list'
         const sql = formatQueryForJs(method.query, 12)
         const params = extractParamsFromQuery(method.query)
-        const formattedParams = params.length > 0
-            ? '\n            { ' + formatParamsAsJavaScriptObject(params, method) + ' },'
-            : ''
+        const formattedParams = formatParamsAsJavaScriptObject(params, method)
 
         if (hasGetOne || hasGetMany) {
 %>

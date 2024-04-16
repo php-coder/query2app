@@ -239,7 +239,9 @@ const createEndpoints = async (destDir, { lang }, config) => {
                 if (params.length === 0) {
                     return params
                 }
-                return Array.from(
+                const indentLevel = 12
+                const indent = ' '.repeat(indentLevel)
+                return `\n${indent}{ ` + Array.from(
                         new Set(params),
                         p => {
                             const bindTarget = p.substring(0, 1)
@@ -251,7 +253,7 @@ const createEndpoints = async (destDir, { lang }, config) => {
                             }
                             return `"${paramName}": ${prefix}.${paramName}`
                         }
-                    ).join(', ')
+                    ).join(', ') + ' },'
             },
 
             // "SELECT *\n   FROM foo WHERE id = :p.id" => "SELECT * FROM foo WHERE id = :id"
