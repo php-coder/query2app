@@ -1,7 +1,18 @@
+<%
+// "custom_routes.ts" => "custom_routes"
+function removeExtension(filename) {
+    return filename.replace(/\.ts$/, '')
+}
+-%>
 import express from 'express'
 import mysql from 'mysql'
 
 const routes = require('./routes')
+<% customRouteFilenames.forEach(filename => {
+    const routerName = removeExtension(filename)
+-%>
+const <%- routerName %> = require('./<%- routerName %>')
+<% }) -%>
 
 const app = express()
 app.use(express.json())
@@ -36,6 +47,11 @@ const pool = mysql.createPool({
 })
 
 routes.register(app, pool)
+<% customRouteFilenames.forEach(filename => {
+    const routerName = removeExtension(filename)
+-%>
+<%- routerName %>.register(app, pool)
+<% }) -%>
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
