@@ -1,6 +1,7 @@
 const express = require('express')
 const mysql = require('mysql')
 const routes = require('./routes')
+const custom_routes = require('./custom_routes')
 
 const app = express()
 app.use(express.json())
@@ -33,6 +34,8 @@ const pool = mysql.createPool({
 })
 
 routes.register(app, pool)
+
+custom_routes.register(app, pool)
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
