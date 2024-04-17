@@ -34,7 +34,6 @@ const pool = mysql.createPool({
 })
 
 routes.register(app, pool)
-
 custom_routes.register(app, pool)
 
 const port = process.env.PORT || 3000

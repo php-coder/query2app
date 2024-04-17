@@ -48,7 +48,7 @@ const pool = mysql.createPool({
 routes.register(app, pool)
 <% customRouteFilenames.forEach(filename => {
     const routerName = removeExtension(filename)
-%>
+-%>
 <%- routerName %>.register(app, pool)
 <% }) -%>
 
