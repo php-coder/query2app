@@ -91,7 +91,8 @@ jobs:
             --error-format long \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --test \
-            tests/crud.hurl
+            tests/crud.hurl \
+            tests/misc.hurl
 
       - name: Show application logs
         if: failure()

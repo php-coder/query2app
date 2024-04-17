@@ -3,6 +3,6 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/v1/hello')
-def greetings():
-    return {"hello": "world!"}
+@router.get('/custom/route')
+def customRoute():
+    return { "custom": True }
