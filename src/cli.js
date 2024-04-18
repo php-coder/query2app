@@ -104,7 +104,8 @@ const createApp = async (destDir, { lang }) => {
         `${__dirname}/templates/${fileName}.ejs`,
         {
             // @todo #27 Document usage of user defined routes
-            'customRouteFilenames': customRouters
+            'customRouteFilenames': customRouters,
+            'capitalize': capitalize,
         }
     )
 

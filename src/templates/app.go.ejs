@@ -1,3 +1,10 @@
+<%
+// "custom_routes.go" => "registerCustomRoutes"
+function fileName2registerRouterFunc(filename) {
+    const routerName = filename.replace(/_routes\.go$/, '')
+    return `register${capitalize(routerName)}Routes`
+}
+-%>
 package main
 
 import "fmt"
@@ -40,6 +47,11 @@ func main() {
 
     r := chi.NewRouter()
     registerRoutes(r, db)
+<% customRouteFilenames.forEach(filename => {
+    const registerRouterFunc = fileName2registerRouterFunc(filename)
+-%>
+    <%- registerRouterFunc %>(r, db)
+<% }) -%>
 
     port := os.Getenv("PORT")
     if port == "" {

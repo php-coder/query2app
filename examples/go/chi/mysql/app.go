@@ -40,6 +40,7 @@ func main() {
 
     r := chi.NewRouter()
     registerRoutes(r, db)
+    registerCustomRoutes(r, db)
 
     port := os.Getenv("PORT")
     if port == "" {
