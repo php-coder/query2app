@@ -7,4 +7,8 @@ exports.register = (app: Express, pool: Pool) => {
         res.json({ "custom": true })
     })
 
+    app.get('/custom/exception', (req: Request, res: Response, next: NextFunction) => {
+        throw new Error('expected err')
+    })
+
 }

@@ -1,4 +1,5 @@
 import express from 'express'
+import { NextFunction, Request, Response } from 'express'
 import mysql from 'mysql'
 
 const routes = require('./routes')
@@ -36,6 +37,11 @@ const pool = mysql.createPool({
 
 routes.register(app, pool)
 custom_routes.register(app, pool)
+
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
+    console.error(error)
+    res.status(500).json({ "error": "Internal Server Error" })
+})
 
 const port = process.env.PORT || 3000
 app.listen(port, () => {
