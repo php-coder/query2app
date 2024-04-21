@@ -36,6 +36,11 @@ const pool = mysql.createPool({
 routes.register(app, pool)
 custom_routes.register(app, pool)
 
+app.use((error, req, res, next) => {
+    console.error(error)
+    res.status(500).json({ "error": "Internal Server Error" })
+})
+
 const port = process.env.PORT || 3000
 app.listen(port, () => {
     console.log(`Listen on ${port}`)
