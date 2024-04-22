@@ -11,3 +11,10 @@ GET {{ SERVER_URL }}/custom/route
 HTTP 200
 [Asserts]
 jsonpath "$.custom" == true
+
+
+GET {{ SERVER_URL }}/custom/exception
+HTTP 500
+[Asserts]
+header "Content-Type" contains "application/json"
+jsonpath "$.error" == "Internal Server Error"
