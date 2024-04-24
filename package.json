@@ -1,6 +1,6 @@
 {
   "name": "query2app",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Generates the endpoints from SQL -> URL mapping",
   "keywords": [
     "sql",
