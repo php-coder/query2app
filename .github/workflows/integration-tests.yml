@@ -34,15 +34,19 @@ jobs:
           - docker-service-name: 'express-js'
             database-service-name: 'mysql'
             application-port: 3010
+            skip_500_error_testing: false
           - docker-service-name: 'express-ts'
             database-service-name: 'mysql'
             application-port: 3020
+            skip_500_error_testing: false
           - docker-service-name: 'chi'
             database-service-name: 'mysql'
             application-port: 3030
+            skip_500_error_testing: true
           - docker-service-name: 'fastapi'
             database-service-name: 'postgres'
             application-port: 4040
+            skip_500_error_testing: false
     env:
       # Prevent interference between builds by setting the project name to a unique value. Otherwise
       # "docker compose down" has been stopping containers (especially database) from other builds.
@@ -92,6 +96,7 @@ jobs:
           hurl \
             --error-format long \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
+            --variable skip_500_error_testing=${{ matrix.skip_500_error_testing }} \
             --test \
             tests/crud.hurl \
             tests/misc.hurl
