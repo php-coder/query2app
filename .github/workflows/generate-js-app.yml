@@ -39,7 +39,7 @@ jobs:
         run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
 
       - name: Generate JavaScript + Express application
-        run: npm run gen-js-example
+        run: npm run example:js
 
       - name: Check whether all modified files have been committed
         run: >-

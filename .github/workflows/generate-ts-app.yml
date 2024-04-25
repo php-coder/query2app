@@ -39,7 +39,7 @@ jobs:
         run: npm ci --no-audit --no-fund # https://docs.npmjs.com/cli/v8/commands/npm-ci
 
       - name: Generate TypeScript + Express application
-        run: npm run gen-ts-example
+        run: npm run example:ts
 
       - name: Check whether all modified files have been committed
         run: >-
