@@ -26,6 +26,7 @@
     "src/**"
   ],
   "scripts": {
+    "example:all": "npm run example:js && npm run example:ts && npm run example:go && npm run example:py",
     "example:js": "cd examples/js/express/mysql; ../../../../src/cli.js --lang js",
     "example:ts": "cd examples/ts/express/mysql; ../../../../src/cli.js --lang ts",
     "example:go": "cd examples/go/chi/mysql; ../../../../src/cli.js --lang go",
