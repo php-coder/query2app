@@ -120,7 +120,11 @@ const createDb = async (destDir, { lang }) => {
     console.log('Generate', fileName)
     const resultFile = path.join(destDir, fileName)
 
-    return fsPromises.copyFile(`${__dirname}/templates/${fileName}`, resultFile)
+    const resultedCode = await ejs.renderFile(
+        `${__dirname}/templates/${fileName}.ejs`
+    )
+
+    return fsPromises.writeFile(resultFile, resultedCode)
 }
 
 // "-- comment\nSELECT * FROM foo" => "SELECT * FROM foo"
