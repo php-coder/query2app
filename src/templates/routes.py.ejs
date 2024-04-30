@@ -85,6 +85,18 @@ function findOutType(fieldsInfo, fieldName) {
 	return 'str'
 }
 
+// "q.title"  => "q.title: str"
+// "q.active" => "q.active: bool"
+// "q.age"    => "q.age: int"
+// "p.id"     => "p.id"
+// "b.name"   => "b.name"
+function appendVariableTypeToQueryParam(paramsInfo, varName) {
+    if (varName.startsWith('q.')) {
+        return `${varName}: ${findOutType(paramsInfo, stipOurPrefixes(varName))}`
+    }
+    return varName
+}
+
 // LATER: reduce duplication with routes.go.ejs
 function addTypes(props, fieldsInfo) {
 	return props.map(prop => {
@@ -187,7 +199,8 @@ endpoints.forEach(function(endpoint) {
         const pythonMethodName = generate_method_name(method.name, path)
 
         // LATER: add support for aggregated_queries (#17)
-        const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(stipOurPrefixes) : []
+        const queryParamsInfo = method.params && method.params.query ? method.params.query : {}
+        const argsFromQuery = method.query ? extractParamsFromQuery(method.query).map(param => appendVariableTypeToQueryParam(queryParamsInfo, param)).map(stipOurPrefixes) : []
 
         // define before "if", to make them available later
         let methodArgs
