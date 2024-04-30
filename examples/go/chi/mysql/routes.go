@@ -137,9 +137,9 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
                 , :name_ru
                 , :slug
                 , :hidden
-                , NOW()
+                , CURRENT_TIMESTAMP
                 , :user_id
-                , NOW()
+                , CURRENT_TIMESTAMP
                 , :user_id
                 )`,
             args,
@@ -235,7 +235,7 @@ func registerRoutes(r chi.Router, db *sqlx.DB) {
                  , name_ru = :name_ru
                  , slug = :slug
                  , hidden = :hidden
-                 , updated_at = NOW()
+                 , updated_at = CURRENT_TIMESTAMP
                  , updated_by = :user_id
              WHERE id = :categoryId`,
             args,

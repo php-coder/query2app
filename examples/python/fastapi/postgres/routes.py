@@ -117,9 +117,9 @@ def post_v1_categories(body: CreateCategoryDto, conn=Depends(db_connection)):
                         , %(name_ru)s
                         , %(slug)s
                         , %(hidden)s
-                        , NOW()
+                        , CURRENT_TIMESTAMP
                         , %(user_id)s
-                        , NOW()
+                        , CURRENT_TIMESTAMP
                         , %(user_id)s
                         )
                     """, {
@@ -192,7 +192,7 @@ def put_v1_categories_category_id(body: CreateCategoryDto, categoryId, conn=Depe
                          , name_ru = %(name_ru)s
                          , slug = %(slug)s
                          , hidden = %(hidden)s
-                         , updated_at = NOW()
+                         , updated_at = CURRENT_TIMESTAMP
                          , updated_by = %(user_id)s
                      WHERE id = %(categoryId)s
                     """, {

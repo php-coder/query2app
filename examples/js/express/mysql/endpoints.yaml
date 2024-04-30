@@ -64,9 +64,9 @@
           , :b.name_ru
           , :b.slug
           , :b.hidden
-          , NOW()
+          , CURRENT_TIMESTAMP
           , :b.user_id
-          , NOW()
+          , CURRENT_TIMESTAMP
           , :b.user_id
           )
     dto:
@@ -122,7 +122,7 @@
            , name_ru = :b.name_ru
            , slug = :b.slug
            , hidden = :b.hidden
-           , updated_at = NOW()
+           , updated_at = CURRENT_TIMESTAMP
            , updated_by = :b.user_id
        WHERE id = :p.categoryId
     dto:

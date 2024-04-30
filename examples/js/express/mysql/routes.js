@@ -78,9 +78,9 @@ const register = (app, pool) => {
                 , :name_ru
                 , :slug
                 , :hidden
-                , NOW()
+                , CURRENT_TIMESTAMP
                 , :user_id
-                , NOW()
+                , CURRENT_TIMESTAMP
                 , :user_id
                 )`,
             {
@@ -152,7 +152,7 @@ const register = (app, pool) => {
                  , name_ru = :name_ru
                  , slug = :slug
                  , hidden = :hidden
-                 , updated_at = NOW()
+                 , updated_at = CURRENT_TIMESTAMP
                  , updated_by = :user_id
              WHERE id = :categoryId`,
             {
