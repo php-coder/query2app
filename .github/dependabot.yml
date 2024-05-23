@@ -17,6 +17,8 @@ updates:
     assignees: [ "php-coder" ]
     reviewers: [ "php-coder" ]
     labels: [ "kind/dependency-update", "area/ci" ]
+    # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#rebase-strategy
+    rebase-strategy: "disabled"
     # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#open-pull-requests-limit
     open-pull-requests-limit: 1
 
