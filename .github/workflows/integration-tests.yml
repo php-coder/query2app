@@ -84,7 +84,7 @@ jobs:
 
       - name: Install Hurl
         run: |
-          VER=4.3.0
+          VER=5.0.1
           DEB=hurl_${VER}_amd64.deb
           curl --location --no-progress-meter --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$VER/$DEB
           sudo dpkg --install $DEB
@@ -98,9 +98,7 @@ jobs:
             --error-format long \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --variable skip_500_error_testing=${{ matrix.skip_500_error_testing }} \
-            --test \
-            tests/crud.hurl \
-            tests/misc.hurl
+            --test tests/
 
       - name: Show application logs
         if: failure()
