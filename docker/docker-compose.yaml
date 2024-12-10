@@ -4,7 +4,6 @@
 #   docker compose exec mysql mysql -u test -ptest test -e 'SELECT * FROM categories'
 #   docker compose exec postgres psql -U test -c 'SELECT * FROM categories'
 #
-version: '3'
 
 services:
   mysql:
