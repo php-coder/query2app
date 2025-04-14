@@ -84,7 +84,7 @@ jobs:
 
       - name: Install Hurl
         run: |
-          VER=6.0.0
+          VER=6.1.1
           DEB=hurl_${VER}_amd64.deb
           curl --location --no-progress-meter --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$VER/$DEB
           sudo dpkg --install $DEB
