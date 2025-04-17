@@ -20,7 +20,7 @@ jobs:
   generate-app:
     name: Generate app
     # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idruns-on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
 
       - name: Clone source code
