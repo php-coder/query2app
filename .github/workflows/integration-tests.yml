@@ -83,7 +83,7 @@ jobs:
         run: docker compose ps
 
       - name: Install mise to install Hurl
-        uses: jdx/mise-action@v2.3.1 # https://github.com/jdx/mise-action
+        uses: jdx/mise-action@v2.4.0 # https://github.com/jdx/mise-action
         with:
           version: 2025.6.8        # [default: latest] mise version to install
           install: true            # [default: true] run `mise install`
