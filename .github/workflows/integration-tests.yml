@@ -107,7 +107,8 @@ jobs:
             --error-format long \
             --variable SERVER_URL=http://127.0.0.1:${{ matrix.application-port }} \
             --variable skip_500_error_testing=${{ matrix.skip_500_error_testing }} \
-            --test
+            --test \
+            .
 
       - name: Show application logs
         if: failure()
